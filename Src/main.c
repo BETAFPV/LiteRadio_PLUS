@@ -25,7 +25,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_hid.h"
+#include "usb_device.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +50,7 @@ ADC_HandleTypeDef hadc2;
 osThreadId defaultTaskHandle;
 osThreadId myTask02Handle;
 /* USER CODE BEGIN PV */
-
+uint16_t report_data[9] = {0x1000,0x1000,0x1000,0x1000,0x1000,0x1000,0x1000,0x1000,0x1000};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -335,6 +336,7 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+	USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &report_data, 9*sizeof(uint16_t));
     osDelay(1);
   }
   /* USER CODE END StartTask02 */
