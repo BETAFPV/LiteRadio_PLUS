@@ -338,7 +338,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc; ../Drivers/STM32F1xx_HAL_Driver/Inc; ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy; ../Middlewares/Third_Party/FreeRTOS/Source/include; ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS; ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3; ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc; ../Drivers/CMSIS/Device/ST/STM32F1xx/Include; ../Drivers/CMSIS/Include;../Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc</IncludePath>
+              <IncludePath>../Inc;  ../Drivers/STM32F1xx_HAL_Driver/Inc;  ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;  ../Middlewares/Third_Party/FreeRTOS/Source/include;  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;  ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;  ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;  ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;  ../Drivers/CMSIS/Include;  ../Middlewares/ST/STM32_USB_Device_Library/Class/HID/Inc;  ..\USER\Drivers</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -611,6 +611,16 @@
               <FileName>usbd_hid.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Class/HID/Src/usbd_hid.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers</GroupName>
+          <Files>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Drivers\adc.c</FilePath>
             </File>
           </Files>
         </Group>
