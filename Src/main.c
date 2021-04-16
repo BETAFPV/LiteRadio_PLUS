@@ -28,6 +28,7 @@
 #include "usbd_hid.h"
 #include "usb_device.h"
 #include "adc.h"
+#include "gimbal.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +51,6 @@ DMA_HandleTypeDef hdma_adc1;
 
 osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
-uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static TaskHandle_t startTaskHandle;
 static void startTask(void *param);
 /* USER CODE END PV */
@@ -295,7 +295,7 @@ static void MX_GPIO_Init(void)
 void startTask(void *param)
 {
 	taskENTER_CRITICAL();	/*进入临界区*/
-	
+	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 1, NULL);/*创建无线连接任务*/
 	vTaskDelete(startTaskHandle);/*删除开始任务*/
 	taskEXIT_CRITICAL();	/*退出临界区*/
 }
@@ -316,10 +316,6 @@ void StartDefaultTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-	adc_test1 = getAdcValue(0);
-    adc_test2 = getAdcValue(1);
-    adc_test3 = getAdcValue(2);
-    adc_test4 = getAdcValue(3);
     osDelay(1);
   }
   /* USER CODE END 5 */
