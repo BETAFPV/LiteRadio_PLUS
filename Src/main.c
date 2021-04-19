@@ -29,6 +29,8 @@
 #include "usb_device.h"
 #include "adc.h"
 #include "gimbal.h"
+#include "key.h"
+#include "power_switch.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -407,9 +409,11 @@ static void MX_GPIO_Init(void)
 void startTask(void *param)
 {
 	taskENTER_CRITICAL();	/*进入临界*/
-	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 1, NULL);
+	//xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 1, NULL);
+	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 1, NULL);
+	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
 	vTaskDelete(startTaskHandle);
-	taskEXIT_CRITICAL();	/*�?出临界区*/
+	taskEXIT_CRITICAL();	/*退出临界区*/
 }
 /* USER CODE END 4 */
 
