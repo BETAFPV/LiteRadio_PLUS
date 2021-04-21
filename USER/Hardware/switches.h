@@ -37,7 +37,7 @@ typedef enum
 #define SWC_L_Pin 			GPIO_PIN_9
 #define SWC_L_GPIO_Port 	GPIOB
 
-void Switches_IO_Init(void);
+void switchesTask(void* param);
 uint16_t GetSwitchValue(SwitchesChannelTypeDef switchnum);
 uint16_t GetSwitchJoyStickValue(SwitchesChannelTypeDef switchnum);
 uint16_t JoyStickValMapToChannelVal(uint16_t switch_val);

@@ -5,10 +5,10 @@
 #define POWER_ON_PORT           GPIOC
 #define POWER_ON_PIN            GPIO_PIN_15
 
-#define POWER_ON()  HAL_GPIO_WritePin(POWER_ON_PORT,POWER_ON_PIN,GPIO_PIN_SET)
-#define POWER_OFF() HAL_GPIO_WritePin(POWER_ON_PORT,POWER_ON_PIN,GPIO_PIN_RESET)
+#define POWER_PIN_HOLD_UP()   HAL_GPIO_WritePin(POWER_ON_PORT,POWER_ON_PIN,GPIO_PIN_SET)
+#define POWER_PIN_HOLD_DOWN() HAL_GPIO_WritePin(POWER_ON_PORT,POWER_ON_PIN,GPIO_PIN_RESET)
 
 void powerSwitchTask(void* param);
-
+void powerOn(void);
 #endif
 

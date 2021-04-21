@@ -7,8 +7,8 @@ HeaderPath=..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\STM32F1xx_HAL_Driver\I
 CDefines=USE_HAL_DRIVER;STM32F103xB;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
 [PreviousGenFiles]
-HeaderPath=E:/git/LiteRadio_PLUS/Inc
+HeaderPath=E:/github/LiteRadio_PLUS/Inc
 HeaderFiles=FreeRTOSConfig.h;usb_device.h;usbd_conf.h;usbd_desc.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=E:/git/LiteRadio_PLUS/Src
+SourcePath=E:/github/LiteRadio_PLUS/Src
 SourceFiles=freertos.c;usb_device.c;usbd_conf.c;usbd_desc.c;stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 

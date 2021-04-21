@@ -1,4 +1,6 @@
 #include "led.h"
+#include "math.h"
+
 void Led_Red(GPIO_PinState status)
 {
     HAL_GPIO_WritePin(LED_RED_PORT,LED_RED_PIN,status);

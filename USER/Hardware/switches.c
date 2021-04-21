@@ -1,5 +1,8 @@
 #include "switches.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
+uint16_t switches_buff[4] = {0};
 uint16_t GetSwitchValue(SwitchesChannelTypeDef switchnum)
 {
 	uint16_t switchvalue;
@@ -174,3 +177,14 @@ uint16_t JoyStickValMapToChannelVal(uint16_t switch_val)
 	return tempVal;
 }
 
+void switchesTask(void* param)
+{
+	while(1)
+	{
+		vTaskDelay(100);
+		switches_buff[SWA] =  GetSwitchValue(SWA);
+		switches_buff[SWB] =  GetSwitchValue(SWB);
+		switches_buff[SWC] =  GetSwitchValue(SWC);
+		switches_buff[SWD] =  GetSwitchValue(SWD);
+	}
+}
