@@ -99,7 +99,6 @@ void keyTask(void* param)
 			powerswitchKeypressedTime = xTaskGetTickCount();            //刷新pressedTime，防止再一次进入LONG_PRESS
 		}
 		
-
 	}
 }
 

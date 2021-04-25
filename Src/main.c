@@ -32,6 +32,7 @@
 #include "switches.h"
 #include "key.h"
 #include "power_switch.h"
+#include "buzzer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -87,7 +88,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -112,7 +112,7 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   Adc_Start();
-//  powerOn();
+
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -143,7 +143,7 @@ int main(void)
 
   /* Start scheduler */
   osKernelStart();
- 
+
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
@@ -167,7 +167,7 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -180,7 +180,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -219,7 +219,7 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 1 */
 
   /* USER CODE END ADC1_Init 1 */
-  /** Common config 
+  /** Common config
   */
   hadc1.Instance = ADC1;
   hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
@@ -232,7 +232,7 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure Regular Channel 
+  /** Configure Regular Channel
   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = ADC_REGULAR_RANK_1;
@@ -241,7 +241,7 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure Regular Channel 
+  /** Configure Regular Channel
   */
   sConfig.Channel = ADC_CHANNEL_1;
   sConfig.Rank = ADC_REGULAR_RANK_2;
@@ -249,7 +249,7 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure Regular Channel 
+  /** Configure Regular Channel
   */
   sConfig.Channel = ADC_CHANNEL_2;
   sConfig.Rank = ADC_REGULAR_RANK_3;
@@ -257,7 +257,7 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
-  /** Configure Regular Channel 
+  /** Configure Regular Channel
   */
   sConfig.Channel = ADC_CHANNEL_3;
   sConfig.Rank = ADC_REGULAR_RANK_4;
@@ -291,7 +291,7 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
+  htim1.Init.Prescaler = 99;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 0;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -336,10 +336,10 @@ static void MX_TIM1_Init(void)
 
 }
 
-/** 
+/**
   * Enable DMA controller clock
   */
-static void MX_DMA_Init(void) 
+static void MX_DMA_Init(void)
 {
 
   /* DMA controller clock enable */
@@ -347,7 +347,7 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
 }
@@ -405,9 +405,9 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB4 PB5 PB6 PB7 
+  /*Configure GPIO pins : PB4 PB5 PB6 PB7
                            PB8 PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7 
+  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7
                           |GPIO_PIN_8|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -421,11 +421,11 @@ void startTask(void *param)
 	KeyEventHandle = xEventGroupCreate();   //创建事件
 	taskENTER_CRITICAL();	/*进入临界*/
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
-//	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
+	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
 	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
-	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 1, NULL);
+	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
 	vTaskDelete(startTaskHandle);
-	taskEXIT_CRITICAL();	/*退出临界区*/
+	taskEXIT_CRITICAL();	/*�?出临�?*/
 }
 /* USER CODE END 4 */
 
@@ -446,7 +446,7 @@ void StartDefaultTask(void const * argument)
   {
     osDelay(1);
   }
-  /* USER CODE END 5 */ 
+  /* USER CODE END 5 */
 }
 
 /**
@@ -470,7 +470,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

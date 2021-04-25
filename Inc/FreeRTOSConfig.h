@@ -42,9 +42,9 @@
  * See http://www.freertos.org/a00110.html
  *----------------------------------------------------------*/
 
-/* USER CODE BEGIN Includes */   	      
+/* USER CODE BEGIN Includes */
 /* Section where include file can be added */
-/* USER CODE END Includes */ 
+/* USER CODE END Includes */
 
 /* Ensure definitions are only used by the compiler, and not by the assembler. */
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
@@ -61,7 +61,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)3072)
+#define configTOTAL_HEAP_SIZE                    ((size_t)8*1024 )
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_16_BIT_TICKS                   0
 #define configUSE_MUTEXES                        1
@@ -121,11 +121,11 @@ standard names. */
 
 /* IMPORTANT: This define is commented when used with STM32Cube firmware, when the timebase source is SysTick,
               to prevent overwriting SysTick_Handler defined within STM32Cube HAL */
- 
+
 /* #define xPortSysTickHandler SysTick_Handler */
 
-/* USER CODE BEGIN Defines */   	      
+/* USER CODE BEGIN Defines */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
-/* USER CODE END Defines */ 
+/* USER CODE END Defines */
 
 #endif /* FREERTOS_CONFIG_H */

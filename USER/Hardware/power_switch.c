@@ -5,7 +5,7 @@
 #include "key.h"
 #include "led.h"
 #include "cmsis_os.h"
-
+#include "buzzer.h"
 static bool powerswitchStatus = false;
 
 uint8_t key_status;
@@ -27,10 +27,26 @@ void powerSwitchTask(void* param)
 			if(powerswitchStatus == true)
 			{
 				Led_Blue(ON);
+				buzzer_start();
+				Buzzer_On(Do);
+				osDelay(400);
+				Buzzer_On(Re);
+				osDelay(400);
+				Buzzer_On(Mi);
+				osDelay(400);
+				buzzer_stop();
 				POWER_PIN_HOLD_UP();
 			}
 			else
 			{
+				buzzer_start();
+				Buzzer_On(Mi);
+				osDelay(400);
+				Buzzer_On(Re);
+				osDelay(400);
+				Buzzer_On(Do);
+				osDelay(400);
+				buzzer_stop();
 				POWER_PIN_HOLD_DOWN();
 			}
 		}

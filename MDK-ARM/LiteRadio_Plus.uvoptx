@@ -183,15 +183,10 @@
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>i</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>1</WinNumber>
           <ItemText>powerswitchUpSta</ItemText>
         </Ww>
         <Ww>
-          <count>8</count>
+          <count>7</count>
           <WinNumber>1</WinNumber>
           <ItemText>powerswitch_pressed</ItemText>
         </Ww>
