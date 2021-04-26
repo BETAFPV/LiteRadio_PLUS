@@ -627,6 +627,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Drivers\stmflash.c</FilePath>
             </File>
+            <File>
+              <FileName>process.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Drivers\process.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

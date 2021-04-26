@@ -1,8 +1,6 @@
 #include "gimbal.h"
 #include "adc.h"
-#include "cmsis_os.h"
 #include "stmflash.h"
-#include "FreeRTOS.h"
 #include "key.h"
 #include "task.h"
 #include "led.h"
@@ -11,6 +9,7 @@ static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 
 static uint8_t HighThrottle_flg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
 static uint16_t gimbal_buff[4] = {0};
 uint8_t status = 0;
+QueueHandle_t gimbalVal_Queue = NULL;
 const uint16_t OutputCode[513] =      //Gimbal ADC value mapping table
 {
     0,0,0,0,0,
@@ -311,6 +310,9 @@ void ReadCalibrationValueForFlash(void)
 
 void gimbalTask(void* param)
 {
+	BaseType_t xReturn = pdPASS;
+	EventBits_t R_event = pdPASS;
+	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
 	while(1)
 	{
 		vTaskDelay(50);
@@ -318,6 +320,17 @@ void gimbalTask(void* param)
 		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);
 		gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);
 		gimbal_buff[THROTTLE] = Get_GimbalValue(THROTTLE);
+		R_event= xEventGroupWaitBits( KeyEventHandle,
+		                              SETUP_SHORT_PRESS,
+		                              pdTRUE,
+	                                  pdTRUE,
+		                              0);
+		if((R_event & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
+		{
+			status +=1;
+		}
+		xReturn = xQueueSend(gimbalVal_Queue,gimbal_buff,0);
 	//	GimbalCalibrateProcess();
 	}
 }
+

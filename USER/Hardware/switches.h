@@ -1,7 +1,9 @@
 #ifndef _SWITCHES_H_
 #define _SWITCHES_H_
 #include "stm32f1xx_hal.h"
+#include "cmsis_os.h"
 
+extern QueueHandle_t switchesVal_Queue;
 typedef enum
 {
   	SWA 	= 0 ,       //2POS

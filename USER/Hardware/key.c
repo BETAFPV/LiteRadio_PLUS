@@ -22,7 +22,7 @@ void keyTask(void* param)
 {
 	while(1)
 	{
-		vTaskDelay(10);
+		vTaskDelay(50n);
 		if(bind_pressed==false && BIND_KEY_STATUS() == PRESSED)
 		{
 			bind_pressed = true;
@@ -102,14 +102,5 @@ void keyTask(void* param)
 	}
 }
 
-
-//读取按键状态
-//uint8_t getKeyState(void)
-//{
-//	uint8_t temp;
-//	temp = keyState;
-//	keyState = 0;//读取按键之后清零
-//	return temp;
-//}
 
 

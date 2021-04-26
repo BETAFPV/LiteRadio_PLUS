@@ -33,6 +33,7 @@
 #include "key.h"
 #include "power_switch.h"
 #include "buzzer.h"
+#include "process.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -424,8 +425,9 @@ void startTask(void *param)
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
 	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
+	xTaskCreate(radiolinkDataProcessTask, "DATA_PROCESS", 100, NULL, 1, NULL);
 	vTaskDelete(startTaskHandle);
-	taskEXIT_CRITICAL();	/*é€?å‡ºä¸´ç•?*/
+	taskEXIT_CRITICAL();	
 }
 /* USER CODE END 4 */
 
