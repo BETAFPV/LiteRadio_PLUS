@@ -1,0 +1,33 @@
+#include "joystick.h"
+#include "gimbal.h"
+#include "switches.h"
+uint16_t gimbal_val_buff[4];
+uint16_t switches_val_buff[4];
+uint16_t report_data[8];
+
+void joystickTask(void *param) 
+{
+    BaseType_t xReturn = pdPASS;
+	while(1)
+	{
+        
+		vTaskDelay(10);
+        xReturn = xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
+		xReturn = xQueueReceive(switchesVal_Queue,switches_val_buff,0);
+        
+        report_data[5] = gimbal_val_buff[0];
+		report_data[4] = gimbal_val_buff[1];
+		report_data[2] = gimbal_val_buff[2];
+		report_data[3] = gimbal_val_buff[3];
+			
+			
+		report_data[0] = switches_val_buff[0];
+		report_data[1] = switches_val_buff[1];
+		report_data[6] = switches_val_buff[2];
+		report_data[7] = switches_val_buff[3];
+        
+        
+        USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &report_data, 8*sizeof(uint16_t));
+        //USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &report_data, 105);
+	}
+}

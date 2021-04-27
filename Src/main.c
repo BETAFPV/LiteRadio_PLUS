@@ -34,6 +34,7 @@
 #include "power_switch.h"
 #include "buzzer.h"
 #include "process.h"
+#include "joystick.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -426,6 +427,7 @@ void startTask(void *param)
 	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
 	xTaskCreate(radiolinkDataProcessTask, "DATA_PROCESS", 100, NULL, 1, NULL);
+	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 1, NULL);    
 	vTaskDelete(startTaskHandle);
 	taskEXIT_CRITICAL();	
 }

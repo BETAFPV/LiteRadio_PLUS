@@ -22,7 +22,7 @@ void keyTask(void* param)
 {
 	while(1)
 	{
-		vTaskDelay(50n);
+		vTaskDelay(50);
 		if(bind_pressed==false && BIND_KEY_STATUS() == PRESSED)
 		{
 			bind_pressed = true;

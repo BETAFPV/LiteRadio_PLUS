@@ -315,7 +315,7 @@ void gimbalTask(void* param)
 	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
 	while(1)
 	{
-		vTaskDelay(50);
+		vTaskDelay(5);
 		gimbal_buff[AILERON] =  Get_GimbalValue(AILERON);
 		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);
 		gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);
