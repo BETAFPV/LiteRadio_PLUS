@@ -1,5 +1,96 @@
 #include "buzzer.h"
+uint8_t buzzer_curr_count = 0;
+uint32_t buzzer_lastmillis = 0;
+uint32_t buzzer_millis = 0;
+//uint8_t buzzer_status = 0;//为1时处于发声时间，为0时处于静止时间
 
+uint8_t buzzer_intervalstatus = 0;//为1时处于间隔时间，为0时处于间隔时间
+uint32_t buzzer_intervalmillis = 0;
+
+EventGroupHandle_t buzzerEventHandle = NULL;
+
+void buzzerTask(void* param)
+{
+	EventBits_t R_event;
+	while(1)
+	{
+		vTaskDelay(100);
+		R_event= xEventGroupWaitBits( buzzerEventHandle,
+		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING,
+		                              pdTRUE,
+	                                  pdFALSE,
+		                              portMAX_DELAY);
+		if((R_event & POWER_ON_RING) == POWER_ON_RING)
+		{         
+            Buzzer_bee_up();
+		}
+        if((R_event & POWER_OFF_RING) == POWER_OFF_RING)
+        {				
+            Buzzer_bee_down();
+        } 
+        if((R_event & SETUP_MID_RING) == SETUP_MID_RING)
+        {
+            Buzzer_Bee(Do,2);
+        }
+        if((R_event & SETUP_MINMAX_RING) == SETUP_MINMAX_RING)
+        {
+            Buzzer_Bee(Do,3);
+        }
+        if((R_event & SETUP_END_RING) == SETUP_END_RING)
+        {
+            Buzzer_bee_time(Do,1000);
+        }
+	}
+}
+
+void Buzzer_bee_time(uint8_t tone,uint32_t buzzer_time)
+{
+    buzzer_start();
+    Buzzer_On(tone);
+    osDelay(buzzer_time);
+    buzzer_stop();
+}
+
+void Buzzer_bee_up()
+{
+    buzzer_start();
+    Buzzer_On(Do);
+    osDelay(400);
+    Buzzer_On(Re);
+    osDelay(400);
+    Buzzer_On(Mi);
+    osDelay(400);
+    buzzer_stop();
+}
+
+void Buzzer_bee_down()
+{
+    buzzer_start();
+    Buzzer_On(Mi);
+    osDelay(400);
+    Buzzer_On(Re);
+    osDelay(400);
+    Buzzer_On(Do);
+    osDelay(400);
+    buzzer_stop();
+}
+
+void Buzzer_Bee(uint8_t tone,uint8_t buzzer_count)
+{
+    while(buzzer_curr_count < buzzer_count)
+    {
+        buzzer_start();
+        Buzzer_On(tone);
+        osDelay(100);
+        buzzer_stop();
+        osDelay(100);
+        buzzer_curr_count++;
+     
+    }
+    osDelay(500);
+    buzzer_curr_count = 0;
+}
+     
 void Buzzer_On(uint8_t tone)
 {
 	switch(tone)

@@ -421,13 +421,15 @@ static void MX_GPIO_Init(void)
 void startTask(void *param)
 {
 	KeyEventHandle = xEventGroupCreate();   //创建事件
+    buzzerEventHandle = xEventGroupCreate();   
 	taskENTER_CRITICAL();	/*进入临界*/
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
 	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
 	xTaskCreate(radiolinkDataProcessTask, "DATA_PROCESS", 100, NULL, 1, NULL);
-	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 1, NULL);    
+	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 1, NULL); 
+    xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
 	vTaskDelete(startTaskHandle);
 	taskEXIT_CRITICAL();	
 }

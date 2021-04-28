@@ -30,9 +30,9 @@ void Led_Twinkle(uint8_t num)
     for(i=0; i<num; i++)
     {
         Led_Red(ON);
-        //Delay_ms(100);
+        osDelay(100);
         Led_Red(OFF);
-        //Delay_ms(100);
+        osDelay(100);
     }
 }
 

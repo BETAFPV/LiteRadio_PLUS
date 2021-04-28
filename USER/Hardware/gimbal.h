@@ -64,6 +64,7 @@ typedef struct{
 #define AD_MIDVALUE_MIN (ADC_INPUT_MID - 350)
 #define AD_MIDVALUE_MAX	(ADC_INPUT_MID + 350)
 
+
 void gimbalTask(void* param);
 
 uint16_t Get_GimbalValue(GimbalChannelTypeDef channel);
@@ -73,5 +74,7 @@ void HighThrottleCheck(void);
 uint8_t Get_HighThrottle_flg(void);
 void GimbalCalibrateProcess(void);
 uint8_t get_calibration_mode(void);
+
+void get_report_data(uint16_t *data);
 
 #endif

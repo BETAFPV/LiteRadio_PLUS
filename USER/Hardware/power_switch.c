@@ -27,26 +27,14 @@ void powerSwitchTask(void* param)
 			if(powerswitchStatus == true)
 			{
 				Led_Blue(ON);
-				buzzer_start();
-				Buzzer_On(Do);
-				osDelay(400);
-				Buzzer_On(Re);
-				osDelay(400);
-				Buzzer_On(Mi);
-				osDelay(400);
-				buzzer_stop();
+                xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
+                osDelay(1200);
 				POWER_PIN_HOLD_UP();
 			}
 			else
 			{
-				buzzer_start();
-				Buzzer_On(Mi);
-				osDelay(400);
-				Buzzer_On(Re);
-				osDelay(400);
-				Buzzer_On(Do);
-				osDelay(400);
-				buzzer_stop();
+                xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
+                osDelay(1200);
 				POWER_PIN_HOLD_DOWN();
 			}
 		}
