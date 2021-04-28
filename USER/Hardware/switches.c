@@ -2,7 +2,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-static uint16_t switches_buff[4] = {0};
+
 QueueHandle_t switchesVal_Queue = NULL;
 uint16_t GetSwitchValue(SwitchesChannelTypeDef switchnum)
 {
@@ -180,6 +180,7 @@ uint16_t JoyStickValMapToChannelVal(uint16_t switch_val)
 
 void switchesTask(void* param)
 {
+    static uint16_t switches_buff[4] = {0};
 	BaseType_t xReturn = pdPASS;
 	switchesVal_Queue = xQueueCreate(20,sizeof(switches_buff));
 	while(1)

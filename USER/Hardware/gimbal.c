@@ -7,7 +7,6 @@
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
 static uint8_t HighThrottle_flg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
-static uint16_t gimbal_buff[4] = {0};
 uint8_t status = 0;
 QueueHandle_t gimbalVal_Queue = NULL;
 const uint16_t OutputCode[513] =      //Gimbal ADC value mapping table
@@ -312,6 +311,7 @@ void gimbalTask(void* param)
 {
 	BaseType_t xReturn = pdPASS;
 	EventBits_t R_event = pdPASS;
+    static uint16_t gimbal_buff[4] = {0};
 	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
 	while(1)
 	{

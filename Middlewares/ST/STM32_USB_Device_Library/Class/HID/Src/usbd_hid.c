@@ -375,8 +375,7 @@ __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE]  _
 	0xc0,               /*End Collection*/
     
     0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
-	0x
-    09,0x36,			/*USAGE (Pointer)*/
+	0x09,0x36,			/*USAGE (Pointer)*/
 	0xA1,0x00,			/*COLLECTION (Physical)*/
 	0x09,0x36,          /*USAGE (Slider)*/
 	0x15,0x00,			/*LOGICAL_MINIMUM (0)*/
