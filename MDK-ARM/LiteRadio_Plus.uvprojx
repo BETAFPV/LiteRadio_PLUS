@@ -638,6 +638,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\Drivers\joystick.c</FilePath>
             </File>
+            <File>
+              <FileName>mixes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Drivers\mixes.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

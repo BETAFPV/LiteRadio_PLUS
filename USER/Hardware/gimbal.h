@@ -26,12 +26,13 @@ extern QueueHandle_t gimbalVal_Queue;
 #define THROTTLE_MIDVALUE_ADDR 0x08007814
 #define THROTTLE_MINVALUE_ADDR 0x08007816
 
+//按电位器采取顺序排列
 typedef enum
 {
-  	THROTTLE 	= 0 ,       //throttle
-	AILERON 	= 1 ,       //roll
-	RUDDER  	= 2 ,       //yaw
-	ELEVATOR   	= 3 ,       //pitch
+  	RUDDER   = 0 ,       //yaw
+	THROTTLE = 1 ,       //throttle
+	AILERON  = 2 ,       //roll
+	ELEVATOR = 3 ,       //pitch
 }GimbalChannelTypeDef;
 
 typedef struct{

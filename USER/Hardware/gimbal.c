@@ -79,7 +79,7 @@ uint16_t Get_GimbalValue(GimbalChannelTypeDef channel)
 				Sampling_MaxMinData[channel][MIDDAT] = AD_MIDVALUE_MIN; 
 			}
 		}
-		//限定AD值得采样范围
+		//限定AD值的采样范围
 		if(getAdcValue(channel) > Sampling_MaxMinData[channel][MAXDAT]) 
 		{
 			ADTemp = Sampling_MaxMinData[channel][MAXDAT] ; 
@@ -114,14 +114,15 @@ uint16_t Get_GimbalValue(GimbalChannelTypeDef channel)
 		{
 			OutputTemp = (CHANNEL_OUTPUT_MIN) ;
 		}
-		if(OutputTemp > CHANNEL_OUTPUT_MID) 
-		{
-			OutputTemp = OutputCode[OutputTemp - CHANNEL_OUTPUT_MID] + CHANNEL_OUTPUT_MID;
-		}
-		else		            
-		{
-			OutputTemp = CHANNEL_OUTPUT_MID - OutputCode[CHANNEL_OUTPUT_MID - OutputTemp];
-		}
+        
+//		if(OutputTemp > CHANNEL_OUTPUT_MID) 
+//		{
+//			OutputTemp = OutputCode[OutputTemp - CHANNEL_OUTPUT_MID] + CHANNEL_OUTPUT_MID;
+//		}
+//		else		            
+//		{
+//			OutputTemp = CHANNEL_OUTPUT_MID - OutputCode[CHANNEL_OUTPUT_MID - OutputTemp];
+//		}
 		
 	}
 	else
@@ -314,10 +315,11 @@ void gimbalTask(void* param)
 	while(1)
 	{
 		vTaskDelay(5);
+        gimbal_buff[THROTTLE] = Get_GimbalValue(THROTTLE);
 		gimbal_buff[AILERON] =  Get_GimbalValue(AILERON);
-		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);
-		gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);
-		gimbal_buff[THROTTLE] = Get_GimbalValue(THROTTLE);
+        gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);//反的
+		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);//反的
+
 		R_event= xEventGroupWaitBits( KeyEventHandle,
 		                              SETUP_SHORT_PRESS,
 		                              pdTRUE,

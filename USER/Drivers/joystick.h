@@ -13,8 +13,6 @@
 
 #define AXIS_NUM								((THROTTLE_ENABLED) + (JOYSTICK_AXIS_NUM) \
 																+ (SECONDARY_AXIS_NUM) + (RUDDER_ENABLED))
-								
-
 void joystickTask(void *param);
 
 #endif
