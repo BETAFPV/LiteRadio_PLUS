@@ -32,4 +32,6 @@ typedef struct
 
 void mixesTask(void* param);
 
+extern TaskHandle_t mixesTaskHandle;
+
 #endif

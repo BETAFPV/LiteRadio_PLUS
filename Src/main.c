@@ -430,10 +430,12 @@ void startTask(void *param)
 	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
 	xTaskCreate(radiolinkDataProcessTask, "DATA_PROCESS", 100, NULL, 1, NULL);
-    xTaskCreate(mixesTask, "MIXES", 100, NULL, 1, NULL); 
-	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 1, NULL); 
+    xTaskCreate(mixesTask, "MIXES", 100, NULL, 1, &mixesTaskHandle); 
+	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 1, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
 	vTaskDelete(startTaskHandle);
+    //vTaskSuspend(joystickTaskHandle);//挂起joystick
+    vTaskSuspend(mixesTaskHandle);//挂起mixes
 	taskEXIT_CRITICAL();	
 }
 /* USER CODE END 4 */

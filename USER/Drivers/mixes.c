@@ -1,10 +1,10 @@
 #include "mixes.h"
 #include "switches.h"
 #include "buzzer.h"
-//mixchannel_t mixchannel;
+TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesdataVal_Queue = NULL;
 
-
+//初始化混控的参数
 void mixes_init(mixdata_t* mixdata)
 {
     mixdata[0].GimbalChannel=mix_THROTTLE;
@@ -26,6 +26,7 @@ void mixes_init(mixdata_t* mixdata)
     mixdata[7].mix_inverse = 0;
 }
 
+//通道反向操作
 uint16_t mixes_inverse(uint8_t inverse, uint16_t gimbal_val_curr)
 {
     if(inverse)
@@ -43,6 +44,7 @@ uint16_t mixes_inverse(uint8_t inverse, uint16_t gimbal_val_curr)
     return gimbal_val_curr;
 }
 
+//混控任务
 void mixesTask(void* param)
 {
     mixdata_t mixdata[8];
@@ -55,8 +57,8 @@ void mixesTask(void* param)
     while(1)
 	{
 		vTaskDelay(10);  
-//        xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
-//        xQueueReceive(switchesVal_Queue,switches_val_buff,0);
+        xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
+        xQueueReceive(switchesVal_Queue,switches_val_buff,0);
           	//RUDDER   = 0 ,       //yaw
             //THROTTLE = 1 ,       //throttle
             //AILERON  = 2 ,       //roll
@@ -79,7 +81,6 @@ void mixesTask(void* param)
                 mixdata[mix_index].mix_output_data = mixes_inverse(mixdata[mix_index].mix_inverse,mixdata[mix_index].mix_output_data);
             }
         }
-        
         xQueueSend(mixesdataVal_Queue,report_data,0);
     }
 }

@@ -152,9 +152,41 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
+          <LineNumber>67</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134235846</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\USER\Drivers\mixes.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\LiteRadio_Plus\../USER/Drivers/mixes.c\67</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>56</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134235790</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\USER\Drivers\mixes.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\LiteRadio_Plus\../USER/Drivers/mixes.c\56</Expression>
+        </Bp>
+        <Bp>
+          <Number>2</Number>
+          <Type>0</Type>
           <LineNumber>48</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134235222</Address>
+          <Address>134235378</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -211,6 +243,11 @@
           <count>8</count>
           <WinNumber>1</WinNumber>
           <ItemText>mixdata,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>report_data,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

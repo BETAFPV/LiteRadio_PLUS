@@ -1,6 +1,7 @@
 #include "joystick.h"
 #include "gimbal.h"
 #include "switches.h"
+TaskHandle_t joystickTaskHandle;
 
 void joystickTask(void *param) 
 {
@@ -15,14 +16,28 @@ void joystickTask(void *param)
         xReturn = xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
 		xReturn = xQueueReceive(switchesVal_Queue,switches_val_buff,0);
         
-        report_data[5] = gimbal_val_buff[0];
-		report_data[4] = gimbal_val_buff[2];
-		report_data[2] = gimbal_val_buff[1];
-		report_data[3] = gimbal_val_buff[3];
-				
-		report_data[0] = switches_val_buff[0];
-		report_data[1] = switches_val_buff[1];
+        //RUDDER   = 0 ,       //yaw
+        //THROTTLE = 1 ,       //throttle
+        //AILERON  = 2 ,       //roll
+        //ELEVATOR = 3 ,       //pitch
+        
+        //x轴
+		report_data[3] = gimbal_val_buff[RUDDER];
+        //y轴
+		report_data[4] = gimbal_val_buff[THROTTLE];
+        //z轴
+        report_data[5] = gimbal_val_buff[ELEVATOR];
+
+		//x旋转		
+		report_data[0] = gimbal_val_buff[AILERON];
+        //y旋转
+		report_data[1] = switches_val_buff[0];
+		//z旋转
+        report_data[2] = switches_val_buff[1];
+        
+        //滑块1
 		report_data[6] = switches_val_buff[2];
+        //滑块2
 		report_data[7] = switches_val_buff[3];
 
         
