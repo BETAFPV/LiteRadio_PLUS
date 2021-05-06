@@ -22,16 +22,22 @@ typedef enum
 
 typedef struct
 {
-    mixsetChannel_e GimbalChannel;
-    uint8_t mix_inverse;
+    mixsetChannel_e GimbalChannel;//所设置通道
+    uint8_t mix_inverse; // 0为正向，1为反向
     int8_t mix_weight; // 范围-100~100
+    int16_t mix_offset; //范围为-100~100
     uint16_t mix_output_data;
     
 }mixdata_t;
 
 
 void mixesTask(void* param);
-
 extern TaskHandle_t mixesTaskHandle;
+
+uint16_t mixes_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode);
+uint16_t mixes_weight(uint8_t weight, uint16_t gimbal_val_curr);
+uint16_t mixes_offset(int16_t offset, uint16_t gimbal_val_curr);
+
+
 
 #endif
