@@ -197,9 +197,9 @@ void mixesTask(void* param)
         uint8_t mix_index = 0;
         for(mix_index = 0;mix_index < 8;mix_index++)
         {
+            mixdata[mix_index].mix_output_data =  report_data[mixdata[mix_index].GimbalChannel];
             if(mixdata[mix_index].GimbalChannel < 4)
             {
-                mixdata[mix_index].mix_output_data =  report_data[mixdata[mix_index].GimbalChannel];
                 
                 if(mixdata[mix_index].GimbalChannel == mix_THROTTLE)
                 {

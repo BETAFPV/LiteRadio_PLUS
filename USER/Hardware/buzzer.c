@@ -128,21 +128,21 @@ void Buzzer_On(uint8_t tone)
 
 void buzzer_start()
 {
-	HAL_TIM_PWM_Start(&htim1,BUZZER_PWM_CH);
+	HAL_TIM_PWM_Start(&htim3,BUZZER_PWM_CH);
 }
 
 void buzzer_stop()
 {
-	HAL_TIM_PWM_Stop(&htim1,BUZZER_PWM_CH);
+	HAL_TIM_PWM_Stop(&htim3,BUZZER_PWM_CH);
 }
 
 void HAL_TIM_SET_COMPARE(uint16_t compare)
 {	
-	htim1.Instance->CCR3 = compare;
+	htim3.Instance->CCR1 = compare;
 }
 
 void HAL_TIM_SET_AUTORELOAD(uint16_t arr)
 {
-	htim1.Instance->ARR = arr;
-	htim1.Init.Period = arr;
+	htim3.Instance->ARR = arr;
+	htim3.Init.Period = arr;
 }

@@ -3,10 +3,10 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
-extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim3;
 extern EventGroupHandle_t buzzerEventHandle;
 
-#define BUZZER_PWM_CH TIM_CHANNEL_3          //蜂鸣器PWM通道
+#define BUZZER_PWM_CH TIM_CHANNEL_1         //蜂鸣器PWM通道
 
 #define BIND_SHORT_PRESS_RING	        (0x01 << 0)	
 #define BIND_LONG_PRESS_RING	        (0x01 << 1)	
