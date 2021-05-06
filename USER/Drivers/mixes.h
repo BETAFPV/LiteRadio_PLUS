@@ -34,9 +34,11 @@ typedef struct
 void mixesTask(void* param);
 extern TaskHandle_t mixesTaskHandle;
 
-uint16_t mixes_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode);
-uint16_t mixes_weight(uint8_t weight, uint16_t gimbal_val_curr);
-uint16_t mixes_offset(int16_t offset, uint16_t gimbal_val_curr);
+uint16_t mixes_sw_inverse(uint8_t inverse, uint16_t gimbal_val_curr);
+
+uint16_t mixes_gimbal_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode);
+uint16_t mixes_gimbal_weight(uint8_t weight, uint16_t gimbal_val_curr);
+uint16_t mixes_gimbal_offset(int16_t offset, uint16_t gimbal_val_curr);
 
 
 

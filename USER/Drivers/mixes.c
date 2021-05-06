@@ -45,8 +45,8 @@ void mixes_init(mixdata_t* mixdata)
 }
 
 
-//通道补偿操作
-uint16_t mixes_offset(int16_t offset, uint16_t gimbal_val_curr)
+//摇杆通道补偿操作
+uint16_t mixes_gimbal_offset(int16_t offset, uint16_t gimbal_val_curr)
 {
     if(offset < 0)
     {
@@ -61,8 +61,8 @@ uint16_t mixes_offset(int16_t offset, uint16_t gimbal_val_curr)
     return gimbal_val_curr;
 }
 
-//通道比例操作
-uint16_t mixes_weight(uint8_t weight, uint16_t gimbal_val_curr)
+//摇杆通道比例操作
+uint16_t mixes_gimbal_weight(uint8_t weight, uint16_t gimbal_val_curr)
 {
     if(gimbal_val_curr > CHANNEL_OUTPUT_MID) 
     {
@@ -75,8 +75,8 @@ uint16_t mixes_weight(uint8_t weight, uint16_t gimbal_val_curr)
     return gimbal_val_curr;
 }
 
-//通道反向操作
-uint16_t mixes_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode)
+//摇杆通道反向操作
+uint16_t mixes_gimbal_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode)
 {
     if(inverse)
     {
@@ -100,6 +100,22 @@ uint16_t mixes_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outpu
         {
             gimbal_val_curr = CHANNEL_OUTPUT_MID - outputcode[CHANNEL_OUTPUT_MID - gimbal_val_curr];            
         }    
+    }
+    return gimbal_val_curr;
+}
+//开关通道反向操作
+uint16_t mixes_sw_inverse(uint8_t inverse, uint16_t gimbal_val_curr)
+{
+    if(inverse)
+    {
+        if(gimbal_val_curr > CHANNEL_OUTPUT_MID) 
+        {
+            gimbal_val_curr = CHANNEL_OUTPUT_MID - (gimbal_val_curr - CHANNEL_OUTPUT_MID);
+        }
+        else		            
+        {
+            gimbal_val_curr = CHANNEL_OUTPUT_MID + (CHANNEL_OUTPUT_MID - gimbal_val_curr);            
+        }
     }
     return gimbal_val_curr;
 }
@@ -204,18 +220,22 @@ void mixesTask(void* param)
                 if(mixdata[mix_index].GimbalChannel == mix_THROTTLE)
                 {
                     //油门映射
-                    mixdata[mix_index].mix_output_data = mixes_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data, THROTTLE_OutputCode);
+                    mixdata[mix_index].mix_output_data = mixes_gimbal_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data, THROTTLE_OutputCode);
                 }
                 else
                 {
                     //非油门映射
-                    mixdata[mix_index].mix_output_data = mixes_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data, OutputCode);
+                    mixdata[mix_index].mix_output_data = mixes_gimbal_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data, OutputCode);
                 }
                 //通道补偿
-                mixdata[mix_index].mix_output_data = mixes_offset(mixdata[mix_index].mix_offset, mixdata[mix_index].mix_output_data);
+                mixdata[mix_index].mix_output_data = mixes_gimbal_offset(mixdata[mix_index].mix_offset, mixdata[mix_index].mix_output_data);
                 //通道比例
-                mixdata[mix_index].mix_output_data = mixes_weight(mixdata[mix_index].mix_weight, mixdata[mix_index].mix_output_data);
+                mixdata[mix_index].mix_output_data = mixes_gimbal_weight(mixdata[mix_index].mix_weight, mixdata[mix_index].mix_output_data);
                 
+            }
+            if(mixdata[mix_index].GimbalChannel >= 4)
+            {
+                mixdata[mix_index].mix_output_data = mixes_sw_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data);
             }
         }
         xQueueSend(mixesdataVal_Queue,report_data,0);
