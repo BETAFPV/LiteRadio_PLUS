@@ -181,7 +181,6 @@ uint16_t JoyStickValMapToChannelVal(uint16_t switch_val)
 void switchesTask(void* param)
 {
     static uint16_t switches_buff[4] = {0};
-	BaseType_t xReturn = pdPASS;
 	switchesVal_Queue = xQueueCreate(20,sizeof(switches_buff));
 	while(1)
 	{
@@ -190,6 +189,6 @@ void switchesTask(void* param)
 		switches_buff[SWB] =  GetSwitchValue(SWB);
 		switches_buff[SWC] =  GetSwitchValue(SWC);
 		switches_buff[SWD] =  GetSwitchValue(SWD);
-		xReturn = xQueueSend(switchesVal_Queue,switches_buff,0);
+		xQueueSend(switchesVal_Queue,switches_buff,0);
 	}
 }

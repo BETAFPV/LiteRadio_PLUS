@@ -1,6 +1,8 @@
 #include "joystick.h"
 #include "gimbal.h"
 #include "switches.h"
+#include "usbd_customhid.h"
+
 TaskHandle_t joystickTaskHandle;
 
 void joystickTask(void *param) 
@@ -41,6 +43,6 @@ void joystickTask(void *param)
 		report_data[7] = switches_val_buff[3];
 
         
-        USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &report_data, 8*sizeof(uint16_t));
+        USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &report_data, 8*sizeof(uint16_t));
 	}
 }

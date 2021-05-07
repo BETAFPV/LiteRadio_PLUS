@@ -46,7 +46,8 @@ EndBSPDependencies */
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_hid.h"
 #include "usbd_ctlreq.h"
-#include "main.h"
+
+
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
   */
@@ -136,7 +137,7 @@ USBD_ClassTypeDef  USBD_HID =
 /* USB HID device FS Configuration Descriptor */
 __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIGN_END =
 {
-0x09, /* bLength: Configuration Descriptor size */
+  0x09, /* bLength: Configuration Descriptor size */
   USB_DESC_TYPE_CONFIGURATION, /* bDescriptorType: Configuration */
   USB_HID_CONFIG_DESC_SIZ,
   /* wTotalLength: Bytes returned */
@@ -157,7 +158,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
   0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x00,//0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -168,8 +169,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x00,         /*bCountryCode: Hardware target country*/
   0x01,         /*bNumDescriptors: Number of HID class descriptors to follow*/
   0x22,         /*bDescriptorType*/
-  HID_MOUSE_REPORT_DESC_SIZE,//0xe3,//HID_MOUSE_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
-  0,//0x01,//0x00,
+  HID_MOUSE_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
+  0x00,
   /******************** Descriptor of Mouse endpoint ********************/
   /* 27 */
   0x07,          /*bLength: Endpoint Descriptor size*/
@@ -179,7 +180,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x03,          /*bmAttributes: Interrupt endpoint*/
   HID_EPIN_SIZE, /*wMaxPacketSize: 4 Byte max */
   0x00,
-  HID_FS_BINTERVAL,          /*bInterval: Polling Interval (10 ms)*/
+  HID_FS_BINTERVAL,          /*bInterval: Polling Interval */
   /* 34 */
 };
 
@@ -287,7 +288,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_OtherSpeedCfgDesc[USB_HID_CONFIG_DESC_SIZ]
 /* USB HID device Configuration Descriptor */
 __ALIGN_BEGIN static uint8_t USBD_HID_Desc[USB_HID_DESC_SIZ]  __ALIGN_END  =
 {
- /* 18 */
+  /* 18 */
   0x09,         /*bLength: HID Descriptor size*/
   HID_DESCRIPTOR_TYPE, /*bDescriptorType: HID*/
   0x11,         /*bcdHID: HID Class Spec release number*/
@@ -295,8 +296,8 @@ __ALIGN_BEGIN static uint8_t USBD_HID_Desc[USB_HID_DESC_SIZ]  __ALIGN_END  =
   0x00,         /*bCountryCode: Hardware target country*/
   0x01,         /*bNumDescriptors: Number of HID class descriptors to follow*/
   0x22,         /*bDescriptorType*/
-  HID_MOUSE_REPORT_DESC_SIZE,//0xe3,//HID_MOUSE_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
-  0,//0x01,//0x00,
+  HID_MOUSE_REPORT_DESC_SIZE,/*wItemLength: Total length of Report descriptor*/
+  0x00,
 };
 
 /* USB Standard Device Descriptor */
@@ -316,58 +317,52 @@ __ALIGN_BEGIN static uint8_t USBD_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
 
 __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE]  __ALIGN_END =
 {
-    0x05,0x01,          /*Usage Page(Generic Desktop)*/ 
-    0x09,0x04,          /*Usage(joystick)*/
-    0xA1,0x01,          /*Collection(Application)*/
-	//24
-	0x05, 0x01,         /*USAGE_PAGE (Generic Desktop)*/
-    0x09, 0x01,         /*USAGE (Pointer)*/
-    0xa1, 0x00,         /*COLLECTION (Physical)*/
-    0x09, 0x33,         /*USAGE (Rx)*/
-    0x09, 0x34,         /*USAGE (Ry)*/
-    0x09, 0x35,         /*USAGE (Rz)*/
-    0x15, 0x00,         /*LOGICAL_MINIMUM (0)*/
-    0x26, 0x00, 0x10,   /*LOGICAL_MAXIMUM (4096)*/
-    0x75, 0x10,         /*REPORT_SIZE (16)*/
-    0x95, 0x03,         /*REPORT_COUNT (3)*/
-    0x81, 0x02,         /*INPUT (Data,Var,Abs)*/
-	0xc0,               /*End Collection*/
-	//24
-    0x05,0x01,          /*USAGE_PAGE (Generic Desktop)*/
-    0x09,0x01,          /*USAGE (Pointer)*/
-    0xa1,0x00,          /*COLLECTION (Physical)*/
-    0x09,0x30,          /*Usage(X axis)*/
-    0x09,0x31,          /*Usage(Y axis)*/ 
-    0x09,0x32,          /*Usage(Z axis)*/ 
-    0x15,0x00,          /*Logical Minimum(0)*/
-    0x26,0x00,0x10,     /*Logical Maximum(4096)*/
-	0x95,0x03,          /*REPORT_COUNT(3)*/
-    0x75,0x10,          /*REPORT_SIZE (16)*/
-    0x81,0x02,          /*INPUT (Data,Var,Abs)*/
-    0xc0,               /*End Collection*/
-	//20
-    0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
-	0x09,0x36,			/*USAGE (Pointer)*/
-	0xA1,0x00,			/*COLLECTION (Physical)*/
-	0x09,0x36,          /*USAGE (Slider)*/
-	0x15,0x00,			/*LOGICAL_MINIMUM (0)*/
-	0x26,0x00,0x10,	    /*LOGICAL_MAXIMUM (4096)*/
-	0x75,0x10,          /*REPORT_SIZE (16)*/
-	0x95,0x01,          /*REPORT_COUNT (3)*/
-	0x81,0x02,          /*INPUT (Data,Var,Abs)*/
-	0xc0,               /*End Collection*/
-    //20
-    0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
-	0x09,0x36,			/*USAGE (Pointer)*/
-	0xA1,0x00,			/*COLLECTION (Physical)*/
-	0x09,0x36,          /*USAGE (Slider)*/
-	0x15,0x00,			/*LOGICAL_MINIMUM (0)*/
-	0x26,0x00,0x10,	    /*LOGICAL_MAXIMUM (4096)*/
-	0x75,0x10,          /*REPORT_SIZE (16)*/
-	0x95,0x01,          /*REPORT_COUNT (3)*/
-	0x81,0x02,          /*INPUT (Data,Var,Abs)*/
-	0xc0,               /*End Collection*/
-    0xC0,               /*End Collection*/ 
+  0x05,   0x01,
+  0x09,   0x02,
+  0xA1,   0x01,
+  0x09,   0x01,
+
+  0xA1,   0x00,
+  0x05,   0x09,
+  0x19,   0x01,
+  0x29,   0x03,
+
+  0x15,   0x00,
+  0x25,   0x01,
+  0x95,   0x03,
+  0x75,   0x01,
+
+  0x81,   0x02,
+  0x95,   0x01,
+  0x75,   0x05,
+  0x81,   0x01,
+
+  0x05,   0x01,
+  0x09,   0x30,
+  0x09,   0x31,
+  0x09,   0x38,
+
+  0x15,   0x81,
+  0x25,   0x7F,
+  0x75,   0x08,
+  0x95,   0x03,
+
+  0x81,   0x06,
+  0xC0,   0x09,
+  0x3c,   0x05,
+  0xff,   0x09,
+
+  0x01,   0x15,
+  0x00,   0x25,
+  0x01,   0x75,
+  0x01,   0x95,
+
+  0x02,   0xb1,
+  0x22,   0x75,
+  0x06,   0x95,
+  0x01,   0xb1,
+
+  0x01,   0xc0
 };
 
 /**

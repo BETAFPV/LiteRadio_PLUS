@@ -271,7 +271,6 @@ void GimbalCalibrateProcess(void)
 
 void gimbalTask(void* param)
 {
-	BaseType_t xReturn = pdPASS;
 	EventBits_t R_event = pdPASS;
     static uint16_t gimbal_buff[4] = {0};
 	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
@@ -296,7 +295,7 @@ void gimbalTask(void* param)
         {
             GimbalCalibrateProcess();
         }
-		xReturn = xQueueSend(gimbalVal_Queue,gimbal_buff,0);
+		xQueueSend(gimbalVal_Queue,gimbal_buff,0);
 	}
 }
 
