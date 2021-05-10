@@ -36,6 +36,7 @@
 #include "process.h"
 #include "mixes.h"
 #include "joystick.h"
+#include "frsky_d16.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -168,6 +169,7 @@ void startTask(void *param)
     xTaskCreate(mixesTask, "MIXES", 600, NULL, 1, &mixesTaskHandle); 
 	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 4, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
+    xTaskCreate(frskyd16Task, "FRSKYD16", 100, NULL, 1, NULL); 
 	vTaskDelete(startTaskHandle);
     //vTaskSuspend(joystickTaskHandle);//挂起joystick
     vTaskSuspend(mixesTaskHandle);//挂起mixes

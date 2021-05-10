@@ -58,6 +58,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define PA_enable_Pin GPIO_PIN_10
+#define PA_enable_GPIO_Port GPIOB
+#define SPI2_NSS_Pin GPIO_PIN_12
+#define SPI2_NSS_GPIO_Port GPIOB
 #define externel_RF_on_Pin GPIO_PIN_15
 #define externel_RF_on_GPIO_Port GPIOA
 #define internel_RF_on_Pin GPIO_PIN_3

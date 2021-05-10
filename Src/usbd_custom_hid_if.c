@@ -240,11 +240,11 @@ static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
     USBD_CUSTOM_HID_HandleTypeDef   *hhid;
     unsigned char USB_Received_Count = 0;//USB接收数据计数  
     USB_Received_Count = USBD_GetRxCount( &hUsbDeviceFS,CUSTOM_HID_EPOUT_ADDR ); 
-    hhid = (USBD_CUSTOM_HID_HandleTypeDef*)hUsbDeviceFS.pClassData;//得到USB接收数据的储存地址
+    hhid = (USBD_CUSTOM_HID_HandleTypeDef*)hUsbDeviceFS.pClassData;//得到USB接收数据的储存地�?
     
     for(i=0;i<USB_Received_Count;i++) 
     {
-        USB_Recive_Buffer[i]=hhid->Report_buf[i];  //把接收到的数据保存到自定义的缓存区保存
+        USB_Recive_Buffer[i]=hhid->Report_buf[i];  //把接收到的数据保存到自定义的缓存区保�?
     } 
     return (USBD_OK);
     
