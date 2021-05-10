@@ -75,7 +75,7 @@
 /*---------- -----------*/
 #define USBD_CUSTOMHID_OUTREPORT_BUF_SIZE     64
 /*---------- -----------*/
-#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     95
+#define USBD_CUSTOM_HID_REPORT_DESC_SIZE     108
 /*---------- -----------*/
 #define CUSTOM_HID_FS_BINTERVAL     0xA
 

@@ -210,6 +210,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>switches_buff</ItemText>
         </Ww>
+        <Ww>
+          <count>12</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>USB_Recive_Buffer</ItemText>
+        </Ww>
       </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>

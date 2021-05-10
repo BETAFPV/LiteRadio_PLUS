@@ -13,8 +13,7 @@ void joystickTask(void *param)
     BaseType_t xReturn = pdPASS;
 	while(1)
 	{
-        
-		vTaskDelay(10);
+		vTaskDelay(5);
         xReturn = xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
 		xReturn = xQueueReceive(switchesVal_Queue,switches_val_buff,0);
         

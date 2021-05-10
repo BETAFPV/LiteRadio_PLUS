@@ -124,7 +124,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  xTaskCreate(startTask, "START_TASK", 300, NULL, 2, &startTaskHandle);
+  xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle);
   /* USER CODE END RTOS_THREADS */
 
 }
@@ -166,11 +166,11 @@ void startTask(void *param)
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
 	//xTaskCreate(radiolinkDataProcessTask, "DATA_PROCESS", 100, NULL, 1, NULL);
     xTaskCreate(mixesTask, "MIXES", 600, NULL, 1, &mixesTaskHandle); 
-	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 1, &joystickTaskHandle); 
+	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 4, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
 	vTaskDelete(startTaskHandle);
-    vTaskSuspend(joystickTaskHandle);//挂起joystick
-    //vTaskSuspend(mixesTaskHandle);//挂起mixes
+    //vTaskSuspend(joystickTaskHandle);//挂起joystick
+    vTaskSuspend(mixesTaskHandle);//挂起mixes
     
 	taskEXIT_CRITICAL();
     osDelay(1);

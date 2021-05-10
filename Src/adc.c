@@ -22,7 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 //static uint16_t adc_value[ADC_CHAL_NUM * ADC_SAMPLE_NUM];
-uint16_t adc_value[100];
+uint16_t adc_value[150];
 /* USER CODE END 0 */
 
 ADC_HandleTypeDef hadc1;
