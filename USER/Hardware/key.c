@@ -49,7 +49,9 @@ void keyTask(void* param)
 				bindKeyUpSta = 0x01;
 			}
 			else if(BIND_KEY_STATUS() == RELEASED)
+            {
 				xEventGroupSetBits( KeyEventHandle, BIND_SHORT_PRESS );
+            }
 		}
 		if(BIND_KEY_STATUS()== RELEASED)
 		{

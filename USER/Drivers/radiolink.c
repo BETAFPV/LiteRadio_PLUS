@@ -1,12 +1,14 @@
-#include "process.h"
+#include "radiolink.h"
 #include "gimbal.h"
 #include "switches.h"
+#include "frsky_d16.h"
+#include "cc2500.h"
+
 //uint16_t gimbal_val_buff[4];
 //uint16_t switches_val_buff[4];
 
-void radiolinkDataProcessTask(void *param) 
+void radiolinkTask(void *param) 
 {
-//	BaseType_t xReturn = pdPASS;
 	while(1)
 	{
 		vTaskDelay(2);

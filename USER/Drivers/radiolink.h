@@ -4,7 +4,7 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 
-void radiolinkDataProcessTask(void *param);
+void radiolinkTask(void *param);
 
 #endif
 

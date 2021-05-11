@@ -10,7 +10,7 @@ static bool powerswitchStatus = false;
 
 uint8_t key_status;
 int i = 0;
-void powerSwitchTask(void* param)
+void powerswitchTask(void* param)
 {
 	EventBits_t R_event;
 	while(1)

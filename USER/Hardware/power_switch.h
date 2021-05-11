@@ -8,7 +8,7 @@
 #define POWER_PIN_HOLD_UP()   HAL_GPIO_WritePin(POWER_ON_PORT,POWER_ON_PIN,GPIO_PIN_SET)
 #define POWER_PIN_HOLD_DOWN() HAL_GPIO_WritePin(POWER_ON_PORT,POWER_ON_PIN,GPIO_PIN_RESET)
 
-void powerSwitchTask(void* param);
+void powerswitchTask(void* param);
 void powerOn(void);
 #endif
 

@@ -139,6 +139,9 @@ enum TXRX_State {
 
 uint8_t CC2500_Init(void);
 
+
+void CC2500_WriteData(uint8_t *dpbuffer, uint16_t len);
+void CC2500_WriteReglistrMulti(uint8_t address,uint8_t* data, uint16_t length);
 void CC2500_WriteReg(uint8_t address, uint8_t data);
 uint8_t CC2500_ReadReg(uint8_t address);
 void CC2500_Strobe(uint8_t state);

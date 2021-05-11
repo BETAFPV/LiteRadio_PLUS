@@ -186,6 +186,23 @@ void CC2500_SetPower(uint8_t power)
 	}
 }
 
+void CC2500_WriteReglistrMulti(uint8_t address,uint8_t* data, uint16_t length)
+{
+	CC2500_NSS_LOW;
+    uint8_t pdata = (CC2500_WRITE_BURST | address);
+    HAL_SPI_Transmit(&hspi2, &pdata, 1,1);   
+    HAL_SPI_Transmit(&hspi2, data, length,1);
+    
+	CC2500_NSS_HIGH;
+}
+
+void CC2500_WriteData(uint8_t *dpbuffer, uint16_t len)
+{
+	CC2500_Strobe(CC2500_SFTX);
+	CC2500_WriteReglistrMulti(CC2500_3F_TXFIFO,dpbuffer,len);
+	CC2500_Strobe(CC2500_STX);
+}
+
 void CC2500_Strobe(uint8_t state)
 {
     CC2500_NSS_LOW;    

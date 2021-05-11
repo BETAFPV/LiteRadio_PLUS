@@ -1123,11 +1123,6 @@
               <FilePath>..\USER\Drivers\stmflash.c</FilePath>
             </File>
             <File>
-              <FileName>process.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Drivers\process.c</FilePath>
-            </File>
-            <File>
               <FileName>joystick.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Drivers\joystick.c</FilePath>
@@ -1138,14 +1133,19 @@
               <FilePath>..\USER\Drivers\mixes.c</FilePath>
             </File>
             <File>
-              <FileName>frsky_d16.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Drivers\frsky_d16.c</FilePath>
-            </File>
-            <File>
               <FileName>delay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Drivers\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>radiolink.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Drivers\radiolink.c</FilePath>
+            </File>
+            <File>
+              <FileName>frsky_d16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Drivers\frsky_d16.c</FilePath>
             </File>
             <File>
               <FileName>function.c</FileName>

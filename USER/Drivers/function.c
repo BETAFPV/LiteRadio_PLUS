@@ -37,6 +37,7 @@ const unsigned char crc8tab[256] = {
 };
 
 
+
 static GimbalReverseTypeDef GimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint16_t ChannelDataBuff[4];
 void Get_ChipID(union ChipID *chipID)

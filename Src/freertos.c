@@ -33,7 +33,7 @@
 #include "key.h"
 #include "power_switch.h"
 #include "buzzer.h"
-#include "process.h"
+#include "radiolink.h"
 #include "mixes.h"
 #include "joystick.h"
 #include "frsky_d16.h"
@@ -163,13 +163,13 @@ void startTask(void *param)
     
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
-	xTaskCreate(powerSwitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
+	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
-	//xTaskCreate(radiolinkDataProcessTask, "DATA_PROCESS", 100, NULL, 1, NULL);
+	//xTaskCreate(radiolinkTask, "DATA_PROCESS", 100, NULL, 1, NULL);
     xTaskCreate(mixesTask, "MIXES", 600, NULL, 1, &mixesTaskHandle); 
 	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 4, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
-    xTaskCreate(frskyd16Task, "FRSKYD16", 100, NULL, 1, NULL); 
+    xTaskCreate(frskyd16Task, "FRSKYD16", 100, NULL, 1, NULL);
 	vTaskDelete(startTaskHandle);
     //vTaskSuspend(joystickTaskHandle);//挂起joystick
     vTaskSuspend(mixesTaskHandle);//挂起mixes
