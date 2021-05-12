@@ -168,67 +168,52 @@
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Sampling_MaxMinData[1],0x0A</ItemText>
+          <ItemText>calibration_mode</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>calibration_mode</ItemText>
+          <ItemText>ADTemp</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ADTemp</ItemText>
+          <ItemText>gimbal_val_buff,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>gimbal_val_buff,0x0A</ItemText>
+          <ItemText>report_data[2]</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>report_data[2]</ItemText>
+          <ItemText>mixdata,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>mixdata,0x0A</ItemText>
+          <ItemText>report_data,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>report_data,0x0A</ItemText>
+          <ItemText>switches_buff</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>adc_value</ItemText>
+          <ItemText>USB_Recive_Buffer</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>switches_buff</ItemText>
+          <ItemText>differ</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>USB_Recive_Buffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>differ</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>1</WinNumber>
           <ItemText>__HAL_TIM_GetCounter</ItemText>
-        </Ww>
-        <Ww>
-          <count>15</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>FRSKYD16_BindCounts</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

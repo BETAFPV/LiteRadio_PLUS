@@ -160,7 +160,9 @@ void startTask(void *param)
     buzzerEventHandle = xEventGroupCreate();   
     
 	taskENTER_CRITICAL();	/*进入临界*/
-    
+        
+//    TimerHandle_t radiolinkTimersHandle = xTimerCreate("radiolinkTimer",(7/portTICK_PERIOD_MS),pdTRUE,(void *) 1,radiolinkTimer);
+//    xTimerStart(radiolinkTimersHandle,0);    
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
 	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, NULL);

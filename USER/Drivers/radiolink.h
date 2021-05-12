@@ -4,7 +4,7 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 
-void radiolinkTask(void *param);
+void radiolinkTimer(TimerHandle_t xTimers);
 
 #endif
 

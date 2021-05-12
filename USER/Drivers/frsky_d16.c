@@ -246,16 +246,24 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 #ifdef MODE2    
     GimbalReverseFlg.RUDDER    = 1;
     GimbalReverseFlg.THROTTLE  = 0;
-    GimbalReverseFlg.AILERON   = 0;
-    GimbalReverseFlg.ELEVATOR  = 1;
+    GimbalReverseFlg.AILERON   = 1;
+    GimbalReverseFlg.ELEVATOR  = 0;
 #else
     GimbalReverseFlg.RUDDER   = 1;
     GimbalReverseFlg.THROTTLE = 1;
     GimbalReverseFlg.AILERON  = 0;
     GimbalReverseFlg.ELEVATOR = 0;
 #endif    
-    Channel_DataBuff[0] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON)) :Get_GimbalValue(AILERON);
-    Channel_DataBuff[1] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)):Get_GimbalValue(ELEVATOR);
+    
+    typedef enum
+{
+  	RUDDER   = 0 ,       //yaw
+	THROTTLE = 1 ,       //throttle
+	AILERON  = 2 ,       //roll
+	ELEVATOR = 3 ,       //pitch
+}GimbalChannelTypeDef;
+    Channel_DataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)):Get_GimbalValue(ELEVATOR);
+    Channel_DataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON)) :Get_GimbalValue(AILERON);
     Channel_DataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)):Get_GimbalValue(THROTTLE);
     Channel_DataBuff[3] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))  :Get_GimbalValue(RUDDER);
 
@@ -501,7 +509,7 @@ void frskyd16Task(void* param)
     initFRSKYD16();
     while(1)
     {
-        osDelay(10);
+        osDelay(9);
         
         xEventGroupGetBits(KeyEventHandle);
 
