@@ -9,6 +9,10 @@
 #include "main.h"
 #include "gimbal.h"
 #include "switches.h"
+#include "mixes.h"
+
+TaskHandle_t frskyd16TaskHandle;
+
 static GimbalReverseTypeDef GimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 
 #ifdef LBT
@@ -33,6 +37,8 @@ uint8_t HighThrottle_flg = 1 ; 							//高油门标志位
 uint16_t TransmitterID ; 							    //遥控器唯一ID
 uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)发送遥控数据包 28Byte(8 + 16CH*2 = 40)
 
+uint16_t control_data[8];
+    
 uint8_t RF_POWER = 0xff;
 
 static uint8_t Version_select_flag = 0;
@@ -262,15 +268,19 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet()
 	AILERON  = 2 ,       //roll
 	ELEVATOR = 3 ,       //pitch
 }GimbalChannelTypeDef;
-    Channel_DataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)):Get_GimbalValue(ELEVATOR);
-    Channel_DataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON)) :Get_GimbalValue(AILERON);
-    Channel_DataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)):Get_GimbalValue(THROTTLE);
-    Channel_DataBuff[3] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))  :Get_GimbalValue(RUDDER);
+    Channel_DataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - control_data[ELEVATOR]):control_data[ELEVATOR];
+    Channel_DataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - control_data[AILERON]) :control_data[AILERON];
+    Channel_DataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - control_data[THROTTLE]):control_data[THROTTLE];
+    Channel_DataBuff[3] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - control_data[RUDDER])  :control_data[RUDDER];
 
-	Channel_DataBuff[4] = GetSwitchValue(SWA);
-    Channel_DataBuff[5] = GetSwitchValue(SWB);
-    Channel_DataBuff[6] = GetSwitchValue(SWC);
-    Channel_DataBuff[7] = GetSwitchValue(SWD);
+//	Channel_DataBuff[4] = GetSwitchValue(SWA);
+//    Channel_DataBuff[5] = GetSwitchValue(SWB);
+//    Channel_DataBuff[6] = GetSwitchValue(SWC);
+//    Channel_DataBuff[7] = GetSwitchValue(SWD);
+	Channel_DataBuff[4] = control_data[4];
+    Channel_DataBuff[5] = control_data[5];
+    Channel_DataBuff[6] = control_data[6];
+    Channel_DataBuff[7] = control_data[7];
 
 	//add Channel data
 	for(uint8_t i = 0; i <12 ; i+=3)
@@ -505,12 +515,13 @@ void initFRSKYD16(void)
 
 void frskyd16Task(void* param)
 {
+//    uint16_t report_data[8];
     EventBits_t R_event = pdPASS;
     initFRSKYD16();
     while(1)
     {
         osDelay(9);
-        
+        xQueueReceive(mixesdataVal_Queue,control_data,0);
         xEventGroupGetBits(KeyEventHandle);
 
         R_event= xEventGroupWaitBits( KeyEventHandle,
