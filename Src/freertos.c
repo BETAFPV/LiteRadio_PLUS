@@ -165,17 +165,17 @@ void startTask(void *param)
 //    xTimerStart(radiolinkTimersHandle,0);    
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
-	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, NULL);
-	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 3, NULL);
+	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 1, NULL);
+	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 1, NULL);
 	//xTaskCreate(radiolinkTask, "DATA_PROCESS", 100, NULL, 1, NULL);
-    xTaskCreate(mixesTask, "MIXES", 600, NULL, 1, &mixesTaskHandle); 
-	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 4, &joystickTaskHandle); 
+    xTaskCreate(mixesTask, "MIXES", 600, NULL, 2, &mixesTaskHandle); 
+	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 2, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
-    xTaskCreate(frskyd16Task, "FRSKYD16", 100, NULL, 1, NULL);
+    xTaskCreate(frskyd16Task, "FRSKYD16", 100, NULL, 3, &frskyd16TaskHandle);
 	vTaskDelete(startTaskHandle);
     //vTaskSuspend(joystickTaskHandle);//挂起joystick
     vTaskSuspend(mixesTaskHandle);//挂起mixes
-    
+    vTaskSuspend(frskyd16TaskHandle);//挂起frskyd16TaskHandle
 	taskEXIT_CRITICAL();
     osDelay(1);
     }

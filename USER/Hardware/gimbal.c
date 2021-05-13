@@ -8,7 +8,7 @@
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
 static uint8_t HighThrottle_flg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
-uint8_t status = 0;
+uint8_t calibrate_status = 0;
 QueueHandle_t gimbalVal_Queue = NULL;
 
 
@@ -196,8 +196,9 @@ void ReadCalibrationValueForFlash(void)
 void GimbalCalibrateProcess(void)
 {
 	static uint8_t MidValueGetSta = 0;
+
 	//status = GetSetupKeyClickTime();
-	switch(status)
+	switch(calibrate_status)
 	{
 		case 1:
         {            //获取中值
@@ -255,7 +256,7 @@ void GimbalCalibrateProcess(void)
         {
             //保存边界值并退出校准模式
             xEventGroupSetBits(buzzerEventHandle,SETUP_END_RING);
-            status = 0;
+            calibrate_status = 0;
 			break;                  
         }  
 		default:
@@ -271,12 +272,13 @@ void GimbalCalibrateProcess(void)
 
 void gimbalTask(void* param)
 {
+
 	EventBits_t R_event = pdPASS;
     static uint16_t gimbal_buff[4] = {0};
 	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
 	while(1)
 	{
-		vTaskDelay(5);
+		vTaskDelay(9);
         gimbal_buff[THROTTLE] = Get_GimbalValue(THROTTLE);
 		gimbal_buff[AILERON] =  Get_GimbalValue(AILERON);
         gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);//反的
@@ -289,9 +291,9 @@ void gimbalTask(void* param)
 		                              0);
 		if((R_event & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
 		{
-			status +=1;
+			calibrate_status +=1;
 		}
-        if(status > 0 && status <= 3)
+        if(calibrate_status > 0 && calibrate_status <= 3)
         {
             GimbalCalibrateProcess();
         }

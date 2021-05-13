@@ -184,7 +184,7 @@ void switchesTask(void* param)
 	switchesVal_Queue = xQueueCreate(20,sizeof(switches_buff));
 	while(1)
 	{
-		vTaskDelay(100);
+		vTaskDelay(15);
 		switches_buff[SWA] =  GetSwitchValue(SWA);
 		switches_buff[SWB] =  GetSwitchValue(SWB);
 		switches_buff[SWC] =  GetSwitchValue(SWC);

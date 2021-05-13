@@ -15,7 +15,7 @@ void powerswitchTask(void* param)
 	EventBits_t R_event;
 	while(1)
 	{
-		vTaskDelay(20);
+		vTaskDelay(10);
 		R_event= xEventGroupWaitBits( KeyEventHandle,
 		                              POWERSWITCH_LONG_PRESS,
 		                              pdTRUE,

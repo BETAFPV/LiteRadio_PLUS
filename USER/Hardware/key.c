@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include "FreeRTOS.h"
 #include "task.h"
-
+#include "buzzer.h"
 #define LONG_PRESS_COUNT 	500	/*判断为长按时间（ms）*/
 EventGroupHandle_t KeyEventHandle = NULL;
 #define PRESSED		0
@@ -22,7 +22,7 @@ void keyTask(void* param)
 {
 	while(1)
 	{
-		vTaskDelay(50);
+		vTaskDelay(10);
 		if(bind_pressed==false && BIND_KEY_STATUS() == PRESSED)
 		{
 			bind_pressed = true;

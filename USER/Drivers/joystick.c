@@ -10,12 +10,12 @@ void joystickTask(void *param)
     uint16_t report_data[8];
     uint16_t gimbal_val_buff[4];
     uint16_t switches_val_buff[4];
-    BaseType_t xReturn = pdPASS;
 	while(1)
 	{
 		vTaskDelay(5);
-        xReturn = xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
-		xReturn = xQueueReceive(switchesVal_Queue,switches_val_buff,0);
+        
+        xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
+		xQueueReceive(switchesVal_Queue,switches_val_buff,0);
         
         //RUDDER   = 0 ,       //yaw
         //THROTTLE = 1 ,       //throttle
