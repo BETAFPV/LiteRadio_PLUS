@@ -128,7 +128,7 @@ void mixesTask(void* param)
     uint16_t report_data[8];
     uint16_t gimbal_val_buff[4];
     uint16_t switches_val_buff[4];
-    mixesdataVal_Queue = xQueueCreate(20,sizeof(mixes_data));
+    mixesdataVal_Queue = xQueueCreate(20,sizeof(report_data));
     uint16_t OutputCode[513] =      //摇杆ADC映射表
     {
         0,0,0,0,0,
@@ -194,22 +194,9 @@ void mixesTask(void* param)
     mixes_init(mixdata);
     while(1)
 	{
-		vTaskDelay(10);  
+		vTaskDelay(9);  
         xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
         xQueueReceive(switchesVal_Queue,switches_val_buff,0);
-          	//RUDDER   = 0 ,       //yaw
-            //THROTTLE = 1 ,       //throttle
-            //AILERON  = 2 ,       //roll
-            //ELEVATOR = 3 ,       //pitch
-        report_data[0] = gimbal_val_buff[0];
-		report_data[1] = gimbal_val_buff[1];
-		report_data[2] = gimbal_val_buff[2];
-		report_data[3] = gimbal_val_buff[3];
-		
-		report_data[4] = switches_val_buff[0];
-		report_data[5] = switches_val_buff[1];
-		report_data[6] = switches_val_buff[2];
-		report_data[7] = switches_val_buff[3];        
         uint8_t mix_index = 0;
         for(mix_index = 0;mix_index < 8;mix_index++)
         {
@@ -238,6 +225,16 @@ void mixesTask(void* param)
                 mixdata[mix_index].mix_output_data = mixes_sw_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data);
             }
         }
+        
+        report_data[0] = mixdata[0].mix_output_data;
+        report_data[1] = mixdata[1].mix_output_data;
+        report_data[2] = mixdata[2].mix_output_data;
+        report_data[3] = mixdata[3].mix_output_data;
+        report_data[4] = mixdata[4].mix_output_data;
+        report_data[5] = mixdata[5].mix_output_data;
+        report_data[6] = mixdata[6].mix_output_data;        
+        report_data[7] = mixdata[7].mix_output_data;              
+        
         xQueueSend(mixesdataVal_Queue,report_data,0);
     }
 }
