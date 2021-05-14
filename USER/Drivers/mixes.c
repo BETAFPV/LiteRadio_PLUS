@@ -124,7 +124,6 @@ uint16_t mixes_sw_inverse(uint8_t inverse, uint16_t gimbal_val_curr)
 void mixesTask(void* param)
 {
     mixdata_t mixdata[8];
-    static uint8_t mixes_data[8];
     uint16_t report_data[8];
     uint16_t gimbal_val_buff[4];
     uint16_t switches_val_buff[4];

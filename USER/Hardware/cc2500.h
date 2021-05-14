@@ -8,6 +8,9 @@
 #define CC2500_NSS_LOW HAL_GPIO_WritePin(GPIOB,SPI2_NSS_Pin,GPIO_PIN_RESET)
 #define CC2500_NSS_HIGH HAL_GPIO_WritePin(GPIOB,SPI2_NSS_Pin,GPIO_PIN_SET)
 
+#define Fre_Carrier_H  0x5c
+#define Fre_Carrier_M  0x76
+#define Fre_Carrier_L  0x27
 
 // Definitions for burst/single access to registers
 #define CC2500_WRITE_SINGLE     0x00
@@ -137,7 +140,7 @@ enum TXRX_State {
 };
 
 
-uint8_t CC2500_Init(void);
+uint8_t CC2500_Init(uint8_t Version_select_flag);
 
 
 void CC2500_WriteData(uint8_t *dpbuffer, uint16_t len);

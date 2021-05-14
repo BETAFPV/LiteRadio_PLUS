@@ -34,14 +34,14 @@ uint8_t  FRSKYD16_calData[50];							// 记录跳频通道频率值
 uint8_t  FRSKYD16_Channel_Num = 0   ; 					// 跳频通道号
 
 uint8_t HighThrottle_flg = 1 ; 							//高油门标志位
-uint16_t TransmitterID ; 							    //遥控器唯一ID
+static uint16_t TransmitterID ; 							    //遥控器唯一ID
 uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)发送遥控数据包 28Byte(8 + 16CH*2 = 40)
 
 
     
-uint8_t RF_POWER = 0xff;
+static uint8_t RF_POWER = 0xff;
 
-static uint8_t Version_select_flag = 0;
+static uint8_t Version_select_flag;
 
 static uint16_t Channel_DataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
 
@@ -470,8 +470,9 @@ void SetBind(void)
 }
 
 
-void initFRSKYD16(void)
+void initFRSKYD16(uint8_t protocol_Index)
 {
+    Version_select_flag = protocol_Index;
   	uint8_t CC2500_Error_flg = 0;
     //get chip ID
   	TransmitterID = GetUniqueID();
@@ -491,7 +492,7 @@ void initFRSKYD16(void)
 	}
 	FRSKYD16_CountsRst = (FRSKYD16_ChannelShip - FRSKYD16_ctr) >> 2 ; 
 	
-	CC2500_Error_flg = CC2500_Init() ; 
+	CC2500_Error_flg = CC2500_Init(protocol_Index) ; 
 	if(CC2500_Error_flg == 1)
 	{
 		//Initialization failed

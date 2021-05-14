@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;                         ../Drivers/STM32F1xx_HAL_Driver/Inc;                         ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;                         ../Middlewares/Third_Party/FreeRTOS/Source/include;                         ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                         ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;                         ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;                         ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;                         ../Drivers/CMSIS/Include;                         ..\USER\Drivers;                         ..\USER\Hardware;             ../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;..\USER\Drivers;..\USER\Hardware;../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc;..\USER\protocol</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1143,11 +1143,6 @@
               <FilePath>..\USER\Drivers\radiolink.c</FilePath>
             </File>
             <File>
-              <FileName>frsky_d16.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Drivers\frsky_d16.c</FilePath>
-            </File>
-            <File>
               <FileName>function.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Drivers\function.c</FilePath>
@@ -1191,6 +1186,21 @@
               <FileName>cc2500.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Hardware\cc2500.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>protocol</GroupName>
+          <Files>
+            <File>
+              <FileName>frsky_d16.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\protocol\frsky_d16.c</FilePath>
+            </File>
+            <File>
+              <FileName>frsky_d8.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\protocol\frsky_d8.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -125,9 +125,8 @@ static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
 	
 };
 
-uint8_t CC2500_Init(void)
+uint8_t CC2500_Init(uint8_t Version_select_flag)
 {
-    uint8_t Version_select_flag = 0;
     uint8_t (*cc2500_config)[2];
     uint8_t RF_POWER = 0xff;
     //使能PA
