@@ -32,6 +32,6 @@
 
 
 
-void initSFHSS(void);
-uint16_t ReadSFHSS(void);
+void initSFHSS(uint8_t protocol_index);
+uint16_t ReadSFHSS(uint16_t* control_data);
 #endif

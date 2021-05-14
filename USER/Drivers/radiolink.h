@@ -4,6 +4,8 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 
+extern TaskHandle_t radiolinkTaskHandle;
+
 void radiolinkTask(void* param);
 
 #endif

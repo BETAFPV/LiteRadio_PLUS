@@ -261,13 +261,13 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* control_data)
     GimbalReverseFlg.ELEVATOR = 0;
 #endif    
     
-    typedef enum
-{
-  	RUDDER   = 0 ,       //yaw
-	THROTTLE = 1 ,       //throttle
-	AILERON  = 2 ,       //roll
-	ELEVATOR = 3 ,       //pitch
-}GimbalChannelTypeDef;
+//    typedef enum
+//{
+//  	RUDDER   = 0 ,       //yaw
+//	THROTTLE = 1 ,       //throttle
+//	AILERON  = 2 ,       //roll
+//	ELEVATOR = 3 ,       //pitch
+//}GimbalChannelTypeDef;
     Channel_DataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - control_data[ELEVATOR]):control_data[ELEVATOR];
     Channel_DataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - control_data[AILERON]) :control_data[AILERON];
     Channel_DataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - control_data[THROTTLE]):control_data[THROTTLE];

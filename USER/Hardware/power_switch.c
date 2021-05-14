@@ -6,6 +6,8 @@
 #include "led.h"
 #include "cmsis_os.h"
 #include "buzzer.h"
+#include "radiolink.h"
+
 static bool powerswitchStatus = false;
 
 uint8_t key_status;
@@ -30,6 +32,11 @@ void powerswitchTask(void* param)
                 xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
                 osDelay(1200);
 				POWER_PIN_HOLD_UP();
+                taskENTER_CRITICAL();	/*Ω¯»Î¡ŸΩÁ*/
+                
+                xTaskCreate(radiolinkTask, "DATA_PROCESS", 100, NULL, 3, radiolinkTaskHandle);
+                
+                taskEXIT_CRITICAL();
 			}
 			else
 			{

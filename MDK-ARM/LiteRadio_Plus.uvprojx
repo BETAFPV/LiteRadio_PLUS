@@ -1202,6 +1202,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\protocol\frsky_d8.c</FilePath>
             </File>
+            <File>
+              <FileName>s_fhss.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\protocol\s_fhss.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

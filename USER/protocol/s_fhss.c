@@ -150,17 +150,17 @@ static void __attribute__((unused)) SFHSS_rf_init()
 	CC2500_SetPower(CC2500_POWER_17);
 }
 
-void initSFHSS()
+void initSFHSS(uint8_t protocol_index)
 {
 	//BIND_DONE;						 // Not a TX bind protocol
-	SPI2_Init();
+	//SPI2_Init();
 	MProtocol_id = GetUniqueID();
 	SFHSS_get_tx_id();
 	
 	srand(SysTick->VAL);
 	fhss_code = rand() % 28;  // Initialize it to random 0-27 inclusive
 	CC2500_Reset(); 
-	Delay_ms(1);
+	HAL_Delay(1);
 	SFHSS_rf_init();
 	phase = SFHSS_START;
 	//return 10000;
@@ -175,7 +175,7 @@ int16_t convert_channel_16b_nolimit(uint8_t num, int16_t min, int16_t max)
 }
 
 uint16_t ch[4];
-static void __attribute__((unused)) SFHSS_build_data_packet()
+static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* control_data)
 {
 	
 	// command.bit0 is the packet number indicator: =0 -> SFHSS_DATA1, =1 -> SFHSS_DATA2
@@ -189,69 +189,33 @@ static void __attribute__((unused)) SFHSS_build_data_packet()
 	uint8_t command= (phase == SFHSS_DATA1) ? 0 : 1;	// Building packet for Data1 or Data2
 	counter+=command;
 	
-//	#ifdef FAILSAFE_ENABLE
-//		if( (counter&0x3FC) == 0x3FC && IS_FAILSAFE_VALUES_on)
-//		{	// Transmit failsafe data twice every 7s
-//			if( ((counter&1)^(command&1)) == 0 )
-//				command|=0x04;							// Failsafe
-//		}
-//		else
-//	#endif
 	command|=0x02;								        // Assuming packet[0] == 0x81
 	counter&=0x3FF;										// Reset failsafe counter
 	if(counter&1) command|=0x08;						// Transmit lower and upper channels twice in a row
 
 	uint8_t ch_offset = (command&0x08) >> 1;			// CH1..CH4 or CH5..CH8
 
-//	#ifdef FAILSAFE_ENABLE
-//		if(command&0x04)
-//		{	//Failsafe data are:
-//			// 0 to 1023 -> no output on channel
-//			// 1024-2047 -> hold output on channel
-//			// 2048-4095 -> channel_output=(data&0x3FF)*5/4+880 in µs
-//			// Notes:
-//			//    2048-2559 -> does not look valid since it only covers the range from 1520µs to 2160µs 
-//			//    2560-3583 -> valid for any channel values from 880µs to 2160µs
-//			//    3584-4095 -> looks to be used for the throttle channel with values ranging from 880µs to 1520µs
-//			for(uint8_t i=0;i<4;i++)
-//			{
-//				ch[i]=Failsafe_data[CH_AETR[ch_offset+i]];
-//				if(ch[i]==FAILSAFE_CHANNEL_HOLD)
-//					ch[i]=1024;
-//				else if(ch[i]==FAILSAFE_CHANNEL_NOPULSES)
-//					ch[i]=0;
-//				else
-//				{ //Use channel value
-//					ch[i]=(ch[i]>>1)+2560;
-//					if(CH_AETR[ch_offset+i]==THROTTLE && ch[i]<3072)		// Throttle
-//						ch[i]+=1024;
-//				}
-//			}
-//		}
-//		else
-//	#endif
-
 #ifdef MODE2    
     GimbalReverseFlg.RUDDER    = 1;
     GimbalReverseFlg.THROTTLE  = 0;
-    GimbalReverseFlg.AILERON   = 0;
-    GimbalReverseFlg.ELEVATOR  = 1;
+    GimbalReverseFlg.AILERON   = 1;
+    GimbalReverseFlg.ELEVATOR  = 0;
 #else
     GimbalReverseFlg.RUDDER   = 1;
     GimbalReverseFlg.THROTTLE = 1;
     GimbalReverseFlg.AILERON  = 0;
     GimbalReverseFlg.ELEVATOR = 0;
 #endif    
-    Channel_DataBuff[0] =(GimbalReverseFlg.THROTTLE  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE);
-    Channel_DataBuff[1] =(GimbalReverseFlg.AILERON == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON)):Get_GimbalValue(AILERON);
-    Channel_DataBuff[2] =(GimbalReverseFlg.RUDDER == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER)):Get_GimbalValue(RUDDER);
-    Channel_DataBuff[3] =(GimbalReverseFlg.ELEVATOR   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR))  :Get_GimbalValue(ELEVATOR);
 
-     
-     Channel_DataBuff[4] = GetSwitchValue(SWA);
-     Channel_DataBuff[5] = GetSwitchValue(SWB);
-     Channel_DataBuff[6] = GetSwitchValue(SWC);
-     Channel_DataBuff[7] = GetSwitchValue(SWD);
+    Channel_DataBuff[0] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - control_data[RUDDER])  :control_data[RUDDER];
+    Channel_DataBuff[1] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - control_data[THROTTLE]):control_data[THROTTLE];
+    Channel_DataBuff[2] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - control_data[ELEVATOR]):control_data[ELEVATOR];
+    Channel_DataBuff[3] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - control_data[AILERON]) :control_data[AILERON];
+
+	Channel_DataBuff[4] = control_data[4];
+    Channel_DataBuff[5] = control_data[5];
+    Channel_DataBuff[6] = control_data[6];
+    Channel_DataBuff[7] = control_data[7];
 
 
 		{	//Normal data
@@ -286,7 +250,7 @@ static void __attribute__((unused)) SFHSS_send_packet()
 }
 
 
-uint16_t ReadSFHSS(void)
+uint16_t ReadSFHSS(uint16_t* control_data)
 {
 	switch(phase)
 	{
@@ -317,13 +281,13 @@ uint16_t ReadSFHSS(void)
 #define SFHSS_TUNE_TIMING	2020
 			// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
 		case SFHSS_DATA1:
-			SFHSS_build_data_packet();
+			SFHSS_build_data_packet(control_data);
 			SFHSS_send_packet();
 			phase = SFHSS_DATA2;
 			return SFHSS_DATA2_TIMING;								// original 1650
 		//break;
         case SFHSS_DATA2:
-			SFHSS_build_data_packet();
+			SFHSS_build_data_packet(control_data);
 			SFHSS_send_packet();
 			SFHSS_calc_next_chan();
 			phase = SFHSS_TUNE;
