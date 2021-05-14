@@ -198,6 +198,21 @@ void mixesTask(void* param)
         xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
         xQueueReceive(switchesVal_Queue,switches_val_buff,0);
         uint8_t mix_index = 0;
+        
+                  	//RUDDER   = 0 ,       //yaw
+            //THROTTLE = 1 ,       //throttle
+            //AILERON  = 2 ,       //roll
+            //ELEVATOR = 3 ,       //pitch
+        report_data[0] = gimbal_val_buff[0];
+		report_data[1] = gimbal_val_buff[1];
+		report_data[2] = gimbal_val_buff[2];
+		report_data[3] = gimbal_val_buff[3];
+
+		report_data[4] = switches_val_buff[0];
+		report_data[5] = switches_val_buff[1];
+		report_data[6] = switches_val_buff[2];
+		report_data[7] = switches_val_buff[3];   
+        
         for(mix_index = 0;mix_index < 8;mix_index++)
         {
             mixdata[mix_index].mix_output_data =  report_data[mixdata[mix_index].GimbalChannel];
