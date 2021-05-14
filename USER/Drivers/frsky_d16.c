@@ -22,7 +22,7 @@ static GimbalReverseTypeDef GimbalReverseFlg;//Ò¡¸ËÊä³ö·´Ïò±êÖ¾ 0£º²»·´Ïò 1£º·´Ï
 #endif
 #define FRSKYD16_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
 
-uint8_t     Bind_flg = 0 ; 
+uint8_t  Bind_flg = 0 ; 
 uint16_t FRSKYD16_BindCounts = 0; 						// ¶ÔÂëÊý¾Ý°ü·¢ËÍ¸öÊý
 
 uint8_t	 FRSKYD16_ChannelShip = 0;       				// ÌøÆµ¼ä¸ô(Ç°ºóÁ½´ÎÆµ¶Î¼ä¸ô)
@@ -37,7 +37,7 @@ uint8_t HighThrottle_flg = 1 ; 							//¸ßÓÍÃÅ±êÖ¾Î»
 uint16_t TransmitterID ; 							    //Ò£¿ØÆ÷Î¨Ò»ID
 uint8_t  SendPacket[40] ; 							    //·¢ËÍÊý¾Ý°ü»º´æ (1) ¶ÔÂëÊý¾Ý°ü14Byte   (2)·¢ËÍÒ£¿ØÊý¾Ý°ü 28Byte(8 + 16CH*2 = 40)
 
-uint16_t control_data[8];
+
     
 uint8_t RF_POWER = 0xff;
 
@@ -212,7 +212,7 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 /*---------------------------------------------------------------------
 			build control data package					
 ----------------------------------------------------------------------*/
-void  __attribute__((unused)) FRSKYD16_build_Data_packet()
+void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* control_data)
 {
 	static uint8_t lpass;
 	uint16_t chan_0 ;
@@ -416,7 +416,7 @@ void Calc_FRSKYD16_Channel()
 }
 
 
-uint16_t ReadFRSKYD16(void)
+uint16_t ReadFRSKYD16(uint16_t* control_data)
 {
 	switch(FRSKYD16Phase)
 	{
@@ -453,7 +453,7 @@ uint16_t ReadFRSKYD16(void)
          //   Reset_Bind_Flg();
 		  	FRSKYD16_calc_next_chan();
 			FRSKYD16_tune_chan_fast();
-			FRSKYD16_build_Data_packet();
+			FRSKYD16_build_Data_packet(control_data);
 			CC2500_Strobe(CC2500_SIDLE);	
 			CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
 		break;  
@@ -513,27 +513,10 @@ void initFRSKYD16(void)
 	}
 }
 
-void frskyd16Task(void* param)
-{
-//    uint16_t report_data[8];
-    EventBits_t R_event = pdPASS;
-    initFRSKYD16();
-    while(1)
-    {
-        osDelay(9);
-        xQueueReceive(mixesdataVal_Queue,control_data,0);
-        xEventGroupGetBits(KeyEventHandle);
+//void frskyd16Task(void* param)
+//{
+////    uint16_t report_data[8];
 
-        R_event= xEventGroupWaitBits( KeyEventHandle,
-		                              BIND_SHORT_PRESS,
-		                              pdTRUE,
-	                                  pdTRUE,
-		                              0);
-		if((R_event & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
-		{
-            SetBind();
-		}
-        ReadFRSKYD16();
-    }
-}
+//   
+//}
 
