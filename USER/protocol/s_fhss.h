@@ -34,4 +34,5 @@
 
 void initSFHSS(uint8_t protocol_index);
 uint16_t ReadSFHSS(uint16_t* control_data);
+void SFHSS_SetBind(void);
 #endif

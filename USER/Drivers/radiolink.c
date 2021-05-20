@@ -42,7 +42,7 @@ void radiolinkTask(void* param)
 				break;
         case 3: RF_Init = initSFHSS;
 				RF_Process = ReadSFHSS;
-                //Reset_Bind_Flg();
+                RF_Bind = SFHSS_SetBind;
                 delay_time = 2;
 				break;
         case 4: RF_Init = initFRSKYD16;

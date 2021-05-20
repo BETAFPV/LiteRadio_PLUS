@@ -310,3 +310,7 @@ uint16_t ReadSFHSS(uint16_t* control_data)
 	}
 	return 0;
 }
+
+void SFHSS_SetBind(void)
+{
+}
