@@ -9,10 +9,9 @@
 #include "mixes.h"
 #include "key.h"
 TaskHandle_t radiolinkTaskHandle;
-//uint16_t gimbal_val_buff[4];
-//uint16_t switches_val_buff[4];
+EventGroupHandle_t radioEventHandle;
 uint16_t control_data[8];
-static uint8_t Version_select_flag = 3;
+static uint8_t Version_select_flag = 2;
 uint32_t delay_time = 0;
 void (*RF_Init)(uint8_t protocol_index);
 void (*RF_Bind)(void);
@@ -20,8 +19,6 @@ uint16_t (*RF_Process)(uint16_t* control_data);
 
 void radiolinkTask(void* param)
 {
-
-//    initFRSKYD16();
     EventBits_t R_event = pdPASS;
     switch(Version_select_flag)
 	{
@@ -56,14 +53,12 @@ void radiolinkTask(void* param)
     {
         osDelay(delay_time);
         xQueueReceive(mixesdataVal_Queue,control_data,0);
-        xEventGroupGetBits(KeyEventHandle);
-
-        R_event= xEventGroupWaitBits( KeyEventHandle,
-		                              BIND_SHORT_PRESS,
+        R_event= xEventGroupWaitBits( radioEventHandle,
+		                              RADIOLINK_BIND,
 		                              pdTRUE,
 	                                  pdTRUE,
 		                              0);
-		if((R_event & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
+		if((R_event & RADIOLINK_BIND) == RADIOLINK_BIND)
 		{
             RF_Bind();
 		}

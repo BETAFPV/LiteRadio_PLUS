@@ -37,6 +37,7 @@
 #include "mixes.h"
 #include "joystick.h"
 #include "frsky_d16.h"
+#include "status.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -158,26 +159,24 @@ void startTask(void *param)
     {
     KeyEventHandle = xEventGroupCreate();   //创建事件
     buzzerEventHandle = xEventGroupCreate();   
-    
+    powerEventHandle = xEventGroupCreate();
+    radioEventHandle = xEventGroupCreate();
 	taskENTER_CRITICAL();	/*进入临界*/
         
-//    TimerHandle_t radiolinkTimersHandle = xTimerCreate("radiolinkTimer",(7/portTICK_PERIOD_MS),pdTRUE,(void *) 1,radiolinkTimer);
-//    xTimerStart(radiolinkTimersHandle,0);    
+	xTaskCreate(statusTask, "STATUS", 50, NULL, 1, NULL);        
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
-	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 1, NULL);
-	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 1, NULL);
-
+	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, &powerTaskHandle);
+	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 2, NULL);
+    xTaskCreate(radiolinkTask, "DATA_PROCESS", 200, NULL, 3, &radiolinkTaskHandle);   
     xTaskCreate(mixesTask, "MIXES", 600, NULL, 2, &mixesTaskHandle); 
-	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 2, &joystickTaskHandle); 
-    xTaskCreate(buzzerTask, "BUZZER", 100, NULL, 1, NULL); 
-   // xTaskCreate(frskyd16Task, "FRSKYD16", 100, NULL, 3, &frskyd16TaskHandle);
+	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 3, &joystickTaskHandle); 
+    xTaskCreate(buzzerTask, "BUZZER", 50, NULL, 1, NULL); 
 	vTaskDelete(startTaskHandle);
     vTaskSuspend(joystickTaskHandle);//挂起joystick
     //vTaskSuspend(mixesTaskHandle);//挂起mixes
     //vTaskSuspend(radiolinkTaskHandle);
 
-    //vTaskSuspend(frskyd16TaskHandle);//挂起frskyd16TaskHandle
 	taskEXIT_CRITICAL();
     osDelay(1);
     }

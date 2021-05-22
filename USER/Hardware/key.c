@@ -90,7 +90,6 @@ void keyTask(void* param)
 			{
 				xEventGroupSetBits( KeyEventHandle, POWERSWITCH_LONG_PRESS );
 				powerswitchKeyUpSta = 0x01;
-				
 			}
 			else if(POWER_KEY_STATUS()== RELEASED)
 				xEventGroupSetBits( KeyEventHandle, POWERSWITCH_SHORT_PRESS );

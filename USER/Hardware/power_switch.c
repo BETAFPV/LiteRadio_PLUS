@@ -8,6 +8,10 @@
 #include "buzzer.h"
 #include "radiolink.h"
 
+SemaphoreHandle_t powerSemaphore;
+EventGroupHandle_t powerEventHandle = NULL;
+TaskHandle_t powerTaskHandle;
+
 static bool powerswitchStatus = false;
 
 uint8_t key_status;
@@ -17,34 +21,32 @@ void powerswitchTask(void* param)
 	EventBits_t R_event;
 	while(1)
 	{
-		vTaskDelay(10);
-		R_event= xEventGroupWaitBits( KeyEventHandle,
-		                              POWERSWITCH_LONG_PRESS,
+		vTaskDelay(100);
+		R_event= xEventGroupWaitBits( powerEventHandle,
+		                              POWER_ON|POWER_OFF,
 		                              pdTRUE,
-	                                  pdTRUE,
-		                              portMAX_DELAY);
-		if((R_event & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
+	                                  pdFALSE,
+		                              0);
+		if((R_event & POWER_ON) == POWER_ON)
 		{
-			powerswitchStatus = !powerswitchStatus;
-			if(powerswitchStatus == true)
-			{
-				Led_Blue(ON);
-                xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
-                osDelay(1200);
-				POWER_PIN_HOLD_UP();
-                taskENTER_CRITICAL();	/*进入临界*/
-                
-                xTaskCreate(radiolinkTask, "DATA_PROCESS", 100, NULL, 3, radiolinkTaskHandle);
-                
-                taskEXIT_CRITICAL();
-			}
-			else
-			{
-                xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
-                osDelay(1200);
-				POWER_PIN_HOLD_DOWN();
-			}
+            Led_Blue(ON);
+            xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
+            osDelay(1200);
+            POWER_PIN_HOLD_UP();
+            	taskENTER_CRITICAL();	/*进入临界*/
+            vTaskSuspend(powerTaskHandle);
+
+            	taskEXIT_CRITICAL();
 		}
+		if((R_event & POWER_OFF) == POWER_OFF)
+		{
+            Led_Blue(OFF);
+            xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
+            osDelay(1200);
+
+            POWER_PIN_HOLD_DOWN();
+		}        
+		
 	}
 }
 
