@@ -1,12 +1,8 @@
 #include "led.h"
 #include "math.h"
 #include "tim.h"
-
-#define TIMING_ONE  7
-#define TIMING_ZERO 2
-uint8_t color[3] = {0, 0, 0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
-uint16_t LED_BYTE_Buffer[25];
-uint8_t color_record;
+uint8_t color[3] = {0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
+uint16_t rgb_buffer[25];
 void color_write(uint8_t color_set,uint8_t brightness)
 {
     switch (color_set)
@@ -20,7 +16,6 @@ void color_write(uint8_t color_set,uint8_t brightness)
         }
         case GREEN:
         {
-
             color[1] = 0;
             color[0] = brightness;
             color[2] = 0;
@@ -62,7 +57,7 @@ void Rgb_Set(uint8_t color_set,uint8_t brightness)
     /*  green data */
     for(i = 0; i < 8; i++)
     {
-        LED_BYTE_Buffer[memaddr] = (color[0]&0x80)?TIMING_ONE:TIMING_ZERO;
+        rgb_buffer[memaddr] = (color[0]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[0]= color[0]<<1;
         memaddr++;
     }
@@ -70,7 +65,7 @@ void Rgb_Set(uint8_t color_set,uint8_t brightness)
     /*  red data */
     for(i = 0; i < 8; i++)
     {   
-        LED_BYTE_Buffer[memaddr] = (color[1]&0x80)?TIMING_ONE:TIMING_ZERO;
+        rgb_buffer[memaddr] = (color[1]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[1]= color[1]<<1;
         memaddr++;
     }
@@ -78,12 +73,12 @@ void Rgb_Set(uint8_t color_set,uint8_t brightness)
     /*  blue data */
     for(i = 0; i < 8; i++)
     {
-        LED_BYTE_Buffer[memaddr] = (color[2]&0x80)?TIMING_ONE:TIMING_ZERO;
+        rgb_buffer[memaddr] = (color[2]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[2]= color[2]<<1;
         memaddr++;
     }
-    LED_BYTE_Buffer[24] = 0;
-    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_4,(uint32_t*)LED_BYTE_Buffer,25);
+    rgb_buffer[24] = 0;
+    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_4,(uint32_t*)rgb_buffer,25);
 }
 
 void Led_On_Off(uint8_t status)

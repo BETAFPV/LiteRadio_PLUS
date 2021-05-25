@@ -58,6 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define KEY_POWER_Pin GPIO_PIN_14
+#define KEY_POWER_GPIO_Port GPIOC
 #define KEY_SETUP_Pin GPIO_PIN_1
 #define KEY_SETUP_GPIO_Port GPIOB
 #define PA_enable_Pin GPIO_PIN_10
@@ -66,6 +68,8 @@ void Error_Handler(void);
 #define RGB_Output_GPIO_Port GPIOB
 #define SPI2_NSS_Pin GPIO_PIN_12
 #define SPI2_NSS_GPIO_Port GPIOB
+#define KEY_BIND_Pin GPIO_PIN_8
+#define KEY_BIND_GPIO_Port GPIOA
 #define externel_RF_on_Pin GPIO_PIN_15
 #define externel_RF_on_GPIO_Port GPIOA
 #define internel_RF_on_Pin GPIO_PIN_3
