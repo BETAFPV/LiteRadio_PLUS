@@ -29,7 +29,7 @@ void powerswitchTask(void* param)
 		                              0);
 		if((R_event & POWER_ON) == POWER_ON)
 		{
-            Led_Blue(ON);
+            Rgb_Set(BLUE,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
             osDelay(1200);
             POWER_PIN_HOLD_UP();
@@ -40,10 +40,9 @@ void powerswitchTask(void* param)
 		}
 		if((R_event & POWER_OFF) == POWER_OFF)
 		{
-            Led_Blue(OFF);
+            Rgb_Set(BLACK,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
             osDelay(1200);
-
             POWER_PIN_HOLD_DOWN();
 		}        
 		

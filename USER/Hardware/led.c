@@ -1,25 +1,100 @@
 #include "led.h"
 #include "math.h"
+#include "tim.h"
 
-void Led_Red(GPIO_PinState status)
+#define TIMING_ONE  7
+#define TIMING_ZERO 2
+uint8_t color[3] = {0, 0, 0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
+uint16_t LED_BYTE_Buffer[25];
+uint8_t color_record;
+void color_write(uint8_t color_set,uint8_t brightness)
 {
-    HAL_GPIO_WritePin(LED_RED_PORT,LED_RED_PIN,status);
+    switch (color_set)
+    {
+        case RED:
+        {
+            color[1] = brightness;
+            color[0] = 0;
+            color[2] = 0;
+            break;
+        }
+        case GREEN:
+        {
+
+            color[1] = 0;
+            color[0] = brightness;
+            color[2] = 0;
+            break;            
+        }
+        case BLUE:
+        {
+            color[1] = 0;
+            color[0] = 0;
+            color[2] = brightness;
+            break;            
+        }
+        case YELLOW:
+        {
+            color[1] = brightness;
+            color[0] = brightness;
+            color[2] = 0;
+            break;            
+        }
+        case BLACK:
+        {
+            color[1] = 0;
+            color[0] = 0;
+            color[2] = 0;
+            break;            
+        }
+        default:
+        {
+            break;
+        }
+    }
 }
 
-void Led_Blue(GPIO_PinState status)
+void Rgb_Set(uint8_t color_set,uint8_t brightness)
 {
-    HAL_GPIO_WritePin(LED_BLUE_PORT,LED_BLUE_PIN,status);
+    uint8_t i;
+    color_write(color_set,brightness);
+    uint16_t memaddr = 0;
+    /*  green data */
+    for(i = 0; i < 8; i++)
+    {
+        LED_BYTE_Buffer[memaddr] = (color[0]&0x80)?TIMING_ONE:TIMING_ZERO;
+        color[0]= color[0]<<1;
+        memaddr++;
+    }
+
+    /*  red data */
+    for(i = 0; i < 8; i++)
+    {   
+        LED_BYTE_Buffer[memaddr] = (color[1]&0x80)?TIMING_ONE:TIMING_ZERO;
+        color[1]= color[1]<<1;
+        memaddr++;
+    }
+
+    /*  blue data */
+    for(i = 0; i < 8; i++)
+    {
+        LED_BYTE_Buffer[memaddr] = (color[2]&0x80)?TIMING_ONE:TIMING_ZERO;
+        color[2]= color[2]<<1;
+        memaddr++;
+    }
+    LED_BYTE_Buffer[24] = 0;
+    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_4,(uint32_t*)LED_BYTE_Buffer,25);
 }
 
 void Led_On_Off(uint8_t status)
 {
 	if(0 == status)
 	{
-		Led_Red(OFF);
+		Rgb_Set(BLACK,255);
 	}
 	else
 	{
-		Led_Red(ON);
+        Rgb_Set(RED,255);
 	}
 }
 
@@ -29,11 +104,10 @@ void Led_Twinkle(uint8_t num)
     uint8_t i;
     for(i=0; i<num; i++)
     {
-        Led_Red(ON);
-        osDelay(100);
-        Led_Red(OFF);
-        osDelay(100);
+        Rgb_Set(RED,255);
+        osDelay(1000);
+        Rgb_Set(BLACK,255);
+        osDelay(1000);
     }
 }
-
 

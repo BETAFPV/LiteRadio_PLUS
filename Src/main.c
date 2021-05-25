@@ -39,7 +39,7 @@
 #include "buzzer.h"
 #include "mixes.h"
 #include "joystick.h"
-
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,8 +107,11 @@ int main(void)
   MX_TIM3_Init();
   MX_SPI2_Init();
   MX_TIM1_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   Adc_Start();
+  HAL_TIMEx_RemapConfig(&htim1,ENABLE);
+  //TIM1->BDTR |= 0x8000;
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

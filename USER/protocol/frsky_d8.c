@@ -277,7 +277,6 @@ uint16_t ReadFRSKYD8(uint16_t* control_data)
 		//send bind data
 		case FRSKYD8_BIND : 
 		  //	Set_Bind_Flg();
-            Led_Blue(OFF);
             if(FRSKYD8_BindCounts < 600)
 			{
 				FRSKYD8_TuneChannel(FRSKYD8_BINDCHANNEL) ; 
@@ -299,8 +298,7 @@ uint16_t ReadFRSKYD8(uint16_t* control_data)
 				CC2500_SetPower(RF_POWER);           //设置发送功率
 				FRSKYD8_InitDeviceAddr(D8_Bind_flg) ;	
 				FRSKYD8Phase = FRSKYD8_DATA ; 
-				Led_On_Off(0);
-				
+                Rgb_Set(BLUE,255);				
 			}
 			return 8830 ;
 		// Frsky D16 data

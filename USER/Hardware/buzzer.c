@@ -1,4 +1,5 @@
 #include "buzzer.h"
+#include "led.h"
 uint8_t buzzer_curr_count = 0;
 uint32_t buzzer_lastmillis = 0;
 uint32_t buzzer_millis = 0;

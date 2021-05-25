@@ -19,10 +19,19 @@
 #define OFF GPIO_PIN_RESET
  
 
-void Led_Init(void);/* LED初始化 */
-void Led_Red(GPIO_PinState status);
-void Led_Blue(GPIO_PinState status);
+typedef enum
+{
+	RED = 1,
+	GREEN,
+	BLUE,
+	YELLOW,
+    BLACK,
+}color_e;
+
+void color_write(uint8_t color_set,uint8_t brightness);
+void Rgb_Set(uint8_t color_set,uint8_t brightness);
 void Led_On_Off(uint8_t status);
 void Led_Twinkle(uint8_t num);
+void WS2812_send(uint8_t *rgb, uint16_t len);
 #endif
 

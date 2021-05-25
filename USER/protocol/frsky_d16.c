@@ -423,7 +423,6 @@ uint16_t ReadFRSKYD16(uint16_t* control_data)
 		//send bind data
 		case FRSKYD16_BIND :
          //   Set_Bind_Flg();
-            Led_Blue(OFF);
 		  	if(FRSKYD16_BindCounts < 600)
 			{    
                 ++FRSKYD16_BindCounts ;    
@@ -444,8 +443,7 @@ uint16_t ReadFRSKYD16(uint16_t* control_data)
 				//FRSKYD16_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(RF_POWER);
 				FRSKYD16Phase = FRSKYD16_DATA ; 
-                Led_Red(OFF);
-                Led_Blue(ON);
+                Rgb_Set(BLUE,255);
 			}
 		break;
 		// Frsky D16 data

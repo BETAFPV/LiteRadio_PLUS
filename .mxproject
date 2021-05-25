@@ -7,8 +7,8 @@ HeaderPath=..\Drivers\STM32F1xx_HAL_Driver\Inc;..\Drivers\STM32F1xx_HAL_Driver\I
 CDefines=USE_HAL_DRIVER;STM32F103xB;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
 [PreviousGenFiles]
-HeaderPath=D:/GitHub/LiteRadio_PLUS/Inc
+HeaderPath=Z:/GitHub/LiteRadio_PLUS/Inc
 HeaderFiles=gpio.h;FreeRTOSConfig.h;adc.h;dma.h;spi.h;tim.h;usb_device.h;usbd_conf.h;usbd_desc.h;usbd_custom_hid_if.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=D:/GitHub/LiteRadio_PLUS/Src
+SourcePath=Z:/GitHub/LiteRadio_PLUS/Src
 SourceFiles=gpio.c;freertos.c;adc.c;dma.c;spi.c;tim.c;usb_device.c;usbd_conf.c;usbd_desc.c;usbd_custom_hid_if.c;stm32f1xx_it.c;stm32f1xx_hal_msp.c;stm32f1xx_hal_timebase_tim.c;main.c;
 

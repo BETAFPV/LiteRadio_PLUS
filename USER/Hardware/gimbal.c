@@ -202,7 +202,6 @@ void GimbalCalibrateProcess(void)
 	{
 		case 1:
         {            //获取中值
-            Led_Blue(OFF);
 			calibration_mode = 1;   //进入校准模式
 			Led_Twinkle(2);
             xEventGroupSetBits(buzzerEventHandle,SETUP_MID_RING);

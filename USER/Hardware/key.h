@@ -2,6 +2,7 @@
 #define __KEY_H_
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
+#include "gpio.h"
 
 extern EventGroupHandle_t KeyEventHandle;
 
@@ -17,14 +18,12 @@ extern EventGroupHandle_t KeyEventHandle;
 #define BIND_KEY_PORT           GPIOA
 #define BIND_KEY_PIN            GPIO_PIN_8
 
-#define SETUP_KEY_PORT          GPIOB
-#define SETUP_KEY_PIN           GPIO_PIN_11
 
 #define POWER_KEY_PORT          GPIOC
 #define POWER_KEY_PIN           GPIO_PIN_14
 
 #define BIND_KEY_STATUS()       HAL_GPIO_ReadPin(BIND_KEY_PORT,BIND_KEY_PIN)
-#define SETUP_KEY_STATUS()      HAL_GPIO_ReadPin(SETUP_KEY_PORT,SETUP_KEY_PIN)
+#define SETUP_KEY_STATUS()      HAL_GPIO_ReadPin(KEY_SETUP_GPIO_Port,KEY_SETUP_Pin)
 #define POWER_KEY_STATUS()		HAL_GPIO_ReadPin(POWER_KEY_PORT,POWER_KEY_PIN)
 
 void keyTask(void* param);
