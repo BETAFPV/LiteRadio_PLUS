@@ -1,5 +1,6 @@
 #include "status.h"
 #include "key.h"
+#include "rgb.h"
 #include "power_switch.h"
 #include "radiolink.h"
 
@@ -23,7 +24,7 @@ void statusTask(void* param)
 		                              POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS,
 		                              pdTRUE,
 	                                  pdFALSE,
-		                              portMAX_DELAY);  
+		                              0);  
 		if((R_event & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
 		{    
             if(powerStatus)

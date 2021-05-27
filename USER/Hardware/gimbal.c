@@ -3,7 +3,7 @@
 #include "stmflash.h"
 #include "key.h"
 #include "task.h"
-#include "led.h"
+#include "rgb.h"
 #include "buzzer.h"
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
@@ -159,40 +159,6 @@ void ReadCalibrationValueForFlash(void)
 
 }
 
-//获取Setup按下次数，最大三次
-//按下第一次，返回1：进入校准模式
-//按下第二次，返回2：记录摇杆中间值
-//按下第三次，返回3，记录摇杆边界值，校准结束
-//static uint8_t GetSetupKeyClickTime()
-//{
-//	static uint8_t ClickTime = 0;
-//	static uint8_t SetupDownKeyState = 0;   //记录Setup按键短按按下状态
-//	static uint8_t SetupKeybackup = 0;      //记录Setup上一次按键状态
-//	uint8_t key_status = getKeyState();
-//	if(key_status == SETUP_SHORT_PRESS)     //触发Setup按键短按
-//	{
-//		SetupDownKeyState = SETUP_SHORT_PRESS;
-//	}
-//	else
-//	{
-//		SetupDownKeyState = 0x00;
-//	}
-//	if(SetupDownKeyState != SetupKeybackup)
-//	{
-//		key_status = getKeyState();			
-//		if(SetupDownKeyState != key_status)
-//		{
-//			ClickTime++;
-//			if(ClickTime > 3)
-//			{
-//				ClickTime = 0;
-//			}
-//		}
-//		SetupKeybackup = SetupDownKeyState;
-//	}
-//	return ClickTime;
-//}
-
 void GimbalCalibrateProcess(void)
 {
 	static uint8_t MidValueGetSta = 0;
@@ -203,7 +169,7 @@ void GimbalCalibrateProcess(void)
 		case 1:
         {            //获取中值
 			calibration_mode = 1;   //进入校准模式
-			Led_Twinkle(2);
+			//Led_Twinkle(2);
             xEventGroupSetBits(buzzerEventHandle,SETUP_MID_RING);
 			Sampling_MaxMinData[ELEVATOR][MIDDAT]  = getAdcValue(ELEVATOR);
 			Sampling_MaxMinData[AILERON][MIDDAT]   = getAdcValue(AILERON);
@@ -228,7 +194,7 @@ void GimbalCalibrateProcess(void)
 				Sampling_MaxMinData[AILERON][MINDAT] = Sampling_MaxMinData[AILERON][MIDDAT];
 				MidValueGetSta = 0x01;          //设置已经保存标志位，防止重复保存读写Flash 容易损坏flash
 			}
-			Led_Twinkle(2);
+		//	Led_Twinkle(2);
             xEventGroupSetBits(buzzerEventHandle,SETUP_MINMAX_RING);  
 			if(getAdcValue(THROTTLE) > Sampling_MaxMinData[THROTTLE][MAXDAT])    
 				Sampling_MaxMinData[THROTTLE][MAXDAT] = getAdcValue(THROTTLE);
@@ -277,7 +243,8 @@ void gimbalTask(void* param)
 	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
 	while(1)
 	{
-		vTaskDelay(9);
+        vTaskDelay(9);
+
         gimbal_buff[THROTTLE] = Get_GimbalValue(THROTTLE);
 		gimbal_buff[AILERON] =  Get_GimbalValue(AILERON);
         gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);//反的
@@ -297,6 +264,7 @@ void gimbalTask(void* param)
             GimbalCalibrateProcess();
         }
 		xQueueSend(gimbalVal_Queue,gimbal_buff,0);
+
 	}
 }
 

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "adc.h"
 #include "key.h"
-#include "led.h"
+#include "rgb.h"
 #include "main.h"
 #include "gimbal.h"
 #include "switches.h"
@@ -443,7 +443,6 @@ uint16_t ReadFRSKYD16(uint16_t* control_data)
 				//FRSKYD16_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(RF_POWER);
 				FRSKYD16Phase = FRSKYD16_DATA ; 
-                Rgb_Set(BLUE,255);
 			}
 		break;
 		// Frsky D16 data

@@ -5,7 +5,7 @@
 #include "frsky_d16.h"
 #include "s_fhss.h"
 #include "cc2500.h"
-#include "led.h"
+#include "rgb.h"
 #include "mixes.h"
 #include "key.h"
 #include "tim.h"
@@ -53,8 +53,7 @@ void radiolinkTask(void* param)
     RF_Init(Version_select_flag);
     while(1)
     {
-        osDelay(delay_time);
-
+        vTaskDelay(delay_time);
         xQueueReceive(mixesdataVal_Queue,control_data,0);
         R_event= xEventGroupWaitBits( radioEventHandle,
 		                              RADIOLINK_BIND,

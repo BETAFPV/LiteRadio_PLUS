@@ -3,7 +3,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "key.h"
-#include "led.h"
+#include "rgb.h"
 #include "cmsis_os.h"
 #include "buzzer.h"
 #include "radiolink.h"
@@ -29,10 +29,11 @@ void powerswitchTask(void* param)
 		                              0);
 		if((R_event & POWER_ON) == POWER_ON)
 		{
-            Rgb_Set(BLUE,255);
+          //  Rgb_Set(BLUE,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
             osDelay(1200);
             POWER_PIN_HOLD_UP();
+            Rgb_breath_up(BLUE);
             	taskENTER_CRITICAL();	/*Ω¯»Î¡ŸΩÁ*/
             vTaskSuspend(powerTaskHandle);
 
@@ -40,9 +41,10 @@ void powerswitchTask(void* param)
 		}
 		if((R_event & POWER_OFF) == POWER_OFF)
 		{
-            Rgb_Set(BLACK,255);
+          //  Rgb_Set(BLACK,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
             osDelay(1200);
+            Rgb_breath_down(RED);
             POWER_PIN_HOLD_DOWN();
 		}        
 		

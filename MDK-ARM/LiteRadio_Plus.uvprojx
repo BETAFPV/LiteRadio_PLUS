@@ -1173,11 +1173,6 @@
               <FilePath>..\USER\Hardware\power_switch.c</FilePath>
             </File>
             <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\Hardware\led.c</FilePath>
-            </File>
-            <File>
               <FileName>buzzer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Hardware\buzzer.c</FilePath>
@@ -1191,6 +1186,11 @@
               <FileName>cc2500.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\Hardware\cc2500.c</FilePath>
+            </File>
+            <File>
+              <FileName>rgb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\rgb.c</FilePath>
             </File>
           </Files>
         </Group>

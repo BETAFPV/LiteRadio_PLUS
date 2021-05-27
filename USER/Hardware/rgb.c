@@ -1,8 +1,10 @@
-#include "led.h"
+#include "rgb.h"
 #include "math.h"
 #include "tim.h"
 uint8_t color[3] = {0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
 uint16_t rgb_buffer[25];
+uint16_t rgb_breath_brightness;
+uint8_t rgb_breath_status;
 void color_write(uint8_t color_set,uint8_t brightness)
 {
     switch (color_set)
@@ -100,9 +102,64 @@ void Led_Twinkle(uint8_t num)
     for(i=0; i<num; i++)
     {
         Rgb_Set(RED,255);
-        osDelay(1000);
+        osDelay(200);
         Rgb_Set(BLACK,255);
-        osDelay(1000);
+        osDelay(200);
+    }
+}
+
+void Rgb_breath_up(uint8_t color_set)
+{
+    rgb_breath_brightness = 0;
+    while(rgb_breath_brightness<255)
+    {
+        Rgb_Set(color_set,rgb_breath_brightness);
+        rgb_breath_brightness++;
+        osDelay(4);
+    }
+}
+void Rgb_breath_down(uint8_t color_set)
+{
+    rgb_breath_brightness = 255;
+    while(rgb_breath_brightness>0)
+    {
+        Rgb_Set(color_set,rgb_breath_brightness);
+        rgb_breath_brightness--;
+        osDelay(4);
+    }
+}
+void Rgb_breath()
+{
+    if(rgb_breath_status == BREATH_DOWN)
+    {
+        if(rgb_breath_brightness>0)
+        {
+            rgb_breath_brightness--;
+        }
+        else
+        {
+            rgb_breath_status = BREATH_UP;
+        }
+    }
+    if(rgb_breath_status == BREATH_UP)
+    {
+        if(rgb_breath_brightness<255)
+        {
+            rgb_breath_brightness++;
+        }
+        else
+        {
+            rgb_breath_status = BREATH_DOWN;
+        }
+    }
+    Rgb_Set(RED,rgb_breath_brightness);
+}
+
+void rgbTask(void* param)
+{
+    while(1)
+    {
+       vTaskDelay(5); 
     }
 }
 

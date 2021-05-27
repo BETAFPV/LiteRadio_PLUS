@@ -3,7 +3,7 @@
 #include "delay.h"
 #include "function.h"
 #include <stdlib.h>
-#include "led.h"
+#include "rgb.h"
 #include "main.h"
 #include "key.h"
 #define FRSKYD8_PACKET_LEN  18
@@ -297,8 +297,7 @@ uint16_t ReadFRSKYD8(uint16_t* control_data)
 				FRSKYD8_Counts = 0 ; 
 				CC2500_SetPower(RF_POWER);           //设置发送功率
 				FRSKYD8_InitDeviceAddr(D8_Bind_flg) ;	
-				FRSKYD8Phase = FRSKYD8_DATA ; 
-                Rgb_Set(BLUE,255);				
+				FRSKYD8Phase = FRSKYD8_DATA ; 	
 			}
 			return 8830 ;
 		// Frsky D16 data

@@ -163,8 +163,8 @@ void startTask(void *param)
     radioEventHandle = xEventGroupCreate();
 	taskENTER_CRITICAL();	/*进入临界*/
         
-	xTaskCreate(statusTask, "STATUS", 50, NULL, 1, NULL);        
-	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 2, NULL);
+	xTaskCreate(statusTask, "STATUS", 100, NULL, 3, NULL);        
+	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 3, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
 	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, &powerTaskHandle);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 2, NULL);

@@ -1,5 +1,5 @@
 #include "buzzer.h"
-#include "led.h"
+#include "rgb.h"
 uint8_t buzzer_curr_count = 0;
 uint32_t buzzer_lastmillis = 0;
 uint32_t buzzer_millis = 0;
@@ -15,12 +15,11 @@ void buzzerTask(void* param)
 	EventBits_t R_event;
 	while(1)
 	{
-		vTaskDelay(100);
 		R_event= xEventGroupWaitBits( buzzerEventHandle,
 		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING,
 		                              pdTRUE,
 	                                  pdFALSE,
-		                              portMAX_DELAY);
+		                              0);
 		if((R_event & POWER_ON_RING) == POWER_ON_RING)
 		{         
             Buzzer_bee_up();
@@ -41,6 +40,7 @@ void buzzerTask(void* param)
         {
             Buzzer_bee_time(Do,1000);
         }
+        vTaskDelay(5);
 	}
 }
 
