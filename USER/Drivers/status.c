@@ -1,8 +1,34 @@
 #include "status.h"
+#include "gimbal.h"
 #include "key.h"
 #include "rgb.h"
 #include "power_switch.h"
 #include "radiolink.h"
+#include "stmflash.h"
+
+uint16_t protocol_Index;
+
+void status_init()
+{
+    STMFLASH_Read(FLASH_ADDR,&protocol_Index,1);
+    if(protocol_Index >= 4)
+    {
+        protocol_Index = 0;
+        STMFLASH_Write(FLASH_ADDR,&protocol_Index,1);
+    }
+    
+   if(HAL_GPIO_ReadPin(KEY_BIND_GPIO_Port,KEY_BIND_Pin) == GPIO_PIN_RESET)
+   {
+       protocol_Index = protocol_Index + 1;
+       if(protocol_Index >= 4)
+		{
+			protocol_Index = 0;
+		}
+        STMFLASH_Write(FLASH_ADDR,&protocol_Index,1);
+   }
+   Led_Twinkle_Init((protocol_Index+1));
+
+}
 
 void statusTask(void* param)
 {

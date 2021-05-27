@@ -10,6 +10,8 @@ typedef enum
 	radio_datastatus 	= 1 ,      
 	joystickstatus   	= 2 ,      
 }RCstatus_e;
+
+void status_init(void);
 void statusTask(void* param);
 
 #endif  

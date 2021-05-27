@@ -40,6 +40,7 @@
 #include "mixes.h"
 #include "joystick.h"
 #include "rgb.h"
+#include "status.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -81,7 +82,8 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  SCB->VTOR = FLASH_BASE | 0x8000;
+  __enable_irq();
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -110,6 +112,8 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   Adc_Start();
+  ReadCalibrationValueForFlash();
+  status_init();
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

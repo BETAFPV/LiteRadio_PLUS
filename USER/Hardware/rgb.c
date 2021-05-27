@@ -96,6 +96,19 @@ void Led_On_Off(uint8_t status)
 }
 
 
+void Led_Twinkle_Init(uint8_t num)
+{
+    uint8_t i;
+    for(i=0; i<num; i++)
+    {
+        Rgb_Set(RED,255);
+        HAL_Delay(200);
+        Rgb_Set(BLACK,255);
+        HAL_Delay(200);
+    }
+}
+
+
 void Led_Twinkle(uint8_t num)
 {
     uint8_t i;

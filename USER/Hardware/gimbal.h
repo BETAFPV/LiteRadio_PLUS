@@ -4,6 +4,7 @@
 #include "cmsis_os.h"
 #include "stm32f1xx_hal.h"
 
+#define FLASH_ADDR 0x08007820
 
 extern QueueHandle_t gimbalVal_Queue;
 #define GIMBAL_VAL_QUEUE_SIZE           (4*sizeof(uint16_t))

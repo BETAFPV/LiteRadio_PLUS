@@ -25,6 +25,7 @@ void color_write(uint8_t color_set,uint8_t brightness);
 void Rgb_Set(uint8_t color_set,uint8_t brightness);
 void Led_On_Off(uint8_t status);
 void Led_Twinkle(uint8_t num);
+void Led_Twinkle_Init(uint8_t num);
 void Rgb_breath(void);
 void Rgb_breath_up(uint8_t color_set);
 void Rgb_breath_down(uint8_t color_set);
