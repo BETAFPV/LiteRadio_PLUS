@@ -10,7 +10,7 @@ static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 
 static uint8_t HighThrottle_flg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
 uint8_t calibrate_status = 0;
 QueueHandle_t gimbalVal_Queue = NULL;
-
+EventGroupHandle_t gimbalEventHandle = NULL;
 
 
 uint16_t Sampling_MaxMinData[4][3] = 
@@ -86,7 +86,6 @@ uint16_t Get_GimbalValue(GimbalChannelTypeDef channel)
 		{
 			OutputTemp = (CHANNEL_OUTPUT_MIN) ;
 		}
-        
 	}
 	else
 	{
@@ -221,6 +220,7 @@ void GimbalCalibrateProcess(void)
         {
             //保存边界值并退出校准模式
             xEventGroupSetBits(buzzerEventHandle,SETUP_END_RING);
+            SaveCalibrationValueToFlash();	
             calibrate_status = 0;
 			break;                  
         }  
@@ -250,12 +250,12 @@ void gimbalTask(void* param)
         gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);//反的
 		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);//反的
 
-		R_event= xEventGroupWaitBits( KeyEventHandle,
-		                              SETUP_SHORT_PRESS,
+		R_event= xEventGroupWaitBits( gimbalEventHandle,
+		                              GIMBAL_CALIBRATE,
 		                              pdTRUE,
 	                                  pdTRUE,
 		                              0);
-		if((R_event & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
+		if((R_event & GIMBAL_CALIBRATE) == GIMBAL_CALIBRATE)
 		{
 			calibrate_status +=1;
 		}

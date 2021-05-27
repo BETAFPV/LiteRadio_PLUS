@@ -128,7 +128,7 @@ void Rgb_breath_up(uint8_t color_set)
     {
         Rgb_Set(color_set,rgb_breath_brightness);
         rgb_breath_brightness++;
-        osDelay(4);
+        osDelay(5);
     }
 }
 void Rgb_breath_down(uint8_t color_set)
@@ -138,7 +138,7 @@ void Rgb_breath_down(uint8_t color_set)
     {
         Rgb_Set(color_set,rgb_breath_brightness);
         rgb_breath_brightness--;
-        osDelay(4);
+        osDelay(5);
     }
 }
 void Rgb_breath()
@@ -166,13 +166,5 @@ void Rgb_breath()
         }
     }
     Rgb_Set(RED,rgb_breath_brightness);
-}
-
-void rgbTask(void* param)
-{
-    while(1)
-    {
-       vTaskDelay(5); 
-    }
 }
 

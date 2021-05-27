@@ -32,7 +32,6 @@ void keyTask(void* param)
 		{
 			setup_pressed = true;
 			setupKeypressedTime = xTaskGetTickCount();
-            xEventGroupSetBits( KeyEventHandle, SETUP_SHORT_PRESS );
 		}
 		if(powerswitch_pressed==false && POWER_KEY_STATUS() == PRESSED)
 		{
@@ -73,8 +72,9 @@ void keyTask(void* param)
 				setupKeyUpSta = 0x01;
 			}
 			else if(SETUP_KEY_STATUS() == RELEASED)
-            {}
-			//	xEventGroupSetBits( KeyEventHandle, SETUP_SHORT_PRESS );
+            {
+                xEventGroupSetBits( KeyEventHandle, SETUP_SHORT_PRESS );
+            }
 		}
 		if(SETUP_KEY_STATUS()== RELEASED)
 		{

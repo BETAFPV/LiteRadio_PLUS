@@ -161,6 +161,8 @@ void startTask(void *param)
     buzzerEventHandle = xEventGroupCreate();   
     powerEventHandle = xEventGroupCreate();
     radioEventHandle = xEventGroupCreate();
+    gimbalEventHandle = xEventGroupCreate();
+        
 	taskENTER_CRITICAL();	/*进入临界*/
         
 	xTaskCreate(statusTask, "STATUS", 100, NULL, 3, NULL);        
@@ -168,7 +170,7 @@ void startTask(void *param)
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
 	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, &powerTaskHandle);
 	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 2, NULL);
-    xTaskCreate(radiolinkTask, "DATA_PROCESS", 200, NULL, 3, &radiolinkTaskHandle);   
+    xTaskCreate(radiolinkTask, "DATA_PROCESS", 200, NULL, 4, &radiolinkTaskHandle);   
     xTaskCreate(mixesTask, "MIXES", 600, NULL, 2, &mixesTaskHandle); 
 	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 3, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 50, NULL, 1, NULL); 

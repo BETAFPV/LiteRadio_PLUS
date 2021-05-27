@@ -29,25 +29,22 @@ void powerswitchTask(void* param)
 		                              0);
 		if((R_event & POWER_ON) == POWER_ON)
 		{
-          //  Rgb_Set(BLUE,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
-            osDelay(1200);
             POWER_PIN_HOLD_UP();
             Rgb_breath_up(BLUE);
-            	taskENTER_CRITICAL();	/*进入临界*/
+            taskENTER_CRITICAL();	/*进入临界*/
+            
             vTaskSuspend(powerTaskHandle);
 
-            	taskEXIT_CRITICAL();
+            taskEXIT_CRITICAL();
 		}
 		if((R_event & POWER_OFF) == POWER_OFF)
 		{
-          //  Rgb_Set(BLACK,255);
+            Rgb_Set(BLACK,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
-            osDelay(1200);
             Rgb_breath_down(RED);
             POWER_PIN_HOLD_DOWN();
 		}        
-		
 	}
 }
 

@@ -4,9 +4,12 @@
 #include "cmsis_os.h"
 #include "stm32f1xx_hal.h"
 
+#define GIMBAL_CALIBRATE	    (0x01 << 0)	
+
 #define FLASH_ADDR 0x08007820
 
 extern QueueHandle_t gimbalVal_Queue;
+extern EventGroupHandle_t gimbalEventHandle;
 #define GIMBAL_VAL_QUEUE_SIZE           (4*sizeof(uint16_t))
 #define MODE2 //摇杆操控模式选择 --> #define MODE2：美国手 / 注释掉#define MODE2：日本手
 //摇杆数据隐射

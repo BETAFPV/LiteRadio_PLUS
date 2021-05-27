@@ -5,6 +5,7 @@
 #include "power_switch.h"
 #include "radiolink.h"
 #include "stmflash.h"
+#include "joystick.h"
 
 uint16_t protocol_Index;
 
@@ -27,7 +28,7 @@ void status_init()
         STMFLASH_Write(FLASH_ADDR,&protocol_Index,1);
    }
    Led_Twinkle_Init((protocol_Index+1));
-
+   version_init(protocol_Index); 
 }
 
 void statusTask(void* param)
@@ -35,19 +36,29 @@ void statusTask(void* param)
     uint8_t powerStatus = 0;
     EventBits_t R_event;
     uint8_t RCstatus = radio_datastatus;
-    uint8_t lastRCstatus = 3;
+    uint8_t lastRCstatus = initStatus;
     while(1)
     {
         vTaskDelay(2);
         if(RCstatus == radio_datastatus)
         {
-           
+            if(lastRCstatus == initStatus)
+            {
+                vTaskResume(radiolinkTaskHandle);
+            }else if(lastRCstatus == joystickstatus)
+            {
+                vTaskResume(radiolinkTaskHandle);
+            }
         }else if(RCstatus == joystickstatus)
         {
-        
+           if(lastRCstatus == initStatus)
+           {
+                vTaskResume(joystickTaskHandle);
+           }
         }
+        
 		R_event= xEventGroupWaitBits( KeyEventHandle,
-		                              POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS,
+		                              POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
 		                              pdTRUE,
 	                                  pdFALSE,
 		                              0);  
@@ -69,7 +80,11 @@ void statusTask(void* param)
 		if((R_event & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
 		{    
             xEventGroupSetBits( radioEventHandle, RADIOLINK_BIND);
-        }        
+        }    
+		if((R_event & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
+		{    
+            xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE);
+        }         
     }
         
 }

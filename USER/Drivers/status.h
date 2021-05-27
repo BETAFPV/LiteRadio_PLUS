@@ -6,9 +6,10 @@
 
 typedef enum
 {
-  	radio_bindstatus  	= 0 ,       
-	radio_datastatus 	= 1 ,      
-	joystickstatus   	= 2 ,      
+    initStatus = 0,
+  	radio_bindstatus  	= 1 ,       
+	radio_datastatus 	= 2 ,      
+	joystickstatus   	= 3 ,      
 }RCstatus_e;
 
 void status_init(void);

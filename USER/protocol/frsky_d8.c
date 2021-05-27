@@ -298,6 +298,7 @@ uint16_t ReadFRSKYD8(uint16_t* control_data)
 				CC2500_SetPower(RF_POWER);           //设置发送功率
 				FRSKYD8_InitDeviceAddr(D8_Bind_flg) ;	
 				FRSKYD8Phase = FRSKYD8_DATA ; 	
+                Rgb_Set(BLUE,255);
 			}
 			return 8830 ;
 		// Frsky D16 data

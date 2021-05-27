@@ -18,6 +18,12 @@ uint32_t delay_time = 0;
 void (*RF_Init)(uint8_t protocol_index);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* control_data);
+
+void version_init(uint16_t protocol_Index)
+{
+    Version_select_flag = protocol_Index;
+}
+
 void radiolinkTask(void* param)
 {
     
