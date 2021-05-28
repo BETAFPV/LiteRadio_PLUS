@@ -7,15 +7,15 @@ TaskHandle_t joystickTaskHandle;
 
 void joystickTask(void *param) 
 {
-    uint16_t report_data[8];
-    uint16_t gimbal_val_buff[4];
-    uint16_t switches_val_buff[4];
+    uint16_t reportData[8];
+    uint16_t gimbalValBuff[4];
+    uint16_t switchValBuff[4];
 	while(1)
 	{
 		vTaskDelay(5);
         
-        xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
-		xQueueReceive(switchesVal_Queue,switches_val_buff,0);
+        xQueueReceive(gimbalValQueue,gimbalValBuff,0);
+		xQueueReceive(switchesValQueue,switchValBuff,0);
         
         //RUDDER   = 0 ,       //yaw
         //THROTTLE = 1 ,       //throttle
@@ -23,25 +23,25 @@ void joystickTask(void *param)
         //ELEVATOR = 3 ,       //pitch
         
         //x轴
-		report_data[3] = gimbal_val_buff[RUDDER];
+		reportData[3] = gimbalValBuff[RUDDER];
         //y轴
-		report_data[4] = gimbal_val_buff[THROTTLE];
+		reportData[4] = gimbalValBuff[THROTTLE];
         //z轴
-        report_data[5] = gimbal_val_buff[ELEVATOR];
+        reportData[5] = gimbalValBuff[ELEVATOR];
 
 		//x旋转		
-		report_data[0] = gimbal_val_buff[AILERON];
+		reportData[0] = gimbalValBuff[AILERON];
         //y旋转
-		report_data[1] = switches_val_buff[0];
+		reportData[1] = switchValBuff[0];
 		//z旋转
-        report_data[2] = switches_val_buff[1];
+        reportData[2] = switchValBuff[1];
         
         //滑块1
-		report_data[6] = switches_val_buff[2];
+		reportData[6] = switchValBuff[2];
         //滑块2
-		report_data[7] = switches_val_buff[3];
+		reportData[7] = switchValBuff[3];
 
         
-        USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &report_data, 8*sizeof(uint16_t));
+        USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &reportData, 8*sizeof(uint16_t));
 	}
 }

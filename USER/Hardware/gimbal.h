@@ -8,7 +8,7 @@
 
 #define FLASH_ADDR 0x08007820
 
-extern QueueHandle_t gimbalVal_Queue;
+extern QueueHandle_t gimbalValQueue;
 extern EventGroupHandle_t gimbalEventHandle;
 #define GIMBAL_VAL_QUEUE_SIZE           (4*sizeof(uint16_t))
 #define MODE2 //摇杆操控模式选择 --> #define MODE2：美国手 / 注释掉#define MODE2：日本手
@@ -37,7 +37,7 @@ typedef enum
 	THROTTLE = 1 ,       //throttle
 	AILERON  = 2 ,       //roll
 	ELEVATOR = 3 ,       //pitch
-}GimbalChannelTypeDef;
+}gimbalChannelTypeDef;
 
 typedef struct{
     uint8_t THROTTLE:1;       
@@ -59,8 +59,8 @@ typedef struct{
 #define ADC_INPUT_MID 2047
 #define ADC_INPUT_MIN 0
 
-#define MAX_VALUE_Min  3095
-#define MIN_VALUE_Max  1000
+#define MAX_VALUE_MIN  3095
+#define MIN_VALUE_MAX  1000
 
 #define MAXDAT 0 
 #define MIDDAT 1
@@ -72,7 +72,7 @@ typedef struct{
 void Gimbal_Init(void);
 void gimbalTask(void* param);
 
-uint16_t Get_GimbalValue(GimbalChannelTypeDef channel);
+uint16_t Get_GimbalValue(gimbalChannelTypeDef channel);
 void SaveCalibrationValueToFlash(void);
 void ReadCalibrationValueForFlash(void);
 void HighThrottleCheck(void);
@@ -80,6 +80,6 @@ uint8_t Get_HighThrottle_flg(void);
 void GimbalCalibrateProcess(void);
 uint8_t get_calibration_mode(void);
 
-void get_report_data(uint16_t *data);
+void get_reportData(uint16_t *data);
 
 #endif

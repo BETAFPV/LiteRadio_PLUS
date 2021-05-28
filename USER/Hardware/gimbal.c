@@ -9,7 +9,7 @@ uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
 static uint8_t HighThrottle_flg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
 uint8_t calibrate_status = 0;
-QueueHandle_t gimbalVal_Queue = NULL;
+QueueHandle_t gimbalValQueue = NULL;
 EventGroupHandle_t gimbalEventHandle = NULL;
 
 
@@ -26,7 +26,7 @@ function : return Gimbal channle Value
 input:  channel  -> RUDDER\THROTTLE\ELEVATOR\AILERON 
 return : Gimbal Channel Value
 ******************************************************/
-uint16_t Get_GimbalValue(GimbalChannelTypeDef channel)
+uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 {
 	uint16_t ADTemp = 0 ; 
 	uint16_t OutputTemp = 0 ;
@@ -34,13 +34,13 @@ uint16_t Get_GimbalValue(GimbalChannelTypeDef channel)
 	{
 		if(calibration_mode == 0)   //如果当前运行状态不在校准模式，正常执行
 		{
-			if(Sampling_MaxMinData[channel][MAXDAT] < MAX_VALUE_Min)
+			if(Sampling_MaxMinData[channel][MAXDAT] < MAX_VALUE_MIN)
 			{
-				Sampling_MaxMinData[channel][MAXDAT] = MAX_VALUE_Min;
+				Sampling_MaxMinData[channel][MAXDAT] = MAX_VALUE_MIN;
 			}
-			if(Sampling_MaxMinData[channel][MINDAT] > MIN_VALUE_Max)  
+			if(Sampling_MaxMinData[channel][MINDAT] > MIN_VALUE_MAX)  
 			{
-				Sampling_MaxMinData[channel][MINDAT] = MIN_VALUE_Max; 
+				Sampling_MaxMinData[channel][MINDAT] = MIN_VALUE_MAX; 
 			}
 			if(Sampling_MaxMinData[channel][MIDDAT] > AD_MIDVALUE_MAX)  
 			{
@@ -97,10 +97,10 @@ uint16_t Get_GimbalValue(GimbalChannelTypeDef channel)
 
 void HighThrottleCheck(void)
 {
-    static uint16_t TimeCount = 0;
+    static uint16_t timeCount = 0;
     uint16_t Throttle_Value = 0;
-    if(TimeCount<1000) TimeCount++;
-    if(TimeCount==1000)
+    if(timeCount<1000) timeCount++;
+    if(timeCount==1000)
     {
 #ifdef MODE2
         Throttle_Value = Get_GimbalValue(THROTTLE);
@@ -244,7 +244,7 @@ void gimbalTask(void* param)
 
 	EventBits_t R_event = pdPASS;
     static uint16_t gimbal_buff[4] = {0};
-	gimbalVal_Queue = xQueueCreate(20,sizeof(gimbal_buff));
+	gimbalValQueue = xQueueCreate(20,sizeof(gimbal_buff));
 	while(1)
 	{
         vTaskDelay(9);
@@ -267,7 +267,7 @@ void gimbalTask(void* param)
         {
             GimbalCalibrateProcess();
         }
-		xQueueSend(gimbalVal_Queue,gimbal_buff,0);
+		xQueueSend(gimbalValQueue,gimbal_buff,0);
 
 	}
 }

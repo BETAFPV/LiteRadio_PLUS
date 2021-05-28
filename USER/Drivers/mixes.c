@@ -2,132 +2,132 @@
 #include "switches.h"
 #include "buzzer.h"
 TaskHandle_t mixesTaskHandle;
-QueueHandle_t mixesdataVal_Queue = NULL;
+QueueHandle_t mixesValQueue = NULL;
 
 //初始化混控的参数
-void mixes_init(mixData_t* mixData)
+void Mixes_Init(mixData_t* mixData)
 {
-    mixData[0].GimbalChannel=mix_RUDDER;
-    mixData[1].GimbalChannel=mix_THROTTLE;
-    mixData[2].GimbalChannel=mix_AILERON;
-    mixData[3].GimbalChannel=mix_ELEVATOR;
-    mixData[4].GimbalChannel=mix_SWA;
-    mixData[5].GimbalChannel=mix_SWB;
-    mixData[6].GimbalChannel=mix_SWC;
-    mixData[7].GimbalChannel=mix_SWD;
+    mixData[0].gimbalChannel=MIX_RUDDER;
+    mixData[1].gimbalChannel=MIX_THROTTLE;
+    mixData[2].gimbalChannel=MIX_AILERON;
+    mixData[3].gimbalChannel=MIX_ELEVATOR;
+    mixData[4].gimbalChannel=MIX_SWA;
+    mixData[5].gimbalChannel=MIX_SWB;
+    mixData[6].gimbalChannel=MIX_SWC;
+    mixData[7].gimbalChannel=MIX_SWD;
     
-    mixData[0].mix_inverse = 0;
-    mixData[1].mix_inverse = 0;
-    mixData[2].mix_inverse = 0;
-    mixData[3].mix_inverse = 0;
-    mixData[4].mix_inverse = 0;
-    mixData[5].mix_inverse = 0;
-    mixData[6].mix_inverse = 0;
-    mixData[7].mix_inverse = 0;
+    mixData[0].inverse = 0;
+    mixData[1].inverse = 0;
+    mixData[2].inverse = 0;
+    mixData[3].inverse = 0;
+    mixData[4].inverse = 0;
+    mixData[5].inverse = 0;
+    mixData[6].inverse = 0;
+    mixData[7].inverse = 0;
     
-    mixData[0].mix_weight = 100;
-    mixData[1].mix_weight = 100;
-    mixData[2].mix_weight = 100;
-    mixData[3].mix_weight = 100;
-    mixData[4].mix_weight = 100;
-    mixData[5].mix_weight = 100;
-    mixData[6].mix_weight = 100;
-    mixData[7].mix_weight = 100;
+    mixData[0].weight = 100;
+    mixData[1].weight = 100;
+    mixData[2].weight = 100;
+    mixData[3].weight = 100;
+    mixData[4].weight = 100;
+    mixData[5].weight = 100;
+    mixData[6].weight = 100;
+    mixData[7].weight = 100;
     
-    mixData[0].mix_offset = 0;
-    mixData[1].mix_offset = 0;
-    mixData[2].mix_offset = 0;
-    mixData[3].mix_offset = 0;
-    mixData[4].mix_offset = 0;
-    mixData[5].mix_offset = 0;
-    mixData[6].mix_offset = 0;
-    mixData[7].mix_offset = 0;    
+    mixData[0].offset = 0;
+    mixData[1].offset = 0;
+    mixData[2].offset = 0;
+    mixData[3].offset = 0;
+    mixData[4].offset = 0;
+    mixData[5].offset = 0;
+    mixData[6].offset = 0;
+    mixData[7].offset = 0;    
 }
 
 
 //摇杆通道补偿操作
-uint16_t mixes_gimbal_offset(int16_t offset, uint16_t gimbal_val_curr)
+uint16_t Mixes_GimbalOffset(int16_t offset, uint16_t gimbalValCurr)
 {
     if(offset < 0)
     {
         uint16_t offset_abs;
         offset_abs = (uint16_t) - offset;
-        gimbal_val_curr -= offset_abs;
+        gimbalValCurr -= offset_abs;
     }
     else
     {
-        gimbal_val_curr += offset;
+        gimbalValCurr += offset;
     }
-    return gimbal_val_curr;
+    return gimbalValCurr;
 }
 
 //摇杆通道比例操作
-uint16_t mixes_gimbal_weight(uint8_t weight, uint16_t gimbal_val_curr)
+uint16_t Mixes_GimbalWeight(uint8_t weight, uint16_t gimbalValCurr)
 {
-    if(gimbal_val_curr > CHANNEL_OUTPUT_MID) 
+    if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
     {
-        gimbal_val_curr = CHANNEL_OUTPUT_MID + (gimbal_val_curr - CHANNEL_OUTPUT_MID)* (uint16_t)weight /100;
+        gimbalValCurr = CHANNEL_OUTPUT_MID + (gimbalValCurr - CHANNEL_OUTPUT_MID)* (uint16_t)weight /100;
     }
     else		            
     {
-        gimbal_val_curr = CHANNEL_OUTPUT_MID - (CHANNEL_OUTPUT_MID - gimbal_val_curr)* (uint16_t)weight /100;            
+        gimbalValCurr = CHANNEL_OUTPUT_MID - (CHANNEL_OUTPUT_MID - gimbalValCurr)* (uint16_t)weight /100;            
     }
-    return gimbal_val_curr;
+    return gimbalValCurr;
 }
 
 //摇杆通道反向操作
-uint16_t mixes_gimbal_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode)
+uint16_t Mixes_GimbalInverse(uint8_t inverse, uint16_t gimbalValCurr,uint16_t* outputcode)
 {
     if(inverse)
     {
-        if(gimbal_val_curr > CHANNEL_OUTPUT_MID) 
+        if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
         {
-            gimbal_val_curr = CHANNEL_OUTPUT_MID - outputcode[gimbal_val_curr - CHANNEL_OUTPUT_MID];
+            gimbalValCurr = CHANNEL_OUTPUT_MID - outputcode[gimbalValCurr - CHANNEL_OUTPUT_MID];
         }
         else		            
         {
-            gimbal_val_curr = CHANNEL_OUTPUT_MID + outputcode[CHANNEL_OUTPUT_MID - gimbal_val_curr];            
+            gimbalValCurr = CHANNEL_OUTPUT_MID + outputcode[CHANNEL_OUTPUT_MID - gimbalValCurr];            
         }
     }
     else
     {
-        if(gimbal_val_curr > CHANNEL_OUTPUT_MID) 
+        if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
         {
-            gimbal_val_curr = CHANNEL_OUTPUT_MID + outputcode[gimbal_val_curr - CHANNEL_OUTPUT_MID];
+            gimbalValCurr = CHANNEL_OUTPUT_MID + outputcode[gimbalValCurr - CHANNEL_OUTPUT_MID];
 
         }
         else		            
         {
-            gimbal_val_curr = CHANNEL_OUTPUT_MID - outputcode[CHANNEL_OUTPUT_MID - gimbal_val_curr];            
+            gimbalValCurr = CHANNEL_OUTPUT_MID - outputcode[CHANNEL_OUTPUT_MID - gimbalValCurr];            
         }    
     }
-    return gimbal_val_curr;
+    return gimbalValCurr;
 }
 //开关通道反向操作
-uint16_t mixes_sw_inverse(uint8_t inverse, uint16_t gimbal_val_curr)
+uint16_t Mixes_SwitchInverse(uint8_t inverse, uint16_t gimbalValCurr)
 {
     if(inverse)
     {
-        if(gimbal_val_curr > CHANNEL_OUTPUT_MID) 
+        if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
         {
-            gimbal_val_curr = CHANNEL_OUTPUT_MID - (gimbal_val_curr - CHANNEL_OUTPUT_MID);
+            gimbalValCurr = CHANNEL_OUTPUT_MID - (gimbalValCurr - CHANNEL_OUTPUT_MID);
         }
         else		            
         {
-            gimbal_val_curr = CHANNEL_OUTPUT_MID + (CHANNEL_OUTPUT_MID - gimbal_val_curr);            
+            gimbalValCurr = CHANNEL_OUTPUT_MID + (CHANNEL_OUTPUT_MID - gimbalValCurr);            
         }
     }
-    return gimbal_val_curr;
+    return gimbalValCurr;
 }
 
 //混控任务
 void mixesTask(void* param)
 {
     mixData_t mixData[8];
-    uint16_t report_data[8];
-    uint16_t gimbal_val_buff[4];
-    uint16_t switches_val_buff[4];
-    mixesdataVal_Queue = xQueueCreate(20,sizeof(report_data));
+    uint16_t reportData[8];
+    uint16_t gimbalVaBuff[4];
+    uint16_t switchesValBuff[4];
+    mixesValQueue = xQueueCreate(20,sizeof(reportData));
     uint16_t OutputCode[513] =      //摇杆ADC映射表
     {
         0,0,0,0,0,
@@ -190,65 +190,65 @@ void mixesTask(void* param)
         507,507,507,507,507,507,507,507,507,507,
         507,507,507,507,507,507,507,507,507,507,
     };
-    mixes_init(mixData);
+    Mixes_Init(mixData);
     while(1)
 	{
 		vTaskDelay(9);  
-        xQueueReceive(gimbalVal_Queue,gimbal_val_buff,0);
-        xQueueReceive(switchesVal_Queue,switches_val_buff,0);
-        uint8_t mix_index = 0;
+        xQueueReceive(gimbalValQueue,gimbalVaBuff,0);
+        xQueueReceive(switchesValQueue,switchesValBuff,0);
+        uint8_t mixIndex = 0;
         
                   	//RUDDER   = 0 ,       //yaw
             //THROTTLE = 1 ,       //throttle
             //AILERON  = 2 ,       //roll
             //ELEVATOR = 3 ,       //pitch
-        report_data[0] = gimbal_val_buff[0];
-		report_data[1] = gimbal_val_buff[1];
-		report_data[2] = gimbal_val_buff[2];
-		report_data[3] = gimbal_val_buff[3];
+        reportData[0] = gimbalVaBuff[0];
+		reportData[1] = gimbalVaBuff[1];
+		reportData[2] = gimbalVaBuff[2];
+		reportData[3] = gimbalVaBuff[3];
 
-		report_data[4] = switches_val_buff[0];
-		report_data[5] = switches_val_buff[1];
-		report_data[6] = switches_val_buff[2];
-		report_data[7] = switches_val_buff[3];   
+		reportData[4] = switchesValBuff[0];
+		reportData[5] = switchesValBuff[1];
+		reportData[6] = switchesValBuff[2];
+		reportData[7] = switchesValBuff[3];   
         
-        for(mix_index = 0;mix_index < 8;mix_index++)
+        for(mixIndex = 0;mixIndex < 8;mixIndex++)
         {
-            mixData[mix_index].mix_output_data =  report_data[mixData[mix_index].GimbalChannel];
-            if(mixData[mix_index].GimbalChannel < 4)
+            mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];
+            if(mixData[mixIndex].gimbalChannel < 4)
             {
                 
-                if(mixData[mix_index].GimbalChannel == mix_THROTTLE)
+                if(mixData[mixIndex].gimbalChannel == MIX_THROTTLE)
                 {
                     //油门映射
-                    mixData[mix_index].mix_output_data = mixes_gimbal_inverse(mixData[mix_index].mix_inverse, mixData[mix_index].mix_output_data, THROTTLE_OutputCode);
+                    mixData[mixIndex].output = Mixes_GimbalInverse(mixData[mixIndex].inverse, mixData[mixIndex].output, THROTTLE_OutputCode);
                 }
                 else
                 {
                     //非油门映射
-                    mixData[mix_index].mix_output_data = mixes_gimbal_inverse(mixData[mix_index].mix_inverse, mixData[mix_index].mix_output_data, OutputCode);
+                    mixData[mixIndex].output = Mixes_GimbalInverse(mixData[mixIndex].inverse, mixData[mixIndex].output, OutputCode);
                 }
                 //通道补偿
-                mixData[mix_index].mix_output_data = mixes_gimbal_offset(mixData[mix_index].mix_offset, mixData[mix_index].mix_output_data);
+                mixData[mixIndex].output = Mixes_GimbalOffset(mixData[mixIndex].offset, mixData[mixIndex].output);
                 //通道比例
-                mixData[mix_index].mix_output_data = mixes_gimbal_weight(mixData[mix_index].mix_weight, mixData[mix_index].mix_output_data);
+                mixData[mixIndex].output = Mixes_GimbalWeight(mixData[mixIndex].weight, mixData[mixIndex].output);
                 
             }
-            if(mixData[mix_index].GimbalChannel >= 4)
+            if(mixData[mixIndex].gimbalChannel >= 4)
             {
-                mixData[mix_index].mix_output_data = mixes_sw_inverse(mixData[mix_index].mix_inverse, mixData[mix_index].mix_output_data);
+                mixData[mixIndex].output = Mixes_SwitchInverse(mixData[mixIndex].inverse, mixData[mixIndex].output);
             }
         }
         
-        report_data[0] = mixData[0].mix_output_data;
-        report_data[1] = mixData[1].mix_output_data;
-        report_data[2] = mixData[2].mix_output_data;
-        report_data[3] = mixData[3].mix_output_data;
-        report_data[4] = mixData[4].mix_output_data;
-        report_data[5] = mixData[5].mix_output_data;
-        report_data[6] = mixData[6].mix_output_data;        
-        report_data[7] = mixData[7].mix_output_data;              
+        reportData[0] = mixData[0].output;
+        reportData[1] = mixData[1].output;
+        reportData[2] = mixData[2].output;
+        reportData[3] = mixData[3].output;
+        reportData[4] = mixData[4].output;
+        reportData[5] = mixData[5].output;
+        reportData[6] = mixData[6].output;        
+        reportData[7] = mixData[7].output;              
         
-        xQueueSend(mixesdataVal_Queue,report_data,0);
+        xQueueSend(mixesValQueue,reportData,0);
     }
 }

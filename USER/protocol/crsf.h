@@ -8,6 +8,6 @@
 
 void CRSF_SetBind(void);
 void CRSF_Init(uint8_t protocol_Index);
-uint16_t CRSF_Process(uint16_t* control_data);
+uint16_t CRSF_Process(uint16_t* controlData);
 void Get_CRSFPackage(uint8_t* ChannelToCRSF,uint16_t* ControlDataBuff);
 #endif

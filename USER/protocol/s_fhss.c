@@ -7,7 +7,7 @@
 #include "gimbal.h"
 #include "switches.h"
 //#include "sbus.h"
-static GimbalReverseTypeDef GimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
+static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 #define SFHSS_COARSE	0
 
 #define SFHSS_PACKET_LEN 13
@@ -175,7 +175,7 @@ int16_t convert_channel_16b_nolimit(uint8_t num, int16_t min, int16_t max)
 }
 
 uint16_t ch[4];
-static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* control_data)
+static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* controlData)
 {
 	
 	// command.bit0 is the packet number indicator: =0 -> SFHSS_DATA1, =1 -> SFHSS_DATA2
@@ -196,26 +196,26 @@ static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* control_da
 	uint8_t ch_offset = (command&0x08) >> 1;			// CH1..CH4 or CH5..CH8
 
 #ifdef MODE2    
-    GimbalReverseFlg.RUDDER    = 1;
-    GimbalReverseFlg.THROTTLE  = 0;
-    GimbalReverseFlg.AILERON   = 1;
-    GimbalReverseFlg.ELEVATOR  = 0;
+    gimbalReverseFlg.RUDDER    = 1;
+    gimbalReverseFlg.THROTTLE  = 0;
+    gimbalReverseFlg.AILERON   = 1;
+    gimbalReverseFlg.ELEVATOR  = 0;
 #else
-    GimbalReverseFlg.RUDDER   = 1;
-    GimbalReverseFlg.THROTTLE = 1;
-    GimbalReverseFlg.AILERON  = 0;
-    GimbalReverseFlg.ELEVATOR = 0;
+    gimbalReverseFlg.RUDDER   = 1;
+    gimbalReverseFlg.THROTTLE = 1;
+    gimbalReverseFlg.AILERON  = 0;
+    gimbalReverseFlg.ELEVATOR = 0;
 #endif    
 
-    Channel_DataBuff[0] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - control_data[RUDDER])  :control_data[RUDDER];
-    Channel_DataBuff[1] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - control_data[THROTTLE]):control_data[THROTTLE];
-    Channel_DataBuff[2] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - control_data[ELEVATOR]):control_data[ELEVATOR];
-    Channel_DataBuff[3] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - control_data[AILERON]) :control_data[AILERON];
+    Channel_DataBuff[0] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
+    Channel_DataBuff[1] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
+    Channel_DataBuff[2] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
+    Channel_DataBuff[3] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
 
-	Channel_DataBuff[4] = control_data[4];
-    Channel_DataBuff[5] = control_data[5];
-    Channel_DataBuff[6] = control_data[6];
-    Channel_DataBuff[7] = control_data[7];
+	Channel_DataBuff[4] = controlData[4];
+    Channel_DataBuff[5] = controlData[5];
+    Channel_DataBuff[6] = controlData[6];
+    Channel_DataBuff[7] = controlData[7];
 
 
 		{	//Normal data
@@ -250,7 +250,7 @@ static void __attribute__((unused)) SFHSS_send_packet()
 }
 
 
-uint16_t ReadSFHSS(uint16_t* control_data)
+uint16_t ReadSFHSS(uint16_t* controlData)
 {
 	switch(phase)
 	{
@@ -281,13 +281,13 @@ uint16_t ReadSFHSS(uint16_t* control_data)
 #define SFHSS_TUNE_TIMING	2020
 			// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
 		case SFHSS_DATA1:
-			SFHSS_build_data_packet(control_data);
+			SFHSS_build_data_packet(controlData);
 			SFHSS_send_packet();
 			phase = SFHSS_DATA2;
 			return SFHSS_DATA2_TIMING;								// original 1650
 		//break;
         case SFHSS_DATA2:
-			SFHSS_build_data_packet(control_data);
+			SFHSS_build_data_packet(controlData);
 			SFHSS_send_packet();
 			SFHSS_calc_next_chan();
 			phase = SFHSS_TUNE;

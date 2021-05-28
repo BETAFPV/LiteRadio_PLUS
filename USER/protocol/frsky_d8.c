@@ -9,7 +9,7 @@
 #define FRSKYD8_PACKET_LEN  18
 #define FRSKYD8_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
 
-static GimbalReverseTypeDef GimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
+static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint8_t  D8_Bind_flg = 0 ; 
 uint16_t FRSKYD8_BindCounts = 0; 						
 uint8_t  FRSKYD8_Counts = 0;
@@ -118,7 +118,7 @@ static void __attribute__((unused)) Frsky_D8_build_Bind_packet(void)
 /*---------------------------------------------------------------------
 			build control data package					
 ----------------------------------------------------------------------*/
-void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* control_data)
+void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* controlData)
 {
 	//固定码 + 遥控ID
 	D8_SendPacket[0] = 0x11;
@@ -136,29 +136,29 @@ void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* control_data)
 	D8_SendPacket[17] = 0;
 	
 #ifdef MODE2    
-    GimbalReverseFlg.RUDDER    = 1;
-    GimbalReverseFlg.THROTTLE  = 0;
-    GimbalReverseFlg.AILERON   = 1;
-    GimbalReverseFlg.ELEVATOR  = 0;
+    gimbalReverseFlg.RUDDER    = 1;
+    gimbalReverseFlg.THROTTLE  = 0;
+    gimbalReverseFlg.AILERON   = 1;
+    gimbalReverseFlg.ELEVATOR  = 0;
 #else
-    GimbalReverseFlg.RUDDER   = 1;
-    GimbalReverseFlg.THROTTLE = 1;
-    GimbalReverseFlg.AILERON  = 0;
-    GimbalReverseFlg.ELEVATOR = 0;
+    gimbalReverseFlg.RUDDER   = 1;
+    gimbalReverseFlg.THROTTLE = 1;
+    gimbalReverseFlg.AILERON  = 0;
+    gimbalReverseFlg.ELEVATOR = 0;
 #endif    
-    Channel_DataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - control_data[ELEVATOR]):control_data[ELEVATOR];
-    Channel_DataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - control_data[AILERON]) :control_data[AILERON];
-    Channel_DataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - control_data[THROTTLE]):control_data[THROTTLE];
-    Channel_DataBuff[3] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - control_data[RUDDER])  :control_data[RUDDER];
+    Channel_DataBuff[0] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
+    Channel_DataBuff[1] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
+    Channel_DataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
+    Channel_DataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
 
-//	Channel_DataBuff[4] = GetSwitchValue(SWA);
-//    Channel_DataBuff[5] = GetSwitchValue(SWB);
-//    Channel_DataBuff[6] = GetSwitchValue(SWC);
-//    Channel_DataBuff[7] = GetSwitchValue(SWD);
-	Channel_DataBuff[4] = control_data[4];
-    Channel_DataBuff[5] = control_data[5];
-    Channel_DataBuff[6] = control_data[6];
-    Channel_DataBuff[7] = control_data[7];
+//	Channel_DataBuff[4] = Get_SwitchValue(SWA);
+//    Channel_DataBuff[5] = Get_SwitchValue(SWB);
+//    Channel_DataBuff[6] = Get_SwitchValue(SWC);
+//    Channel_DataBuff[7] = Get_SwitchValue(SWD);
+	Channel_DataBuff[4] = controlData[4];
+    Channel_DataBuff[5] = controlData[5];
+    Channel_DataBuff[6] = controlData[6];
+    Channel_DataBuff[7] = controlData[7];
     
     
 	for(uint8_t i=0; i < 8; i++)
@@ -270,7 +270,7 @@ void Calc_FRSKYD8_Channel()
 
 
 
-uint16_t ReadFRSKYD8(uint16_t* control_data)
+uint16_t ReadFRSKYD8(uint16_t* controlData)
 {
 	switch(FRSKYD8Phase)
 	{
@@ -306,7 +306,7 @@ uint16_t ReadFRSKYD8(uint16_t* control_data)
            // Reset_Bind_Flg();
 			FRSKYD8_Counts = (FRSKYD8_Counts + 1) % 188;
 			FRSKYD8_tune_chan_fast();
-			FRSKYD8_build_Data_packet(control_data);
+			FRSKYD8_build_Data_packet(controlData);
 			CC2500_Strobe(CC2500_SIDLE);
 			CC2500_WriteData(D8_SendPacket, FRSKYD8_PACKET_LEN);	
 			return 8830 ;  

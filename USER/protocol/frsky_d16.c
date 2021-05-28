@@ -13,7 +13,7 @@
 
 TaskHandle_t frskyd16TaskHandle;
 
-static GimbalReverseTypeDef GimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
+static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 
 #ifdef LBT
 	#define FRSKYD16_PACKET_LEN  33
@@ -41,7 +41,7 @@ uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)
     
 static uint8_t RF_POWER = 0xff;
 
-static uint8_t Version_select_flag;
+static uint8_t versionSelect_flg;
 
 static uint16_t Channel_DataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
 
@@ -149,7 +149,7 @@ static void FRSKYD16_calc_next_chan(void)
 static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 {
 		//固定码
-	if(Version_select_flag == LBT)
+	if(versionSelect_flg == LBT)
 	{
 		SendPacket[0] = 0x20;
 	}
@@ -190,7 +190,7 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 	SendPacket[25] 	= 0x00;
 	SendPacket[26] 	= 0x00;
 	SendPacket[27] 	= 0x00;
-	if(Version_select_flag == LBT)
+	if(versionSelect_flg == LBT)
 	{
 		SendPacket[28] 	= 0x00;
 		SendPacket[29] 	= 0x00;
@@ -212,14 +212,14 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 /*---------------------------------------------------------------------
 			build control data package					
 ----------------------------------------------------------------------*/
-void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* control_data)
+void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* controlData)
 {
 	static uint8_t lpass;
 	uint16_t chan_0 ;
 	uint16_t chan_1 ; 
 	uint8_t startChan = 0;
 	//sbus_checkrx();
-	if(Version_select_flag == LBT)
+	if(versionSelect_flg == LBT)
 	{
 		SendPacket[0] = 0x20;
 	}
@@ -250,15 +250,15 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* control_data)
 		startChan += 8;
 	}
 #ifdef MODE2    
-    GimbalReverseFlg.RUDDER    = 1;
-    GimbalReverseFlg.THROTTLE  = 0;
-    GimbalReverseFlg.AILERON   = 1;
-    GimbalReverseFlg.ELEVATOR  = 0;
+    gimbalReverseFlg.RUDDER    = 1;
+    gimbalReverseFlg.THROTTLE  = 0;
+    gimbalReverseFlg.AILERON   = 1;
+    gimbalReverseFlg.ELEVATOR  = 0;
 #else
-    GimbalReverseFlg.RUDDER   = 1;
-    GimbalReverseFlg.THROTTLE = 1;
-    GimbalReverseFlg.AILERON  = 0;
-    GimbalReverseFlg.ELEVATOR = 0;
+    gimbalReverseFlg.RUDDER   = 1;
+    gimbalReverseFlg.THROTTLE = 1;
+    gimbalReverseFlg.AILERON  = 0;
+    gimbalReverseFlg.ELEVATOR = 0;
 #endif    
     
 //    typedef enum
@@ -267,20 +267,20 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* control_data)
 //	THROTTLE = 1 ,       //throttle
 //	AILERON  = 2 ,       //roll
 //	ELEVATOR = 3 ,       //pitch
-//}GimbalChannelTypeDef;
-    Channel_DataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - control_data[ELEVATOR]):control_data[ELEVATOR];
-    Channel_DataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - control_data[AILERON]) :control_data[AILERON];
-    Channel_DataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - control_data[THROTTLE]):control_data[THROTTLE];
-    Channel_DataBuff[3] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - control_data[RUDDER])  :control_data[RUDDER];
+//}gimbalChannelTypeDef;
+    Channel_DataBuff[0] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
+    Channel_DataBuff[1] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
+    Channel_DataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
+    Channel_DataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
 
-//	Channel_DataBuff[4] = GetSwitchValue(SWA);
-//    Channel_DataBuff[5] = GetSwitchValue(SWB);
-//    Channel_DataBuff[6] = GetSwitchValue(SWC);
-//    Channel_DataBuff[7] = GetSwitchValue(SWD);
-	Channel_DataBuff[4] = control_data[4];
-    Channel_DataBuff[5] = control_data[5];
-    Channel_DataBuff[6] = control_data[6];
-    Channel_DataBuff[7] = control_data[7];
+//	Channel_DataBuff[4] = Get_SwitchValue(SWA);
+//    Channel_DataBuff[5] = Get_SwitchValue(SWB);
+//    Channel_DataBuff[6] = Get_SwitchValue(SWC);
+//    Channel_DataBuff[7] = Get_SwitchValue(SWD);
+	Channel_DataBuff[4] = controlData[4];
+    Channel_DataBuff[5] = controlData[5];
+    Channel_DataBuff[6] = controlData[6];
+    Channel_DataBuff[7] = controlData[7];
 
 	//add Channel data
 	for(uint8_t i = 0; i <12 ; i+=3)
@@ -300,7 +300,7 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* control_data)
 	SendPacket[21] = 0x08 ; 
 	//下一包数据 发送 后 8 通
 	lpass += 1 ;
-	if(Version_select_flag == LBT)
+	if(versionSelect_flg == LBT)
 	{
 		for (uint8_t i=22;i<31;i++)
 		{
@@ -416,7 +416,7 @@ void Calc_FRSKYD16_Channel()
 }
 
 
-uint16_t ReadFRSKYD16(uint16_t* control_data)
+uint16_t ReadFRSKYD16(uint16_t* controlData)
 {
 	switch(FRSKYD16Phase)
 	{
@@ -451,7 +451,7 @@ uint16_t ReadFRSKYD16(uint16_t* control_data)
          //   Reset_Bind_Flg();
 		  	FRSKYD16_calc_next_chan();
 			FRSKYD16_tune_chan_fast();
-			FRSKYD16_build_Data_packet(control_data);
+			FRSKYD16_build_Data_packet(controlData);
 			CC2500_Strobe(CC2500_SIDLE);	
 			CC2500_WriteData(SendPacket, FRSKYD16_PACKET_LEN);
 		break;  
@@ -470,7 +470,7 @@ void SetBind(void)
 
 void FRSKYD16_Init(uint8_t protocol_Index)
 {
-    Version_select_flag = protocol_Index;
+    versionSelect_flg = protocol_Index;
   	uint8_t CC2500_Error_flg = 0;
     //get chip ID
   	TransmitterID = GetUniqueID();

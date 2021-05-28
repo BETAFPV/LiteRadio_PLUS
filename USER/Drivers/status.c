@@ -7,7 +7,7 @@
 #include "stmflash.h"
 #include "joystick.h"
 #include "mixes.h"
-uint16_t proIndex;
+static uint16_t proIndex;
 uint8_t RCstatus = radio_datastatus;
 uint8_t lastRCstatus = initStatus;
 void Status_Init()
@@ -36,7 +36,7 @@ void Status_Init()
 void statusTask(void* param)
 {
     uint8_t powerStatus = 0;
-    EventBits_t R_event;
+    EventBits_t keyEvent;
 
     while(1)
     {
@@ -70,12 +70,12 @@ void statusTask(void* param)
         }
         lastRCstatus = RCstatus;
         
-		R_event= xEventGroupWaitBits( KeyEventHandle,
-		                              POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
-		                              pdTRUE,
-	                                  pdFALSE,
-		                              0);  
-		if((R_event & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
+		keyEvent= xEventGroupWaitBits( KeyEventHandle,
+		                               POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
+		                               pdTRUE,
+	                                   pdFALSE,
+		                               0);  
+		if((keyEvent & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
 		{    
             if(powerStatus)
             {
@@ -90,11 +90,11 @@ void statusTask(void* param)
                 
             }
         }
-		if((R_event & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
+		if((keyEvent & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
 		{    
             xEventGroupSetBits( radioEventHandle, RADIOLINK_BIND);
         }    
-		if((R_event & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
+		if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
 		{    
             xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE);
         }         

@@ -4,8 +4,9 @@
 
 uint8_t CRSF_Packet[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
+
 static uint16_t ChannelDataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
-static GimbalReverseTypeDef GimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
+static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint16_t ControlDataBuff[8] = {0};
 void CRSF_SetBind()
 {
@@ -14,7 +15,7 @@ void CRSF_SetBind()
 
 void CRSF_Init(uint8_t protocol_Index)
 {
-
+    HAL_Delay(1);
 }
 
 uint16_t CRSF_Process(uint16_t* control_data)
@@ -36,22 +37,22 @@ void Get_CRSFPackage(uint8_t* ChannelToCRSF,uint16_t* ControlDataBuff)
 	uint16_t SWC_Temp;
 	uint16_t SWD_Temp;
 #ifdef MODE2        
-        GimbalReverseFlg.AILERON  = 0;
-        GimbalReverseFlg.ELEVATOR = 1;
-        GimbalReverseFlg.RUDDER   = 1;
-        GimbalReverseFlg.THROTTLE = 0;
+    gimbalReverseFlg.AILERON  = 0;
+    gimbalReverseFlg.ELEVATOR = 1;
+    gimbalReverseFlg.RUDDER   = 1;
+    gimbalReverseFlg.THROTTLE = 0;
 #else
-        GimbalReverseFlg.AILERON  = 0;
-        GimbalReverseFlg.ELEVATOR = 0;
-        GimbalReverseFlg.RUDDER   = 1;
-        GimbalReverseFlg.THROTTLE = 1;
+    gimbalReverseFlg.AILERON  = 0;
+    gimbalReverseFlg.ELEVATOR = 0;
+    gimbalReverseFlg.RUDDER   = 1;
+    gimbalReverseFlg.THROTTLE = 1;
 #endif 	
 
 
-    ChannelDataBuff[0] =(GimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[ELEVATOR]):ControlDataBuff[ELEVATOR];
-    ChannelDataBuff[1] =(GimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[AILERON]) :ControlDataBuff[AILERON];
-    ChannelDataBuff[2] =(GimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[THROTTLE]):ControlDataBuff[THROTTLE];
-    ChannelDataBuff[3] =(GimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[RUDDER])  :ControlDataBuff[RUDDER];
+    ChannelDataBuff[0] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[ELEVATOR]):ControlDataBuff[ELEVATOR];
+    ChannelDataBuff[1] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[AILERON]) :ControlDataBuff[AILERON];
+    ChannelDataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[THROTTLE]):ControlDataBuff[THROTTLE];
+    ChannelDataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - ControlDataBuff[RUDDER])  :ControlDataBuff[RUDDER];
 
 	ChannelDataBuff[4] = ControlDataBuff[4];
     ChannelDataBuff[5] = ControlDataBuff[5];

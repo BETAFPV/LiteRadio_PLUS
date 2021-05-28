@@ -12,35 +12,33 @@ SemaphoreHandle_t powerSemaphore;
 EventGroupHandle_t powerEventHandle = NULL;
 TaskHandle_t powerTaskHandle;
 
-uint8_t key_status;
-int i = 0;
 void powerswitchTask(void* param)
 {
-	EventBits_t R_event;
+	EventBits_t powerEvent;
 	while(1)
 	{
 		vTaskDelay(100);
-		R_event= xEventGroupWaitBits( powerEventHandle,
-		                              POWER_ON|POWER_OFF,
-		                              pdTRUE,
-	                                  pdFALSE,
-		                              0);
-		if((R_event & POWER_ON) == POWER_ON)
+		powerEvent= xEventGroupWaitBits( powerEventHandle,
+                                         POWER_ON|POWER_OFF,
+		                                 pdTRUE,
+	                                     pdFALSE,
+		                                 0);
+		if((powerEvent & POWER_ON) == POWER_ON)
 		{
             xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
             POWER_PIN_HOLD_UP();
-            Rgb_breath_up(BLUE);
+            Rgb_Breath_Up(BLUE);
             taskENTER_CRITICAL();	/*Ω¯»Î¡ŸΩÁ*/
             
             vTaskSuspend(powerTaskHandle);
 
             taskEXIT_CRITICAL();
 		}
-		if((R_event & POWER_OFF) == POWER_OFF)
+		if((powerEvent & POWER_OFF) == POWER_OFF)
 		{
             Rgb_Set(BLACK,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
-            Rgb_breath_down(RED);
+            Rgb_Breath_Down(RED);
             POWER_PIN_HOLD_DOWN();
 		}        
 	}

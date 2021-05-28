@@ -12,7 +12,7 @@
 //#define Output_Mid 1500
 //#define Output_Min 988
 
-//extern uint8_t Version_select_flag;
+//extern uint8_t versionSelect_flg;
 
 //extern bool CommunicationError_flg ;
 
@@ -28,8 +28,8 @@
 
 extern const uint8_t FRSKYD8_CH_Code[8];
 void initFRSKYD8(uint8_t protocol_Index);
-uint16_t ReadFRSKYD8(uint16_t* control_data);
+uint16_t ReadFRSKYD8(uint16_t* controlData);
 void D8_SetBind(void) ; 
-void FRSKYD8_build_Data_packet(uint16_t* control_data);
+void FRSKYD8_build_Data_packet(uint16_t* controlData);
 
 #endif

@@ -10,35 +10,34 @@
 //ELEVATOR = 3 ,       //pitch
 typedef enum
 {
-  	mix_RUDDER  	= 0 ,       
-	mix_THROTTLE 	= 1 ,      
-	mix_AILERON 	= 2 ,      
-	mix_ELEVATOR   	= 3 ,      
-    mix_SWA         = 4 ,       //2POS
-    mix_SWB         = 5 ,       //3POS
-    mix_SWC         = 6 ,       //3POS
-    mix_SWD         = 7 ,       //2POS
-}mixsetChannel_e;
+  	MIX_RUDDER  	= 0 ,       
+	MIX_THROTTLE 	= 1 ,      
+	MIX_AILERON 	= 2 ,      
+	MIX_ELEVATOR   	= 3 ,      
+    MIX_SWA         = 4 ,       //2POS
+    MIX_SWB         = 5 ,       //3POS
+    MIX_SWC         = 6 ,       //3POS
+    MIX_SWD         = 7 ,       //2POS
+}gimbalChannel_e;
 
 typedef struct
 {
-    mixsetChannel_e GimbalChannel;//所设置通道
-    uint8_t mix_inverse; // 0为正向，1为反向
-    int8_t mix_weight; // 范围-100~100
-    int16_t mix_offset; //范围为-100~100
-    uint16_t mix_output_data;
+    gimbalChannel_e gimbalChannel;//所设置通道
+    uint8_t inverse; // 0为正向，1为反向
+    int8_t weight; // 范围-100~100
+    int16_t offset; //范围为-100~100
+    uint16_t output;
     
 }mixData_t;
 
 
 void mixesTask(void* param);
 extern TaskHandle_t mixesTaskHandle;
-extern QueueHandle_t mixesdataVal_Queue;
-uint16_t mixes_sw_inverse(uint8_t inverse, uint16_t gimbal_val_curr);
-
-uint16_t mixes_gimbal_inverse(uint8_t inverse, uint16_t gimbal_val_curr,uint16_t* outputcode);
-uint16_t mixes_gimbal_weight(uint8_t weight, uint16_t gimbal_val_curr);
-uint16_t mixes_gimbal_offset(int16_t offset, uint16_t gimbal_val_curr);
+extern QueueHandle_t mixesValQueue;
+uint16_t Mixes_SwitchInverse(uint8_t inverse, uint16_t gimbalValCurr);
+uint16_t Mixes_GimbalInverse(uint8_t inverse, uint16_t gimbalValCurr,uint16_t* outputcode);
+uint16_t Mixes_GimbalWeight(uint8_t weight, uint16_t gimbalValCurr);
+uint16_t Mixes_GimbalOffset(int16_t offset, uint16_t gimbalValCurr);
 
 
 

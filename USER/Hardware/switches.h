@@ -3,7 +3,7 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
-extern QueueHandle_t switchesVal_Queue;
+extern QueueHandle_t switchesValQueue;
 typedef enum
 {
   	SWA 	= 0 ,       //2POS
@@ -40,8 +40,8 @@ typedef enum
 #define SWC_L_GPIO_Port 	GPIOB
 
 void switchesTask(void* param);
-uint16_t GetSwitchValue(SwitchesChannelTypeDef switchnum);
-uint16_t GetSwitchJoyStickValue(SwitchesChannelTypeDef switchnum);
+uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex);
+uint16_t GetSwitchJoyStickValue(SwitchesChannelTypeDef switchIndex);
 uint16_t JoyStickValMapToChannelVal(uint16_t switch_val);
 #endif
 

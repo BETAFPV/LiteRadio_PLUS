@@ -125,7 +125,7 @@ static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
 	
 };
 
-uint8_t CC2500_Init(uint8_t Version_select_flag)
+uint8_t CC2500_Init(uint8_t versionSelect_flg)
 {
     uint8_t (*cc2500_config)[2];
     uint8_t RF_POWER = 0xff;
@@ -138,7 +138,7 @@ uint8_t CC2500_Init(uint8_t Version_select_flag)
 		CC2500RestError_flag = 1;	
 	}
 	HAL_Delay(1);
-	switch(Version_select_flag)
+	switch(versionSelect_flg)
 	{
 		case 0: cc2500_config = cc2500_conf_FCC;
 				break;

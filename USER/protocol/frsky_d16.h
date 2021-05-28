@@ -19,7 +19,7 @@
 #define LBT 1
 #define FCC 0
 
-//extern uint8_t Version_select_flag;
+//extern uint8_t versionSelect_flg;
 
 //extern bool CommunicationError_flg ;
 
@@ -39,7 +39,7 @@
 extern TaskHandle_t frskyd16TaskHandle;
 
 void FRSKYD16_Init(uint8_t protocol_Index);
-uint16_t ReadFRSKYD16(uint16_t* control_data);
+uint16_t ReadFRSKYD16(uint16_t* controlData);
 void SetBind(void) ; 
-void FRSKYD16_build_Data_packet(uint16_t* control_data);
+void FRSKYD16_build_Data_packet(uint16_t* controlData);
 #endif
