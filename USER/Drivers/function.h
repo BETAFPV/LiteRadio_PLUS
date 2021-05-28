@@ -12,8 +12,6 @@ union ChipID{
 void Get_ChipID(union ChipID *chipID);
 uint16_t GetUniqueID(void);
 void GetSbusPackage(uint8_t* ChannelToSbus);
-void GetCRSFPackage(uint8_t* ChannelToSbus);
-
 uint8_t crc8(const uint8_t * ptr, uint32_t len);
 
 uint16_t map(float Oxy, float Omin, float Omax, float Nmin, float Nmax);

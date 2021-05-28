@@ -313,4 +313,5 @@ uint16_t ReadSFHSS(uint16_t* control_data)
 
 void SFHSS_SetBind(void)
 {
+    HAL_Delay(1);
 }

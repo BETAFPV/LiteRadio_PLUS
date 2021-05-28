@@ -69,7 +69,7 @@ typedef struct{
 #define AD_MIDVALUE_MIN (ADC_INPUT_MID - 350)
 #define AD_MIDVALUE_MAX	(ADC_INPUT_MID + 350)
 
-
+void Gimbal_Init(void);
 void gimbalTask(void* param);
 
 uint16_t Get_GimbalValue(GimbalChannelTypeDef channel);

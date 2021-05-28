@@ -5,43 +5,43 @@ TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesdataVal_Queue = NULL;
 
 //初始化混控的参数
-void mixes_init(mixdata_t* mixdata)
+void mixes_init(mixData_t* mixData)
 {
-    mixdata[0].GimbalChannel=mix_RUDDER;
-    mixdata[1].GimbalChannel=mix_THROTTLE;
-    mixdata[2].GimbalChannel=mix_AILERON;
-    mixdata[3].GimbalChannel=mix_ELEVATOR;
-    mixdata[4].GimbalChannel=mix_SWA;
-    mixdata[5].GimbalChannel=mix_SWB;
-    mixdata[6].GimbalChannel=mix_SWC;
-    mixdata[7].GimbalChannel=mix_SWD;
+    mixData[0].GimbalChannel=mix_RUDDER;
+    mixData[1].GimbalChannel=mix_THROTTLE;
+    mixData[2].GimbalChannel=mix_AILERON;
+    mixData[3].GimbalChannel=mix_ELEVATOR;
+    mixData[4].GimbalChannel=mix_SWA;
+    mixData[5].GimbalChannel=mix_SWB;
+    mixData[6].GimbalChannel=mix_SWC;
+    mixData[7].GimbalChannel=mix_SWD;
     
-    mixdata[0].mix_inverse = 0;
-    mixdata[1].mix_inverse = 0;
-    mixdata[2].mix_inverse = 0;
-    mixdata[3].mix_inverse = 0;
-    mixdata[4].mix_inverse = 0;
-    mixdata[5].mix_inverse = 0;
-    mixdata[6].mix_inverse = 0;
-    mixdata[7].mix_inverse = 0;
+    mixData[0].mix_inverse = 0;
+    mixData[1].mix_inverse = 0;
+    mixData[2].mix_inverse = 0;
+    mixData[3].mix_inverse = 0;
+    mixData[4].mix_inverse = 0;
+    mixData[5].mix_inverse = 0;
+    mixData[6].mix_inverse = 0;
+    mixData[7].mix_inverse = 0;
     
-    mixdata[0].mix_weight = 100;
-    mixdata[1].mix_weight = 100;
-    mixdata[2].mix_weight = 100;
-    mixdata[3].mix_weight = 100;
-    mixdata[4].mix_weight = 100;
-    mixdata[5].mix_weight = 100;
-    mixdata[6].mix_weight = 100;
-    mixdata[7].mix_weight = 100;
+    mixData[0].mix_weight = 100;
+    mixData[1].mix_weight = 100;
+    mixData[2].mix_weight = 100;
+    mixData[3].mix_weight = 100;
+    mixData[4].mix_weight = 100;
+    mixData[5].mix_weight = 100;
+    mixData[6].mix_weight = 100;
+    mixData[7].mix_weight = 100;
     
-    mixdata[0].mix_offset = 0;
-    mixdata[1].mix_offset = 0;
-    mixdata[2].mix_offset = 0;
-    mixdata[3].mix_offset = 0;
-    mixdata[4].mix_offset = 0;
-    mixdata[5].mix_offset = 0;
-    mixdata[6].mix_offset = 0;
-    mixdata[7].mix_offset = 0;    
+    mixData[0].mix_offset = 0;
+    mixData[1].mix_offset = 0;
+    mixData[2].mix_offset = 0;
+    mixData[3].mix_offset = 0;
+    mixData[4].mix_offset = 0;
+    mixData[5].mix_offset = 0;
+    mixData[6].mix_offset = 0;
+    mixData[7].mix_offset = 0;    
 }
 
 
@@ -123,7 +123,7 @@ uint16_t mixes_sw_inverse(uint8_t inverse, uint16_t gimbal_val_curr)
 //混控任务
 void mixesTask(void* param)
 {
-    mixdata_t mixdata[8];
+    mixData_t mixData[8];
     uint16_t report_data[8];
     uint16_t gimbal_val_buff[4];
     uint16_t switches_val_buff[4];
@@ -190,7 +190,7 @@ void mixesTask(void* param)
         507,507,507,507,507,507,507,507,507,507,
         507,507,507,507,507,507,507,507,507,507,
     };
-    mixes_init(mixdata);
+    mixes_init(mixData);
     while(1)
 	{
 		vTaskDelay(9);  
@@ -214,40 +214,40 @@ void mixesTask(void* param)
         
         for(mix_index = 0;mix_index < 8;mix_index++)
         {
-            mixdata[mix_index].mix_output_data =  report_data[mixdata[mix_index].GimbalChannel];
-            if(mixdata[mix_index].GimbalChannel < 4)
+            mixData[mix_index].mix_output_data =  report_data[mixData[mix_index].GimbalChannel];
+            if(mixData[mix_index].GimbalChannel < 4)
             {
                 
-                if(mixdata[mix_index].GimbalChannel == mix_THROTTLE)
+                if(mixData[mix_index].GimbalChannel == mix_THROTTLE)
                 {
                     //油门映射
-                    mixdata[mix_index].mix_output_data = mixes_gimbal_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data, THROTTLE_OutputCode);
+                    mixData[mix_index].mix_output_data = mixes_gimbal_inverse(mixData[mix_index].mix_inverse, mixData[mix_index].mix_output_data, THROTTLE_OutputCode);
                 }
                 else
                 {
                     //非油门映射
-                    mixdata[mix_index].mix_output_data = mixes_gimbal_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data, OutputCode);
+                    mixData[mix_index].mix_output_data = mixes_gimbal_inverse(mixData[mix_index].mix_inverse, mixData[mix_index].mix_output_data, OutputCode);
                 }
                 //通道补偿
-                mixdata[mix_index].mix_output_data = mixes_gimbal_offset(mixdata[mix_index].mix_offset, mixdata[mix_index].mix_output_data);
+                mixData[mix_index].mix_output_data = mixes_gimbal_offset(mixData[mix_index].mix_offset, mixData[mix_index].mix_output_data);
                 //通道比例
-                mixdata[mix_index].mix_output_data = mixes_gimbal_weight(mixdata[mix_index].mix_weight, mixdata[mix_index].mix_output_data);
+                mixData[mix_index].mix_output_data = mixes_gimbal_weight(mixData[mix_index].mix_weight, mixData[mix_index].mix_output_data);
                 
             }
-            if(mixdata[mix_index].GimbalChannel >= 4)
+            if(mixData[mix_index].GimbalChannel >= 4)
             {
-                mixdata[mix_index].mix_output_data = mixes_sw_inverse(mixdata[mix_index].mix_inverse, mixdata[mix_index].mix_output_data);
+                mixData[mix_index].mix_output_data = mixes_sw_inverse(mixData[mix_index].mix_inverse, mixData[mix_index].mix_output_data);
             }
         }
         
-        report_data[0] = mixdata[0].mix_output_data;
-        report_data[1] = mixdata[1].mix_output_data;
-        report_data[2] = mixdata[2].mix_output_data;
-        report_data[3] = mixdata[3].mix_output_data;
-        report_data[4] = mixdata[4].mix_output_data;
-        report_data[5] = mixdata[5].mix_output_data;
-        report_data[6] = mixdata[6].mix_output_data;        
-        report_data[7] = mixdata[7].mix_output_data;              
+        report_data[0] = mixData[0].mix_output_data;
+        report_data[1] = mixData[1].mix_output_data;
+        report_data[2] = mixData[2].mix_output_data;
+        report_data[3] = mixData[3].mix_output_data;
+        report_data[4] = mixData[4].mix_output_data;
+        report_data[5] = mixData[5].mix_output_data;
+        report_data[6] = mixData[6].mix_output_data;        
+        report_data[7] = mixData[7].mix_output_data;              
         
         xQueueSend(mixesdataVal_Queue,report_data,0);
     }

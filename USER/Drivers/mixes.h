@@ -28,7 +28,7 @@ typedef struct
     int16_t mix_offset; //范围为-100~100
     uint16_t mix_output_data;
     
-}mixdata_t;
+}mixData_t;
 
 
 void mixesTask(void* param);

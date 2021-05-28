@@ -174,11 +174,13 @@ void startTask(void *param)
     xTaskCreate(mixesTask, "MIXES", 600, NULL, 2, &mixesTaskHandle); 
 	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 3, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 50, NULL, 1, NULL); 
-	vTaskDelete(startTaskHandle);
+        
     vTaskSuspend(joystickTaskHandle);//挂起joystick
-    //vTaskSuspend(mixesTaskHandle);//挂起mixes
-    //vTaskSuspend(radiolinkTaskHandle);
-
+    vTaskSuspend(radiolinkTaskHandle);//挂起radiolink
+    vTaskSuspend(mixesTaskHandle);//挂起mixes
+    
+    vTaskDelete(startTaskHandle);
+    
 	taskEXIT_CRITICAL();
     osDelay(1);
     }

@@ -70,6 +70,10 @@ void Error_Handler(void);
 #define SPI2_NSS_GPIO_Port GPIOB
 #define KEY_BIND_Pin GPIO_PIN_8
 #define KEY_BIND_GPIO_Port GPIOA
+#define CRSF_TX_Pin GPIO_PIN_9
+#define CRSF_TX_GPIO_Port GPIOA
+#define CRSF_RX_Pin GPIO_PIN_10
+#define CRSF_RX_GPIO_Port GPIOA
 #define externel_RF_on_Pin GPIO_PIN_15
 #define externel_RF_on_GPIO_Port GPIOA
 #define internel_RF_on_Pin GPIO_PIN_3

@@ -12,8 +12,6 @@ SemaphoreHandle_t powerSemaphore;
 EventGroupHandle_t powerEventHandle = NULL;
 TaskHandle_t powerTaskHandle;
 
-static bool powerswitchStatus = false;
-
 uint8_t key_status;
 int i = 0;
 void powerswitchTask(void* param)

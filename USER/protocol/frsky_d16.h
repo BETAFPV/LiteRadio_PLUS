@@ -38,9 +38,8 @@
 
 extern TaskHandle_t frskyd16TaskHandle;
 
-void initFRSKYD16(uint8_t protocol_Index);
+void FRSKYD16_Init(uint8_t protocol_Index);
 uint16_t ReadFRSKYD16(uint16_t* control_data);
 void SetBind(void) ; 
 void FRSKYD16_build_Data_packet(uint16_t* control_data);
-void frskyd16Task(void* param);
 #endif

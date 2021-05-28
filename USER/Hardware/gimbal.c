@@ -233,7 +233,11 @@ void GimbalCalibrateProcess(void)
 	}
 }
 
-
+void Gimbal_Init()
+{
+    Adc_Start();
+    ReadCalibrationValueForFlash();
+}
 
 void gimbalTask(void* param)
 {

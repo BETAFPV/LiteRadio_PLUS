@@ -12,7 +12,7 @@ typedef enum
 	joystickstatus   	= 3 ,      
 }RCstatus_e;
 
-void status_init(void);
+void Status_Init(void);
 void statusTask(void* param);
 
 #endif  

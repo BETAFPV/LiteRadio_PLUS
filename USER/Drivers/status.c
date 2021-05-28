@@ -6,56 +6,69 @@
 #include "radiolink.h"
 #include "stmflash.h"
 #include "joystick.h"
-
-uint16_t protocol_Index;
-
-void status_init()
+#include "mixes.h"
+uint16_t proIndex;
+uint8_t RCstatus = radio_datastatus;
+uint8_t lastRCstatus = initStatus;
+void Status_Init()
 {
-    STMFLASH_Read(FLASH_ADDR,&protocol_Index,1);
-    if(protocol_Index >= 4)
+    STMFLASH_Read(FLASH_ADDR,&proIndex,1);
+    if(proIndex > 4)
     {
-        protocol_Index = 0;
-        STMFLASH_Write(FLASH_ADDR,&protocol_Index,1);
+        proIndex = 0;
+        STMFLASH_Write(FLASH_ADDR,&proIndex,1);
     }
     
    if(HAL_GPIO_ReadPin(KEY_BIND_GPIO_Port,KEY_BIND_Pin) == GPIO_PIN_RESET)
    {
-       protocol_Index = protocol_Index + 1;
-       if(protocol_Index >= 4)
+       proIndex++;
+       if(proIndex > 4)
 		{
-			protocol_Index = 0;
+			proIndex = 0;
 		}
-        STMFLASH_Write(FLASH_ADDR,&protocol_Index,1);
+
+        STMFLASH_Write(FLASH_ADDR,&proIndex,1);
    }
-   Led_Twinkle_Init((protocol_Index+1));
-   version_init(protocol_Index); 
+   Led_Twinkle_Init((proIndex+1));
+   Version_Init(proIndex); 
 }
 
 void statusTask(void* param)
 {
     uint8_t powerStatus = 0;
     EventBits_t R_event;
-    uint8_t RCstatus = radio_datastatus;
-    uint8_t lastRCstatus = initStatus;
+
     while(1)
     {
         vTaskDelay(2);
+        
         if(RCstatus == radio_datastatus)
         {
             if(lastRCstatus == initStatus)
             {
                 vTaskResume(radiolinkTaskHandle);
+                vTaskResume(mixesTaskHandle);
             }else if(lastRCstatus == joystickstatus)
             {
+                vTaskSuspend(joystickTaskHandle);              
                 vTaskResume(radiolinkTaskHandle);
+                vTaskResume(mixesTaskHandle);
             }
-        }else if(RCstatus == joystickstatus)
+        } 
+        if(RCstatus == joystickstatus)
         {
-           if(lastRCstatus == initStatus)
-           {
+            if(lastRCstatus == initStatus)
+            {
                 vTaskResume(joystickTaskHandle);
-           }
+            }
+            else if(lastRCstatus == joystickstatus)
+            {
+                vTaskSuspend(radiolinkTaskHandle);
+                vTaskSuspend(mixesTaskHandle);
+                vTaskResume(joystickTaskHandle);              
+            }
         }
+        lastRCstatus = RCstatus;
         
 		R_event= xEventGroupWaitBits( KeyEventHandle,
 		                              POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,

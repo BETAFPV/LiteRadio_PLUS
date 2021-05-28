@@ -468,7 +468,7 @@ void SetBind(void)
 }
 
 
-void initFRSKYD16(uint8_t protocol_Index)
+void FRSKYD16_Init(uint8_t protocol_Index)
 {
     Version_select_flag = protocol_Index;
   	uint8_t CC2500_Error_flg = 0;
@@ -511,11 +511,4 @@ void initFRSKYD16(uint8_t protocol_Index)
 		FRSKYD16_TuneChannel(FRSKYD16_HOPChannel[FRSKYD16_Channel_Num]) ; 
 	}
 }
-
-//void frskyd16Task(void* param)
-//{
-////    uint16_t report_data[8];
-
-//   
-//}
 
