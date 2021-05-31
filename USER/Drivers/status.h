@@ -7,8 +7,8 @@
 typedef enum
 {
     initStatus = 0,
-  	radio_bindstatus  	= 1 ,       
-	radio_datastatus 	= 2 ,      
+  	RADIO_CALIBARATION  	= 1 ,       
+	RADIO_DATA 	= 2 ,      
 	joystickstatus   	= 3 ,      
 }RCstatus_e;
 
