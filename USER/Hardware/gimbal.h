@@ -4,8 +4,8 @@
 #include "cmsis_os.h"
 #include "stm32f1xx_hal.h"
 
-#define GIMBAL_CALIBRATE	    (0x01 << 0)	
-
+#define GIMBAL_CALIBRATE_IN	    (0x01 << 0)	
+#define GIMBAL_CALIBRATE_END	(0x02 << 0)	
 #define FLASH_ADDR 0x08007820
 
 extern QueueHandle_t gimbalValQueue;
@@ -75,10 +75,10 @@ void gimbalTask(void* param);
 uint16_t Get_GimbalValue(gimbalChannelTypeDef channel);
 void SaveCalibrationValueToFlash(void);
 void ReadCalibrationValueForFlash(void);
-void HighThrottleCheck(void);
-uint8_t Get_HighThrottle_flg(void);
+void Check_HighThrottle(void);
+uint8_t Get_highThrottleFlg(void);
 void GimbalCalibrateProcess(void);
-uint8_t get_calibration_mode(void);
+uint8_t get_calibrationMode(void);
 
 void get_reportData(uint16_t *data);
 

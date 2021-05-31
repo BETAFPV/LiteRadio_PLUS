@@ -37,12 +37,12 @@ typedef enum
 
 void HAL_TIM_SET_COMPARE(uint16_t compare);
 void HAL_TIM_SET_AUTORELOAD(uint16_t arr);
-void buzzer_start(void);
-void buzzer_stop(void);
+void Buzzer_Start(void);
+void Buzzer_Stop(void);
 void Buzzer_On(uint8_t tone);
 void Buzzer_bee_time(uint8_t tone,uint32_t buzzer_time);
-void Buzzer_bee_up(void);
-void Buzzer_bee_down(void);
+void Buzzer_Bee_Up(void);
+void Buzzer_Bee_Down(void);
 void Buzzer_Bee(uint8_t tone,uint8_t buzzer_count);
 void buzzerTask(void* param);  
 #endif

@@ -150,7 +150,7 @@ static void __attribute__((unused)) SFHSS_rf_init()
 	CC2500_SetPower(CC2500_POWER_17);
 }
 
-void initSFHSS(uint8_t protocol_index)
+void initSFHSS(uint8_t protocolIndex)
 {
 	//BIND_DONE;						 // Not a TX bind protocol
 	//SPI2_Init();

@@ -15,7 +15,7 @@
 
 extern TaskHandle_t radiolinkTaskHandle;
 extern EventGroupHandle_t radioEventHandle;
-void Version_Init(uint16_t protocol_Index);
+void Version_Init(uint16_t protocolIndex);
 void radiolinkTask(void* param);
 
 #endif

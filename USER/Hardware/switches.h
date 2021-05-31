@@ -21,22 +21,16 @@ typedef enum
 #define SWITCH_JOYSTICK_MID_VALUE 2047
 #define SWITCH_JOYSTICK_MIN_VALUE 10
 
-#define SWA_Pin 			GPIO_PIN_6
 #define SWA_GPIO_Port 		GPIOB
 
-#define SWB_H_Pin 			GPIO_PIN_4
 #define SWB_H_GPIO_Port 	GPIOB
 
-#define SWB_L_Pin 			GPIO_PIN_5
 #define SWB_L_GPIO_Port 	GPIOB
 
-#define SWD_Pin 			GPIO_PIN_8
 #define SWD_GPIO_Port 		GPIOB
 
-#define SWC_H_Pin 			GPIO_PIN_7
 #define SWC_H_GPIO_Port 	GPIOB
 
-#define SWC_L_Pin 			GPIO_PIN_9
 #define SWC_L_GPIO_Port 	GPIOB
 
 void switchesTask(void* param);

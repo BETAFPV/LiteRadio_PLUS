@@ -12,23 +12,23 @@
 #include "tim.h"
 TaskHandle_t radiolinkTaskHandle;
 EventGroupHandle_t radioEventHandle;
-uint16_t controlData[8];
-static uint8_t versionSelect_flg = 2;
-uint32_t delayTime = 0;
-void (*RF_Init)(uint8_t protocol_index);
+static uint16_t controlData[8];
+static uint8_t versionSelectFlg = 2;
+static uint32_t delayTime = 0;
+void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* controlData);
 
-void Version_Init(uint16_t protocol_Index)
+void Version_Init(uint16_t protocolIndex)
 {
-    versionSelect_flg = protocol_Index;
+    versionSelectFlg = protocolIndex;
 }
 
 void radiolinkTask(void* param)
 {
     
     EventBits_t radioEvent;
-    switch(versionSelect_flg)
+    switch(versionSelectFlg)
 	{
 		case 0: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
@@ -58,16 +58,16 @@ void radiolinkTask(void* param)
 		default:
 				break;
 	}
-    RF_Init(versionSelect_flg);
+    RF_Init(versionSelectFlg);
     while(1)
     {
         vTaskDelay(delayTime);
         xQueueReceive(mixesValQueue,controlData,0);
         radioEvent= xEventGroupWaitBits( radioEventHandle,
-		                              RADIOLINK_BIND,
-		                              pdTRUE,
-	                                  pdTRUE,
-		                              0);
+                                         RADIOLINK_BIND,
+		                                 pdTRUE,
+	                                     pdFALSE,
+		                                 0);
 		if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
 		{
             RF_Bind();

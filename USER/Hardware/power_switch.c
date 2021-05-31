@@ -1,14 +1,9 @@
-#include <stdbool.h>
 #include "power_switch.h"
-#include "FreeRTOS.h"
-#include "task.h"
 #include "key.h"
 #include "rgb.h"
-#include "cmsis_os.h"
 #include "buzzer.h"
 #include "radiolink.h"
 
-SemaphoreHandle_t powerSemaphore;
 EventGroupHandle_t powerEventHandle = NULL;
 TaskHandle_t powerTaskHandle;
 
@@ -28,6 +23,7 @@ void powerswitchTask(void* param)
             xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
             POWER_PIN_HOLD_UP();
             Rgb_Breath_Up(BLUE);
+            
             taskENTER_CRITICAL();	/*Ω¯»Î¡ŸΩÁ*/
             
             vTaskSuspend(powerTaskHandle);
@@ -36,7 +32,7 @@ void powerswitchTask(void* param)
 		}
 		if((powerEvent & POWER_OFF) == POWER_OFF)
 		{
-            Rgb_Set(BLACK,255);
+            RGB_Set(BLACK,255);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
             Rgb_Breath_Down(RED);
             POWER_PIN_HOLD_DOWN();

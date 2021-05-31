@@ -19,7 +19,7 @@
 #define LBT 1
 #define FCC 0
 
-//extern uint8_t versionSelect_flg;
+//extern uint8_t versionSelectFlg;
 
 //extern bool CommunicationError_flg ;
 
@@ -29,7 +29,7 @@
 //#define TRANSMITTER_CHANNEL       8
 
 //extern bool CommunicationError_flg ; 
-//extern bool HighThrottle_flg ; 
+//extern bool highThrottleFlg ; 
 //extern bool Bind_flg ; 
 //extern uint16_t TransmitterID ; 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@
 
 extern TaskHandle_t frskyd16TaskHandle;
 
-void FRSKYD16_Init(uint8_t protocol_Index);
+void FRSKYD16_Init(uint8_t protocolIndex);
 uint16_t ReadFRSKYD16(uint16_t* controlData);
 void SetBind(void) ; 
 void FRSKYD16_build_Data_packet(uint16_t* controlData);

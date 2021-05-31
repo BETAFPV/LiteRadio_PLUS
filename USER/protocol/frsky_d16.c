@@ -33,7 +33,7 @@ uint8_t  FRSKYD16_calData[50];							// 记录跳频通道频率值
 
 uint8_t  FRSKYD16_Channel_Num = 0   ; 					// 跳频通道号
 
-uint8_t HighThrottle_flg = 1 ; 							//高油门标志位
+uint8_t highThrottleFlg = 1 ; 							//高油门标志位
 static uint16_t TransmitterID ; 							    //遥控器唯一ID
 uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)发送遥控数据包 28Byte(8 + 16CH*2 = 40)
 
@@ -41,7 +41,7 @@ uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)
     
 static uint8_t RF_POWER = 0xff;
 
-static uint8_t versionSelect_flg;
+static uint8_t versionSelectFlg;
 
 static uint16_t Channel_DataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
 
@@ -149,7 +149,7 @@ static void FRSKYD16_calc_next_chan(void)
 static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 {
 		//固定码
-	if(versionSelect_flg == LBT)
+	if(versionSelectFlg == LBT)
 	{
 		SendPacket[0] = 0x20;
 	}
@@ -190,7 +190,7 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 	SendPacket[25] 	= 0x00;
 	SendPacket[26] 	= 0x00;
 	SendPacket[27] 	= 0x00;
-	if(versionSelect_flg == LBT)
+	if(versionSelectFlg == LBT)
 	{
 		SendPacket[28] 	= 0x00;
 		SendPacket[29] 	= 0x00;
@@ -219,7 +219,7 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* controlData)
 	uint16_t chan_1 ; 
 	uint8_t startChan = 0;
 	//sbus_checkrx();
-	if(versionSelect_flg == LBT)
+	if(versionSelectFlg == LBT)
 	{
 		SendPacket[0] = 0x20;
 	}
@@ -300,7 +300,7 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* controlData)
 	SendPacket[21] = 0x08 ; 
 	//下一包数据 发送 后 8 通
 	lpass += 1 ;
-	if(versionSelect_flg == LBT)
+	if(versionSelectFlg == LBT)
 	{
 		for (uint8_t i=22;i<31;i++)
 		{
@@ -426,7 +426,7 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 		  	if(FRSKYD16_BindCounts < 600)
 			{    
                 ++FRSKYD16_BindCounts ;    
-				Led_On_Off(FRSKYD16_BindCounts & 0x10);
+				RGB_Toggle(FRSKYD16_BindCounts & 0x10);
 				FRSKYD16_TuneChannel(FRSKYD16_BINDCHANNEL) ; 
 				CC2500_SetPower(CC2500_POWER_17);
 				CC2500_Strobe(CC2500_SFRX);
@@ -443,7 +443,7 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 				//FRSKYD16_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(RF_POWER);
 				FRSKYD16Phase = FRSKYD16_DATA ; 
-                Rgb_Set(BLUE,255);
+                RGB_Set(BLUE,255);
 			}
 		break;
 		// Frsky D16 data
@@ -468,9 +468,9 @@ void SetBind(void)
 }
 
 
-void FRSKYD16_Init(uint8_t protocol_Index)
+void FRSKYD16_Init(uint8_t protocolIndex)
 {
-    versionSelect_flg = protocol_Index;
+    versionSelectFlg = protocolIndex;
   	uint8_t CC2500_Error_flg = 0;
     //get chip ID
   	TransmitterID = GetUniqueID();
@@ -478,10 +478,6 @@ void FRSKYD16_Init(uint8_t protocol_Index)
 	//Get the frequency hopping by chip ID
 	//Calc_FRSKYD16_Channel();
 	Frsky_init_hop();
-//	adc_init();
-//	ADC_StartOfConversion(ADC1);
-//	while(ADC_GetFlagStatus(ADC1,ADC_FLAG_EOC)==RESET);
-//	srand(ADC_GetConversionValue(ADC1));     //Gets a random number from the ADC
     srand(SysTick->VAL);
 	FRSKYD16_ChannelShip = rand() % 46 + 1;  // Initialize it to random 0-47 inclusive
 	while((FRSKYD16_ChannelShip - FRSKYD16_ctr) % 4) 
@@ -490,7 +486,7 @@ void FRSKYD16_Init(uint8_t protocol_Index)
 	}
 	FRSKYD16_CountsRst = (FRSKYD16_ChannelShip - FRSKYD16_ctr) >> 2 ; 
 	
-	CC2500_Error_flg = CC2500_Init(protocol_Index) ; 
+	CC2500_Error_flg = CC2500_Init(protocolIndex) ; 
 	if(CC2500_Error_flg == 1)
 	{
 		//Initialization failed

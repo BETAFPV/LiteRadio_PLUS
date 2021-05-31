@@ -39,6 +39,4 @@ uint16_t Mixes_GimbalInverse(uint8_t inverse, uint16_t gimbalValCurr,uint16_t* o
 uint16_t Mixes_GimbalWeight(uint8_t weight, uint16_t gimbalValCurr);
 uint16_t Mixes_GimbalOffset(int16_t offset, uint16_t gimbalValCurr);
 
-
-
 #endif

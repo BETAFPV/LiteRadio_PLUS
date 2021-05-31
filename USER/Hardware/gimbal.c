@@ -6,9 +6,9 @@
 #include "rgb.h"
 #include "buzzer.h"
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
-static uint8_t calibration_mode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
-static uint8_t HighThrottle_flg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
-uint8_t calibrate_status = 0;
+static uint8_t calibrationMode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
+static uint8_t highThrottleFlg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
+static uint8_t calibrationStatus = 0;
 QueueHandle_t gimbalValQueue = NULL;
 EventGroupHandle_t gimbalEventHandle = NULL;
 
@@ -29,10 +29,10 @@ return : Gimbal Channel Value
 uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 {
 	uint16_t ADTemp = 0 ; 
-	uint16_t OutputTemp = 0 ;
+	uint16_t outputTemp = 0 ;
 	if((channel == RUDDER) || (channel == ELEVATOR) || (channel == AILERON) ||(channel == THROTTLE))
 	{
-		if(calibration_mode == 0)   //如果当前运行状态不在校准模式，正常执行
+		if(calibrationMode == 0)   //如果当前运行状态不在校准模式，正常执行
 		{
 			if(Sampling_MaxMinData[channel][MAXDAT] < MAX_VALUE_MIN)
 			{
@@ -52,50 +52,50 @@ uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 			}
 		}
 		//限定AD值的采样范围
-		if(getAdcValue(channel) > Sampling_MaxMinData[channel][MAXDAT]) 
+		if(Get_AdcValue(channel) > Sampling_MaxMinData[channel][MAXDAT]) 
 		{
 			ADTemp = Sampling_MaxMinData[channel][MAXDAT] ; 
 		}
-		else if(getAdcValue(channel) < Sampling_MaxMinData[channel][MINDAT])
+		else if(Get_AdcValue(channel) < Sampling_MaxMinData[channel][MINDAT])
 		{
 			ADTemp = Sampling_MaxMinData[channel][MINDAT] ; 
 		}
 		else								     
 		{
-			ADTemp = getAdcValue(channel); 
+			ADTemp = Get_AdcValue(channel); 
 		}
 		
 		//将三个摇杆AD输出数据映射为发送数据
 	  	if(ADTemp >= Sampling_MaxMinData[channel][MIDDAT]) 
 		{ 
-			OutputTemp = (uint16_t)(CHANNEL_OUTPUT_MID + (((float)ADTemp - Sampling_MaxMinData[channel][MIDDAT]) * ((((float)CHANNEL_OUTPUT_MAX - CHANNEL_OUTPUT_MID ))/(Sampling_MaxMinData[channel][MAXDAT] - Sampling_MaxMinData[channel][MIDDAT])))) ; 
+			outputTemp = (uint16_t)(CHANNEL_OUTPUT_MID + (((float)ADTemp - Sampling_MaxMinData[channel][MIDDAT]) * ((((float)CHANNEL_OUTPUT_MAX - CHANNEL_OUTPUT_MID ))/(Sampling_MaxMinData[channel][MAXDAT] - Sampling_MaxMinData[channel][MIDDAT])))) ; 
         }
 		else
 		{ 
-			OutputTemp = (uint16_t)(CHANNEL_OUTPUT_MID - (((float)Sampling_MaxMinData[channel][MIDDAT] - ADTemp) * ((((float)CHANNEL_OUTPUT_MID - CHANNEL_OUTPUT_MIN))/(Sampling_MaxMinData[channel][MIDDAT] - Sampling_MaxMinData[channel][MINDAT]))));
+			outputTemp = (uint16_t)(CHANNEL_OUTPUT_MID - (((float)Sampling_MaxMinData[channel][MIDDAT] - ADTemp) * ((((float)CHANNEL_OUTPUT_MID - CHANNEL_OUTPUT_MIN))/(Sampling_MaxMinData[channel][MIDDAT] - Sampling_MaxMinData[channel][MINDAT]))));
 
         }
 		
 		//查表换算前，检查数据范围防止越界(查表范围不能超过512)
-		if(OutputTemp > (CHANNEL_OUTPUT_MAX)) 
+		if(outputTemp > (CHANNEL_OUTPUT_MAX)) 
 		{
-			OutputTemp = (CHANNEL_OUTPUT_MAX) ; 
+			outputTemp = (CHANNEL_OUTPUT_MAX) ; 
 		}
 		
-		if(OutputTemp < (CHANNEL_OUTPUT_MIN)) 
+		if(outputTemp < (CHANNEL_OUTPUT_MIN)) 
 		{
-			OutputTemp = (CHANNEL_OUTPUT_MIN) ;
+			outputTemp = (CHANNEL_OUTPUT_MIN) ;
 		}
 	}
 	else
 	{
 
 	}
-	return OutputTemp;
+	return outputTemp;
 }
 
 
-void HighThrottleCheck(void)
+void Check_HighThrottle(void)
 {
     static uint16_t timeCount = 0;
     uint16_t Throttle_Value = 0;
@@ -108,13 +108,13 @@ void HighThrottleCheck(void)
         Throttle_Value = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE);
 #endif
     if(Throttle_Value<HIGH_THROTTLE_THRESHOLD)        
-        HighThrottle_flg = 0;
+        highThrottleFlg = 0;
     }
 }
 
-uint8_t Get_HighThrottle_flg(void)
+uint8_t Get_highThrottleFlg(void)
 {
-	return HighThrottle_flg;
+	return highThrottleFlg;
 }
 
 
@@ -163,17 +163,17 @@ void GimbalCalibrateProcess(void)
 	static uint8_t MidValueGetSta = 0;
 
 	//status = GetSetupKeyClickTime();
-	switch(calibrate_status)
+	switch(calibrationStatus)
 	{
 		case 1:
         {            //获取中值
-			calibration_mode = 1;   //进入校准模式
-			//Led_Twinkle(2);
+			calibrationMode = 1;   //进入校准模式
+			//RGB_Twinkle(2);
             xEventGroupSetBits(buzzerEventHandle,SETUP_MID_RING);
-			Sampling_MaxMinData[ELEVATOR][MIDDAT]  = getAdcValue(ELEVATOR);
-			Sampling_MaxMinData[AILERON][MIDDAT]   = getAdcValue(AILERON);
-			Sampling_MaxMinData[RUDDER][MIDDAT]    = getAdcValue(RUDDER);
-			Sampling_MaxMinData[THROTTLE][MIDDAT]  = getAdcValue(THROTTLE);
+			Sampling_MaxMinData[ELEVATOR][MIDDAT]  = Get_AdcValue(ELEVATOR);
+			Sampling_MaxMinData[AILERON][MIDDAT]   = Get_AdcValue(AILERON);
+			Sampling_MaxMinData[RUDDER][MIDDAT]    = Get_AdcValue(RUDDER);
+			Sampling_MaxMinData[THROTTLE][MIDDAT]  = Get_AdcValue(THROTTLE);
         
 			break;
         }
@@ -193,41 +193,42 @@ void GimbalCalibrateProcess(void)
 				Sampling_MaxMinData[AILERON][MINDAT] = Sampling_MaxMinData[AILERON][MIDDAT];
 				MidValueGetSta = 0x01;          //设置已经保存标志位，防止重复保存读写Flash 容易损坏flash
 			}
-		//	Led_Twinkle(2);
+		//	RGB_Twinkle(2);
             xEventGroupSetBits(buzzerEventHandle,SETUP_MINMAX_RING);  
-			if(getAdcValue(THROTTLE) > Sampling_MaxMinData[THROTTLE][MAXDAT])    
-				Sampling_MaxMinData[THROTTLE][MAXDAT] = getAdcValue(THROTTLE);
-			if(getAdcValue(THROTTLE) < Sampling_MaxMinData[THROTTLE][MINDAT])    
-				Sampling_MaxMinData[THROTTLE][MINDAT] = getAdcValue(THROTTLE);
+			if(Get_AdcValue(THROTTLE) > Sampling_MaxMinData[THROTTLE][MAXDAT])    
+				Sampling_MaxMinData[THROTTLE][MAXDAT] = Get_AdcValue(THROTTLE);
+			if(Get_AdcValue(THROTTLE) < Sampling_MaxMinData[THROTTLE][MINDAT])    
+				Sampling_MaxMinData[THROTTLE][MINDAT] = Get_AdcValue(THROTTLE);
 
-			if(getAdcValue(RUDDER) > Sampling_MaxMinData[RUDDER][MAXDAT])    
-				Sampling_MaxMinData[RUDDER][MAXDAT] = getAdcValue(RUDDER);
-			if(getAdcValue(RUDDER) < Sampling_MaxMinData[RUDDER][MINDAT])    
-				Sampling_MaxMinData[RUDDER][MINDAT] = getAdcValue(RUDDER);
+			if(Get_AdcValue(RUDDER) > Sampling_MaxMinData[RUDDER][MAXDAT])    
+				Sampling_MaxMinData[RUDDER][MAXDAT] = Get_AdcValue(RUDDER);
+			if(Get_AdcValue(RUDDER) < Sampling_MaxMinData[RUDDER][MINDAT])    
+				Sampling_MaxMinData[RUDDER][MINDAT] = Get_AdcValue(RUDDER);
 
-			if(getAdcValue(ELEVATOR) > Sampling_MaxMinData[ELEVATOR][MAXDAT])    
-				Sampling_MaxMinData[ELEVATOR][MAXDAT] = getAdcValue(ELEVATOR);
-			if(getAdcValue(ELEVATOR) < Sampling_MaxMinData[ELEVATOR][MINDAT])    
-				Sampling_MaxMinData[ELEVATOR][MINDAT] = getAdcValue(ELEVATOR);
+			if(Get_AdcValue(ELEVATOR) > Sampling_MaxMinData[ELEVATOR][MAXDAT])    
+				Sampling_MaxMinData[ELEVATOR][MAXDAT] = Get_AdcValue(ELEVATOR);
+			if(Get_AdcValue(ELEVATOR) < Sampling_MaxMinData[ELEVATOR][MINDAT])    
+				Sampling_MaxMinData[ELEVATOR][MINDAT] = Get_AdcValue(ELEVATOR);
 
-			if(getAdcValue(AILERON) > Sampling_MaxMinData[AILERON][MAXDAT])    
-				Sampling_MaxMinData[AILERON][MAXDAT] = getAdcValue(AILERON);
-			if(getAdcValue(AILERON) < Sampling_MaxMinData[AILERON][MINDAT])    
-				Sampling_MaxMinData[AILERON][MINDAT] = getAdcValue(AILERON); 
+			if(Get_AdcValue(AILERON) > Sampling_MaxMinData[AILERON][MAXDAT])    
+				Sampling_MaxMinData[AILERON][MAXDAT] = Get_AdcValue(AILERON);
+			if(Get_AdcValue(AILERON) < Sampling_MaxMinData[AILERON][MINDAT])    
+				Sampling_MaxMinData[AILERON][MINDAT] = Get_AdcValue(AILERON); 
 			break; 
         }            
 		case 3:
         {
             //保存边界值并退出校准模式
             xEventGroupSetBits(buzzerEventHandle,SETUP_END_RING);
+            xEventGroupSetBits(gimbalEventHandle,GIMBAL_CALIBRATE_END);
             SaveCalibrationValueToFlash();	
-            calibrate_status = 0;
+            calibrationStatus = 0;
 			break;                  
         }  
 		default:
         {            
 			 MidValueGetSta = 0x00;
-			 calibration_mode = 0;
+			 calibrationMode = 0;
 			 break;
         }
 	}
@@ -255,15 +256,15 @@ void gimbalTask(void* param)
 		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);//反的
 
 		R_event= xEventGroupWaitBits( gimbalEventHandle,
-		                              GIMBAL_CALIBRATE,
+		                              GIMBAL_CALIBRATE_IN,
 		                              pdTRUE,
-	                                  pdTRUE,
+	                                  pdFALSE,
 		                              0);
-		if((R_event & GIMBAL_CALIBRATE) == GIMBAL_CALIBRATE)
+		if((R_event & GIMBAL_CALIBRATE_IN) == GIMBAL_CALIBRATE_IN)
 		{
-			calibrate_status +=1;
+			calibrationStatus +=1;
 		}
-        if(calibrate_status > 0 && calibrate_status <= 3)
+        if(calibrationStatus > 0 && calibrationStatus <= 3)
         {
             GimbalCalibrateProcess();
         }

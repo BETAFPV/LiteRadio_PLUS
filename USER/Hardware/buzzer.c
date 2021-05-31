@@ -22,11 +22,11 @@ void buzzerTask(void* param)
 		                              0);
 		if((R_event & POWER_ON_RING) == POWER_ON_RING)
 		{         
-            Buzzer_bee_up();
+            Buzzer_Bee_Up();
 		}
         if((R_event & POWER_OFF_RING) == POWER_OFF_RING)
         {				
-            Buzzer_bee_down();
+            Buzzer_Bee_Down();
         } 
         if((R_event & SETUP_MID_RING) == SETUP_MID_RING)
         {
@@ -46,47 +46,46 @@ void buzzerTask(void* param)
 
 void Buzzer_bee_time(uint8_t tone,uint32_t buzzer_time)
 {
-    buzzer_start();
+    Buzzer_Start();
     Buzzer_On(tone);
     osDelay(buzzer_time);
-    buzzer_stop();
+    Buzzer_Stop();
 }
 
-void Buzzer_bee_up()
+void Buzzer_Bee_Up()
 {
-    buzzer_start();
+    Buzzer_Start();
     Buzzer_On(Do);
     osDelay(400);
     Buzzer_On(Re);
     osDelay(400);
     Buzzer_On(Mi);
     osDelay(400);
-    buzzer_stop();
+    Buzzer_Stop();
 }
 
-void Buzzer_bee_down()
+void Buzzer_Bee_Down()
 {
-    buzzer_start();
+    Buzzer_Start();
     Buzzer_On(Mi);
     osDelay(400);
     Buzzer_On(Re);
     osDelay(400);
     Buzzer_On(Do);
     osDelay(400);
-    buzzer_stop();
+    Buzzer_Stop();
 }
 
 void Buzzer_Bee(uint8_t tone,uint8_t buzzer_count)
 {
     while(buzzer_curr_count < buzzer_count)
     {
-        buzzer_start();
+        Buzzer_Start();
         Buzzer_On(tone);
         osDelay(100);
-        buzzer_stop();
+        Buzzer_Stop();
         osDelay(100);
         buzzer_curr_count++;
-     
     }
     osDelay(500);
     buzzer_curr_count = 0;
@@ -127,12 +126,12 @@ void Buzzer_On(uint8_t tone)
 	}
 }
 
-void buzzer_start()
+void Buzzer_Start()
 {
 	HAL_TIM_PWM_Start(&htim3,BUZZER_PWM_CH);
 }
 
-void buzzer_stop()
+void Buzzer_Stop()
 {
 	HAL_TIM_PWM_Stop(&htim3,BUZZER_PWM_CH);
 }

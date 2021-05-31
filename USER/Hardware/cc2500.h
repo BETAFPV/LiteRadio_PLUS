@@ -140,7 +140,7 @@ enum TXRX_State {
 };
 
 
-uint8_t CC2500_Init(uint8_t versionSelect_flg);
+uint8_t CC2500_Init(uint8_t versionSelectFlg);
 
 
 void CC2500_WriteData(uint8_t *dpbuffer, uint16_t len);

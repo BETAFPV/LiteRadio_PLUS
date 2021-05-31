@@ -39,7 +39,7 @@ const unsigned char crc8tab[256] = {
 
 
 static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
-uint16_t ChannelDataBuff[4];
+uint16_t channelDataBuff[4];
 void Get_ChipID(union ChipID *chipID)
 {
     chipID->ChipUniqueID[0] = (uint32_t)(READ_REG(*((uint32_t *)UID_BASE)));
@@ -96,15 +96,15 @@ void GetSbusPackage(uint8_t* ChannelToSbus)
 #endif 	
 
 #ifdef FRSKY
-	ChannelDataBuff[0] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)) :Get_GimbalValue(ELEVATOR),993,2000,165,1811);
-	ChannelDataBuff[1] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE),993,2000,165,1811);
-	ChannelDataBuff[2] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))   :Get_GimbalValue(RUDDER)  ,993,2000,165,1811);
-	ChannelDataBuff[3] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON))  :Get_GimbalValue(AILERON) ,993,2000,165,1811);
+	channelDataBuff[0] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)) :Get_GimbalValue(ELEVATOR),993,2000,165,1811);
+	channelDataBuff[1] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE),993,2000,165,1811);
+	channelDataBuff[2] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))   :Get_GimbalValue(RUDDER)  ,993,2000,165,1811);
+	channelDataBuff[3] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON))  :Get_GimbalValue(AILERON) ,993,2000,165,1811);
 #else
-	ChannelDataBuff[0] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)) :Get_GimbalValue(ELEVATOR),1,1024,178,1811);
-	ChannelDataBuff[1] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE),1,1024,178,1811);
-	ChannelDataBuff[2] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))   :Get_GimbalValue(RUDDER)  ,1,1024,178,1811);
-	ChannelDataBuff[3] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON))  :Get_GimbalValue(AILERON) ,1,1024,178,1811);
+	channelDataBuff[0] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)) :Get_GimbalValue(ELEVATOR),1,1024,178,1811);
+	channelDataBuff[1] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE),1,1024,178,1811);
+	channelDataBuff[2] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))   :Get_GimbalValue(RUDDER)  ,1,1024,178,1811);
+	channelDataBuff[3] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON))  :Get_GimbalValue(AILERON) ,1,1024,178,1811);
 #endif
 	switch_A_Temp = map(Get_SwitchValue(SWA),993,2000,163,1811);
 	switch_B_Temp = map(Get_SwitchValue(SWB),993,2000,163,1811);
@@ -112,12 +112,12 @@ void GetSbusPackage(uint8_t* ChannelToSbus)
 	switch_D_Temp = map(Get_SwitchValue(SWD),993,2000,163,1811);
 	
 	ChannelToSbus[0] = 0x0F;  
-	ChannelToSbus[1] = (uint8_t) (ChannelDataBuff[AILERON]   & 0x07FF);
-    ChannelToSbus[2] = (uint8_t) ((ChannelDataBuff[AILERON]  & 0x07FF)>>8  | (ChannelDataBuff[ELEVATOR] & 0x07FF)<<3);
-    ChannelToSbus[3] = (uint8_t) ((ChannelDataBuff[ELEVATOR] & 0x07FF)>>5  | (ChannelDataBuff[THROTTLE] & 0x07FF)<<6);
-    ChannelToSbus[4] = (uint8_t) ((ChannelDataBuff[THROTTLE] & 0x07FF)>>2);
-    ChannelToSbus[5] = (uint8_t) ((ChannelDataBuff[THROTTLE] & 0x07FF)>>10 | (ChannelDataBuff[RUDDER]   & 0x07FF)<<1);
-    ChannelToSbus[6] = (uint8_t) ((ChannelDataBuff[RUDDER]   & 0x07FF)>>7  | (switch_A_Temp & 0x07FF)<<4);
+	ChannelToSbus[1] = (uint8_t) (channelDataBuff[AILERON]   & 0x07FF);
+    ChannelToSbus[2] = (uint8_t) ((channelDataBuff[AILERON]  & 0x07FF)>>8  | (channelDataBuff[ELEVATOR] & 0x07FF)<<3);
+    ChannelToSbus[3] = (uint8_t) ((channelDataBuff[ELEVATOR] & 0x07FF)>>5  | (channelDataBuff[THROTTLE] & 0x07FF)<<6);
+    ChannelToSbus[4] = (uint8_t) ((channelDataBuff[THROTTLE] & 0x07FF)>>2);
+    ChannelToSbus[5] = (uint8_t) ((channelDataBuff[THROTTLE] & 0x07FF)>>10 | (channelDataBuff[RUDDER]   & 0x07FF)<<1);
+    ChannelToSbus[6] = (uint8_t) ((channelDataBuff[RUDDER]   & 0x07FF)>>7  | (switch_A_Temp & 0x07FF)<<4);
     ChannelToSbus[7] = (uint8_t) ((switch_A_Temp & 0x07FF)>>4 | (switch_B_Temp & 0x07FF)<<7);
     ChannelToSbus[8] = (uint8_t) ((switch_B_Temp & 0x07FF)>>1);
     ChannelToSbus[9] = (uint8_t) ((switch_B_Temp & 0x07FF)>>9 | (switch_C_Temp & 0x07FF)<<2);

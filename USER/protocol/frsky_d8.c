@@ -287,7 +287,7 @@ uint16_t ReadFRSKYD8(uint16_t* controlData)
 				CC2500_Strobe(CC2500_SFTX);
 				CC2500_WriteData(D8_SendPacket, FRSKYD8_PACKET_LEN);
 				++FRSKYD8_BindCounts ; 
-				Led_On_Off(FRSKYD8_BindCounts & 0x10);
+				RGB_Toggle(FRSKYD8_BindCounts & 0x10);
 				
 			}  
 			else
@@ -298,7 +298,7 @@ uint16_t ReadFRSKYD8(uint16_t* controlData)
 				CC2500_SetPower(RF_POWER);           //设置发送功率
 				FRSKYD8_InitDeviceAddr(D8_Bind_flg) ;	
 				FRSKYD8Phase = FRSKYD8_DATA ; 	
-                Rgb_Set(BLUE,255);
+                RGB_Set(BLUE,255);
 			}
 			return 8830 ;
 		// Frsky D16 data
@@ -323,7 +323,7 @@ void D8_SetBind(void)
 }
 
 
-void initFRSKYD8(uint8_t protocol_Index)
+void initFRSKYD8(uint8_t protocolIndex)
 {
     uint8_t CC2500_Error_flg = 0;
     
@@ -341,7 +341,7 @@ void initFRSKYD8(uint8_t protocol_Index)
 	}
 	FRSKYD8_CountsRst = (FRSKYD8_ChannelShip - FRSKYD8_ctr) >> 2 ; 
 	
-	CC2500_Error_flg = CC2500_Init(protocol_Index); 
+	CC2500_Error_flg = CC2500_Init(protocolIndex); 
 	if(CC2500_Error_flg == 1)
 	{
 		//Initialization failed

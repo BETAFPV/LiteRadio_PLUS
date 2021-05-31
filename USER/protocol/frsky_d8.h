@@ -12,7 +12,7 @@
 //#define Output_Mid 1500
 //#define Output_Min 988
 
-//extern uint8_t versionSelect_flg;
+//extern uint8_t versionSelectFlg;
 
 //extern bool CommunicationError_flg ;
 
@@ -22,12 +22,12 @@
 //#define TRANSMITTER_CHANNEL       8
 
 //extern bool CommunicationError_flg ; 
-//extern bool HighThrottle_flg ; 
+//extern bool highThrottleFlg ; 
 //extern bool Bind_flg ; 
 //extern uint16_t TransmitterID ; 
 
 extern const uint8_t FRSKYD8_CH_Code[8];
-void initFRSKYD8(uint8_t protocol_Index);
+void initFRSKYD8(uint8_t protocolIndex);
 uint16_t ReadFRSKYD8(uint16_t* controlData);
 void D8_SetBind(void) ; 
 void FRSKYD8_build_Data_packet(uint16_t* controlData);

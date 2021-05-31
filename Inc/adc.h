@@ -44,7 +44,7 @@ void MX_ADC1_Init(void);
 /* USER CODE BEGIN Prototypes */
 
 void Adc_Start(void);
-uint16_t getAdcValue(uint8_t axis);
+uint16_t Get_AdcValue(uint8_t axis);
 
 /* USER CODE END Prototypes */
 

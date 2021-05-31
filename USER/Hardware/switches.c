@@ -1,6 +1,8 @@
 #include "switches.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "gpio.h"
+
 QueueHandle_t switchesValQueue = NULL;
 
 uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
@@ -184,10 +186,12 @@ void switchesTask(void* param)
 	while(1)
 	{
 		vTaskDelay(15);
+        
 		switchesBuff[SWA] =  Get_SwitchValue(SWA);
 		switchesBuff[SWB] =  Get_SwitchValue(SWB);
 		switchesBuff[SWC] =  Get_SwitchValue(SWC);
 		switchesBuff[SWD] =  Get_SwitchValue(SWD);
+        
 		xQueueSend(switchesValQueue,switchesBuff,0);
 	}
 }

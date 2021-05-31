@@ -176,7 +176,7 @@ void Adc_Start()
 	}
 }
 
-uint16_t getAdcValue(uint8_t axis)
+uint16_t Get_AdcValue(uint8_t axis)
 {
 	uint32_t sum=0;
 	for(uint8_t i=0;i<ADC_SAMPLE_NUM;i++)
