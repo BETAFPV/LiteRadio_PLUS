@@ -50,9 +50,9 @@ uint16_t Mixes_GimbalOffset(int16_t offset, uint16_t gimbalValCurr)
 {
     if(offset < 0)
     {
-        uint16_t offset_abs;
-        offset_abs = (uint16_t) - offset;
-        gimbalValCurr -= offset_abs;
+        uint16_t offsetAbs;
+        offsetAbs = (uint16_t) - offset;
+        gimbalValCurr -= offsetAbs;
     }
     else
     {
@@ -123,6 +123,7 @@ uint16_t Mixes_SwitchInverse(uint8_t inverse, uint16_t gimbalValCurr)
 //混控任务
 void mixesTask(void* param)
 {
+    uint8_t mixIndex;
     mixData_t mixData[8];
     uint16_t reportData[8];
     uint16_t gimbalVaBuff[4];
@@ -196,12 +197,12 @@ void mixesTask(void* param)
 		vTaskDelay(9);  
         xQueueReceive(gimbalValQueue,gimbalVaBuff,0);
         xQueueReceive(switchesValQueue,switchesValBuff,0);
-        uint8_t mixIndex = 0;
         
-                  	//RUDDER   = 0 ,       //yaw
-            //THROTTLE = 1 ,       //throttle
-            //AILERON  = 2 ,       //roll
-            //ELEVATOR = 3 ,       //pitch
+        
+        //RUDDER   = 0 ,       //yaw
+        //THROTTLE = 1 ,       //throttle
+        //AILERON  = 2 ,       //roll
+        //ELEVATOR = 3 ,       //pitch
         reportData[0] = gimbalVaBuff[0];
 		reportData[1] = gimbalVaBuff[1];
 		reportData[2] = gimbalVaBuff[2];
@@ -211,7 +212,7 @@ void mixesTask(void* param)
 		reportData[5] = switchesValBuff[1];
 		reportData[6] = switchesValBuff[2];
 		reportData[7] = switchesValBuff[3];   
-        
+
         for(mixIndex = 0;mixIndex < 8;mixIndex++)
         {
             mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];

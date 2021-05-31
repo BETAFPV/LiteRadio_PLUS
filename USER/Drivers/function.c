@@ -1,4 +1,5 @@
 #include "function.h"
+
 #define SBUS_VALUE  993
 
 const unsigned char crc8tab[256] = {

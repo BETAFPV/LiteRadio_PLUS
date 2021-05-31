@@ -49,7 +49,7 @@ void statusTask(void* param)
 		                                   0);
 		if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
 		{
-            RGB_Set(BLUE,255);
+            RGB_Set(BLUE,BRIGHTNESS_MAX);
 			RCstatus = lastRCstatus;
 		}
         if(RCstatus == RADIO_DATA)

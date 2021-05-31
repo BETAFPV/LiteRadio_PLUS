@@ -6,6 +6,11 @@
 
 extern EventGroupHandle_t KeyEventHandle;
 
+#define LONG_PRESS_COUNT 	500	/*判断为长按时间（ms）*/
+
+#define PRESSED		0
+#define RELEASED	1
+
 //按键状态
 #define BIND_SHORT_PRESS	    (0x01 << 0)	
 #define BIND_LONG_PRESS	        (0x01 << 1)	
@@ -19,6 +24,6 @@ extern EventGroupHandle_t KeyEventHandle;
 #define POWER_KEY_STATUS()		HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port,KEY_POWER_Pin)
 
 void keyTask(void* param);
-uint8_t getKeyState(void);
+
 #endif
  

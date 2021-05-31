@@ -443,7 +443,7 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 				//FRSKYD16_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(RF_POWER);
 				FRSKYD16Phase = FRSKYD16_DATA ; 
-                RGB_Set(BLUE,255);
+                RGB_Set(BLUE,BRIGHTNESS_MAX);
 			}
 		break;
 		// Frsky D16 data

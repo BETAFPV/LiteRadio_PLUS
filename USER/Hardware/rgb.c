@@ -87,11 +87,11 @@ void RGB_Toggle(uint8_t status)
 {
 	if(status == 0)
 	{
-		RGB_Set(BLACK,255);
+		RGB_Set(BLACK,BRIGHTNESS_MAX);
 	}
 	else
 	{
-        RGB_Set(RED,255);
+        RGB_Set(RED,BRIGHTNESS_MAX);
 	}
 }
 
@@ -101,9 +101,9 @@ void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
     uint8_t i;
     for(i=0; i<num; i++)
     {
-        RGB_Set(BLUE,255);
+        RGB_Set(BLUE,BRIGHTNESS_MAX);
         HAL_Delay(twinkleDelayTime);
-        RGB_Set(BLACK,255);
+        RGB_Set(BLACK,BRIGHTNESS_MAX);
         HAL_Delay(twinkleDelayTime);
     }
 }
@@ -113,26 +113,26 @@ void RGB_Twinkle(uint8_t num,uint16_t twinkleDelayTime)
     uint8_t i;
     for(i=0; i<num; i++)
     {
-        RGB_Set(RED,255);
+        RGB_Set(RED,BRIGHTNESS_MAX);
         osDelay(twinkleDelayTime);
-        RGB_Set(BLACK,255);
+        RGB_Set(BLACK,BRIGHTNESS_MAX);
         osDelay(twinkleDelayTime);
     }
 }
 
-void Rgb_Breath_Up(uint8_t colorIndex)
+void RGB_Breath_Up(uint8_t colorIndex)
 {
     rgbBrightness = 0;
-    while(rgbBrightness<255)
+    while(rgbBrightness<BRIGHTNESS_MAX)
     {
         RGB_Set(colorIndex,rgbBrightness);
         rgbBrightness++;
         osDelay(5);
     }
 }
-void Rgb_Breath_Down(uint8_t colorIndex)
+void RGB_Breath_Down(uint8_t colorIndex)
 {
-    rgbBrightness = 255;
+    rgbBrightness = BRIGHTNESS_MAX;
     while(rgbBrightness>0)
     {
         RGB_Set(colorIndex,rgbBrightness);
@@ -140,7 +140,7 @@ void Rgb_Breath_Down(uint8_t colorIndex)
         osDelay(5);
     }
 }
-void Rgb_Breath()
+void RGB_Breath()
 {
     if(rgbBreathStatus == BREATH_DOWN)
     {
@@ -155,7 +155,7 @@ void Rgb_Breath()
     }
     if(rgbBreathStatus == BREATH_UP)
     {
-        if(rgbBrightness<255)
+        if(rgbBrightness<BRIGHTNESS_MAX)
         {
             rgbBrightness++;
         }

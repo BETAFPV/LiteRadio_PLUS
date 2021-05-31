@@ -243,24 +243,24 @@ void Gimbal_Init()
 void gimbalTask(void* param)
 {
 
-	EventBits_t R_event = pdPASS;
-    static uint16_t gimbal_buff[4] = {0};
-	gimbalValQueue = xQueueCreate(20,sizeof(gimbal_buff));
+	EventBits_t gimbalEvent;
+    static uint16_t gimbalBuff[4] = {0};
+	gimbalValQueue = xQueueCreate(20,sizeof(gimbalBuff));
 	while(1)
 	{
         vTaskDelay(9);
 
-        gimbal_buff[THROTTLE] = Get_GimbalValue(THROTTLE);
-		gimbal_buff[AILERON] =  Get_GimbalValue(AILERON);
-        gimbal_buff[RUDDER] =   Get_GimbalValue(RUDDER);//反的
-		gimbal_buff[ELEVATOR] = Get_GimbalValue(ELEVATOR);//反的
+        gimbalBuff[THROTTLE] = Get_GimbalValue(THROTTLE);
+		gimbalBuff[AILERON] = Get_GimbalValue(AILERON);
+        gimbalBuff[RUDDER] = Get_GimbalValue(RUDDER);//反的
+		gimbalBuff[ELEVATOR] = Get_GimbalValue(ELEVATOR);//反的
 
-		R_event= xEventGroupWaitBits( gimbalEventHandle,
-		                              GIMBAL_CALIBRATE_IN,
-		                              pdTRUE,
-	                                  pdFALSE,
-		                              0);
-		if((R_event & GIMBAL_CALIBRATE_IN) == GIMBAL_CALIBRATE_IN)
+		gimbalEvent= xEventGroupWaitBits( gimbalEventHandle,
+		                                  GIMBAL_CALIBRATE_IN,
+		                                  pdTRUE,
+	                                      pdFALSE,
+		                                  0);
+		if((gimbalEvent & GIMBAL_CALIBRATE_IN) == GIMBAL_CALIBRATE_IN)
 		{
 			calibrationStatus +=1;
 		}
@@ -268,7 +268,7 @@ void gimbalTask(void* param)
         {
             GimbalCalibrateProcess();
         }
-		xQueueSend(gimbalValQueue,gimbal_buff,0);
+		xQueueSend(gimbalValQueue,gimbalBuff,0);
 
 	}
 }

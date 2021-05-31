@@ -22,19 +22,19 @@ void powerswitchTask(void* param)
 		{
             xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
             POWER_PIN_HOLD_UP();
-            Rgb_Breath_Up(BLUE);
+            RGB_Breath_Up(BLUE);
             
             taskENTER_CRITICAL();	/*进入临界*/
             
             vTaskSuspend(powerTaskHandle);
 
-            taskEXIT_CRITICAL();
+            taskEXIT_CRITICAL();   /*退出临界*/
 		}
 		if((powerEvent & POWER_OFF) == POWER_OFF)
 		{
-            RGB_Set(BLACK,255);
+            RGB_Set(BLACK,BRIGHTNESS_MAX);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
-            Rgb_Breath_Down(RED);
+            RGB_Breath_Down(RED);
             POWER_PIN_HOLD_DOWN();
 		}        
 	}

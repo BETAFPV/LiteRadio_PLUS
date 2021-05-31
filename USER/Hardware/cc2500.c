@@ -125,20 +125,21 @@ static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
 	
 };
 
-uint8_t CC2500_Init(uint8_t versionSelect_flg)
+uint8_t CC2500_Init(uint8_t versionSelectFlg)
 {
     uint8_t (*cc2500_config)[2];
     uint8_t RF_POWER = 0xff;
+    uint8_t CC2500RestError_flag = 0;
     //使能PA
 	HAL_GPIO_WritePin(GPIOB,PA_enable_Pin,GPIO_PIN_SET);
    
-	uint8_t CC2500RestError_flag = 0;
+
 	if(!CC2500_Reset())
 	{
 		CC2500RestError_flag = 1;	
 	}
 	HAL_Delay(1);
-	switch(versionSelect_flg)
+	switch(versionSelectFlg)
 	{
 		case 0: cc2500_config = cc2500_conf_FCC;
 				break;

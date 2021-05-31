@@ -18,7 +18,7 @@ uint16_t map(float Oxy, float Omin, float Omax, float Nmin, float Nmax);
 //定义各通道名称(最大支持8通道)
 typedef enum
 {
-//  	RUDDER   	= 0 , 
+//  RUDDER   	= 0 , 
 //	THROTTLE 	= 1 , 
 //	ELEVATOR 	= 2 , 
 //	AILERON  	= 3 , 
