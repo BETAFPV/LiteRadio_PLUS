@@ -1,13 +1,13 @@
 #include "rgb.h"
 #include "math.h"
 #include "tim.h"
-uint8_t color[3] = {0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
-uint16_t rgbBuffer[25];
-uint16_t rgbBrightness;
-uint8_t rgb_breath_status;
-void color_write(uint8_t colorSet,uint8_t brightness)
+static uint8_t color[3] = {0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
+static uint16_t rgbBuff[25];
+static uint16_t rgbBrightness;
+static uint8_t rgbBreathStatus;
+void Color_Set(uint8_t colorIndex,uint8_t brightness)
 {
-    switch (colorSet)
+    switch (colorIndex)
     {
         case RED:
         {
@@ -51,15 +51,15 @@ void color_write(uint8_t colorSet,uint8_t brightness)
     }
 }
 
-void Rgb_Set(uint8_t colorSet,uint8_t brightness)
+void RGB_Set(uint8_t colorIndex,uint8_t brightness)
 {
     uint8_t i;
-    color_write(colorSet,brightness);
+    Color_Set(colorIndex,brightness);
     uint16_t memaddr = 0;
     /*  green data */
     for(i = 0; i < 8; i++)
     {
-        rgbBuffer[memaddr] = (color[0]&0x80)?TIMING_ONE:TIMING_ZERO;
+        rgbBuff[memaddr] = (color[0]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[0]= color[0]<<1;
         memaddr++;
     }
@@ -67,7 +67,7 @@ void Rgb_Set(uint8_t colorSet,uint8_t brightness)
     /*  red data */
     for(i = 0; i < 8; i++)
     {   
-        rgbBuffer[memaddr] = (color[1]&0x80)?TIMING_ONE:TIMING_ZERO;
+        rgbBuff[memaddr] = (color[1]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[1]= color[1]<<1;
         memaddr++;
     }
@@ -75,75 +75,74 @@ void Rgb_Set(uint8_t colorSet,uint8_t brightness)
     /*  blue data */
     for(i = 0; i < 8; i++)
     {
-        rgbBuffer[memaddr] = (color[2]&0x80)?TIMING_ONE:TIMING_ZERO;
+        rgbBuff[memaddr] = (color[2]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[2]= color[2]<<1;
         memaddr++;
     }
-    rgbBuffer[24] = 0;
-    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_4,(uint32_t*)rgbBuffer,25);
+    rgbBuff[24] = 0;
+    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_4,(uint32_t*)rgbBuff,25);
 }
 
-void Led_On_Off(uint8_t status)
+void RGB_Toggle(uint8_t status)
 {
-	if(0 == status)
+	if(status == 0)
 	{
-		Rgb_Set(BLACK,255);
+		RGB_Set(BLACK,255);
 	}
 	else
 	{
-        Rgb_Set(RED,255);
+        RGB_Set(RED,255);
 	}
 }
 
-
-void Led_Twinkle_Init(uint8_t num)
+//任务未开始调度时需要使用HAL_Delay
+void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
 {
     uint8_t i;
     for(i=0; i<num; i++)
     {
-        Rgb_Set(BLUE,255);
-        HAL_Delay(400);
-        Rgb_Set(BLACK,255);
-        HAL_Delay(400);
+        RGB_Set(BLUE,255);
+        HAL_Delay(twinkleDelayTime);
+        RGB_Set(BLACK,255);
+        HAL_Delay(twinkleDelayTime);
     }
 }
 
-
-void Led_Twinkle(uint8_t num)
+void RGB_Twinkle(uint8_t num,uint16_t twinkleDelayTime)
 {
     uint8_t i;
     for(i=0; i<num; i++)
     {
-        Rgb_Set(RED,255);
-        osDelay(200);
-        Rgb_Set(BLACK,255);
-        osDelay(200);
+        RGB_Set(RED,255);
+        osDelay(twinkleDelayTime);
+        RGB_Set(BLACK,255);
+        osDelay(twinkleDelayTime);
     }
 }
 
-void Rgb_Breath_Up(uint8_t colorSet)
+void Rgb_Breath_Up(uint8_t colorIndex)
 {
     rgbBrightness = 0;
     while(rgbBrightness<255)
     {
-        Rgb_Set(colorSet,rgbBrightness);
+        RGB_Set(colorIndex,rgbBrightness);
         rgbBrightness++;
         osDelay(5);
     }
 }
-void Rgb_Breath_Down(uint8_t colorSet)
+void Rgb_Breath_Down(uint8_t colorIndex)
 {
     rgbBrightness = 255;
     while(rgbBrightness>0)
     {
-        Rgb_Set(colorSet,rgbBrightness);
+        RGB_Set(colorIndex,rgbBrightness);
         rgbBrightness--;
         osDelay(5);
     }
 }
-void Rgb_breath()
+void Rgb_Breath()
 {
-    if(rgb_breath_status == BREATH_DOWN)
+    if(rgbBreathStatus == BREATH_DOWN)
     {
         if(rgbBrightness>0)
         {
@@ -151,10 +150,10 @@ void Rgb_breath()
         }
         else
         {
-            rgb_breath_status = BREATH_UP;
+            rgbBreathStatus = BREATH_UP;
         }
     }
-    if(rgb_breath_status == BREATH_UP)
+    if(rgbBreathStatus == BREATH_UP)
     {
         if(rgbBrightness<255)
         {
@@ -162,9 +161,9 @@ void Rgb_breath()
         }
         else
         {
-            rgb_breath_status = BREATH_DOWN;
+            rgbBreathStatus = BREATH_DOWN;
         }
     }
-    Rgb_Set(RED,rgbBrightness);
+    RGB_Set(RED,rgbBrightness);
 }
 
