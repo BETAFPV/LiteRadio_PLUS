@@ -1,7 +1,8 @@
 #include "buzzer.h"
 #include "rgb.h"
 uint8_t buzzerCountCurr = 0;
-
+uint16_t onDelayCount = 0;
+uint16_t stopDelayCount = 0;
 EventGroupHandle_t buzzerEventHandle = NULL;
 
 void Buzzer_BeeStay(uint8_t tone,uint32_t stayTime)
@@ -35,20 +36,50 @@ void Buzzer_BeeDown()
     osDelay(400);
     Buzzer_Stop();
 }
-
+void Buzzer_BeeNumInit(uint8_t buzzerCountInit)
+{
+    buzzerCountCurr = buzzerCountInit;
+}
 void Buzzer_BeeNum(uint8_t tone,uint8_t buzzerNum)
 {
-    while(buzzerCountCurr < buzzerNum)
+
+    if(buzzerCountCurr < buzzerNum )
     {
         Buzzer_Start();
         Buzzer_On(tone);
-        osDelay(100);
-        Buzzer_Stop();
-        osDelay(100);
-        buzzerCountCurr++;
+
+        if(onDelayCount < 20)
+        {
+            onDelayCount++;
+        }
+        else
+        {
+            Buzzer_Stop();
+            if(stopDelayCount < 20)
+            {
+                stopDelayCount++;
+            }
+            else
+            {
+                stopDelayCount = 0;
+                onDelayCount = 0;
+                buzzerCountCurr++;
+            }
+        }
+        
     }
-    osDelay(500);
-    buzzerCountCurr = 0;
+    else
+    {
+        if(onDelayCount < 150)
+        {
+            onDelayCount++;
+        }
+        else
+        {
+            onDelayCount = 0;
+            buzzerCountCurr = 0;
+        }
+    }
 }
      
 void Buzzer_On(uint8_t tone)
@@ -110,14 +141,19 @@ void HAL_TIM_SET_AUTORELOAD(uint16_t arr)
 void buzzerTask(void* param)
 {
 	EventBits_t buzzerEvent;
+    uint8_t buzzerStatus = BUZZER_NORMAL;
+    uint8_t lastBuzzerStatus = BUZZER_NORMAL;
 	while(1)
-	{
+	{   
+
+        vTaskDelay(5);        
 		buzzerEvent= xEventGroupWaitBits( buzzerEventHandle,
 		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING,
 		                              pdTRUE,
 	                                  pdFALSE,
 		                              0);
-		if((buzzerEvent & POWER_ON_RING) == POWER_ON_RING)
+		/*POWER RING*/
+        if((buzzerEvent & POWER_ON_RING) == POWER_ON_RING)
 		{         
             Buzzer_BeeUp();
 		}
@@ -125,18 +161,56 @@ void buzzerTask(void* param)
         {				
             Buzzer_BeeDown();
         } 
+        
+        /*SETUP RING*/
         if((buzzerEvent & SETUP_MID_RING) == SETUP_MID_RING)
         {
-            Buzzer_BeeNum(Do,2);
+            buzzerStatus = SETUP_RING_TWO;
+            if(buzzerStatus != lastBuzzerStatus)
+            {
+                Buzzer_BeeNumInit(2);
+            }
         }
         if((buzzerEvent & SETUP_MINMAX_RING) == SETUP_MINMAX_RING)
         {
-            Buzzer_BeeNum(Do,3);
+            buzzerStatus = SETUP_RING_THREE;
         }
         if((buzzerEvent & SETUP_END_RING) == SETUP_END_RING)
         {
-            Buzzer_BeeStay(Do,1000);
+            buzzerStatus = SETUP_RING_BEE;
+
         }
-        vTaskDelay(5);
+        
+        switch(buzzerStatus)
+        {
+            case BUZZER_NORMAL:
+            {             
+                break;
+            }
+            case SETUP_RING_TWO:
+            {
+                Buzzer_BeeNum(Do,2);
+                break;
+            }
+            case SETUP_RING_THREE:
+            {
+                Buzzer_BeeNum(Do,3);
+                break;                
+            }
+            case SETUP_RING_BEE:
+            {
+                Buzzer_Stop();
+                osDelay(300);
+                Buzzer_BeeStay(Do,800);
+                buzzerStatus = BUZZER_NORMAL;        
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        lastBuzzerStatus = buzzerStatus;
+
 	}
 }

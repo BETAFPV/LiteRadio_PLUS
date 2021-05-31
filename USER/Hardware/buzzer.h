@@ -19,10 +19,12 @@ extern EventGroupHandle_t buzzerEventHandle;
 
 typedef enum
 {
+    BUZZER_NORMAL = 0,
     power_longpress_ring = 1,
-    setup_ring_two,
-    
-}buzzer_status;
+    SETUP_RING_TWO,
+    SETUP_RING_THREE,
+    SETUP_RING_BEE,
+}buzzerStatus_e;
 
 typedef enum
 {
@@ -43,6 +45,7 @@ void Buzzer_On(uint8_t tone);
 void Buzzer_BeeStay(uint8_t tone,uint32_t buzzer_time);
 void Buzzer_BeeUp(void);
 void Buzzer_BeeDown(void);
-void Buzzer_BeeNum(uint8_t tone,uint8_t buzzer_count);
+void Buzzer_BeeNumInit(uint8_t buzzerNumInit);
+void Buzzer_BeeNum(uint8_t tone,uint8_t buzzerNum);
 void buzzerTask(void* param);  
 #endif
