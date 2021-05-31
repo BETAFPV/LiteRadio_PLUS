@@ -78,6 +78,18 @@ void Error_Handler(void);
 #define externel_RF_on_GPIO_Port GPIOA
 #define internel_RF_on_Pin GPIO_PIN_3
 #define internel_RF_on_GPIO_Port GPIOB
+#define SWB_H_Pin GPIO_PIN_4
+#define SWB_H_GPIO_Port GPIOB
+#define SWB_L_Pin GPIO_PIN_5
+#define SWB_L_GPIO_Port GPIOB
+#define SWA_Pin GPIO_PIN_6
+#define SWA_GPIO_Port GPIOB
+#define SWC_H_Pin GPIO_PIN_7
+#define SWC_H_GPIO_Port GPIOB
+#define SWD_Pin GPIO_PIN_8
+#define SWD_GPIO_Port GPIOB
+#define SWC_L_Pin GPIO_PIN_9
+#define SWC_L_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define THROTTLE_ENABLED				1					// 1 for enabled, 0 for disabled
 #define RUDDER_ENABLED					1					// 1 for enabled, 0 for disabled
