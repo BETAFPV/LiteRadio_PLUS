@@ -41,7 +41,13 @@ void joystickTask(void *param)
         //滑块2
 		reportData[7] = switchValBuff[3];
 
-        
-        USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &reportData, 8*sizeof(uint16_t));
+        Joystick_USBSendReport(reportData);
+
 	}
 }
+
+void Joystick_USBSendReport(uint16_t* usbReportData)
+{
+    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &usbReportData, 8*sizeof(uint16_t));
+}
+

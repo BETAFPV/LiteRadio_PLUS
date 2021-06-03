@@ -13,5 +13,6 @@
 #define AXIS_NUM								((THROTTLE_ENABLED) + (JOYSTICK_AXIS_NUM) \
 																+ (SECONDARY_AXIS_NUM) + (RUDDER_ENABLED))
 void joystickTask(void *param);
+void Joystick_USBSendReport(uint16_t* reportData);
 extern TaskHandle_t joystickTaskHandle;
 #endif
