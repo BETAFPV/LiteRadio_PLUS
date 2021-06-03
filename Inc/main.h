@@ -62,10 +62,14 @@ void Error_Handler(void);
 #define KEY_POWER_GPIO_Port GPIOC
 #define POWER_EN_Pin GPIO_PIN_15
 #define POWER_EN_GPIO_Port GPIOC
+#define CHRG_IN_Pin GPIO_PIN_0
+#define CHRG_IN_GPIO_Port GPIOB
 #define KEY_SETUP_Pin GPIO_PIN_1
 #define KEY_SETUP_GPIO_Port GPIOB
-#define PA_EN_Pin GPIO_PIN_10
-#define PA_EN_GPIO_Port GPIOB
+#define RF_CE_Pin GPIO_PIN_2
+#define RF_CE_GPIO_Port GPIOB
+#define RF_IRQ_Pin GPIO_PIN_10
+#define RF_IRQ_GPIO_Port GPIOB
 #define RGB_OUT_Pin GPIO_PIN_11
 #define RGB_OUT_GPIO_Port GPIOB
 #define SPI2_NSS_Pin GPIO_PIN_12
