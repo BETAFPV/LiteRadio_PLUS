@@ -8,8 +8,9 @@
 #include "joystick.h"
 #include "mixes.h"
 static uint16_t protocolIndex;
-static uint8_t RCstatus = RADIO_DATA;
-static uint8_t lastRCstatus = initStatus;
+static uint8_t RCstatus = RC_INIT;
+static uint8_t lastRCstatus = RC_INIT;
+static uint8_t powerStatus = RC_POWER_OFF;
 void Status_Init()
 {
     STMFLASH_Read(FLASH_ADDR,&protocolIndex,1);
@@ -33,61 +34,50 @@ void Status_Init()
    Version_Init(protocolIndex); 
 }
 
+void Status_Update()
+{
+    if(powerStatus == RC_POWER_ON)
+    {
+        RCstatus = RC_DATA;
+        if(lastRCstatus == RC_INIT)
+        {
+            vTaskResume(radiolinkTaskHandle);
+            vTaskResume(mixesTaskHandle);
+        }
+        if(lastRCstatus == RC_CHRG_AND_JOYSTICK)
+        {
+            vTaskSuspend(joystickTaskHandle); 
+            vTaskResume(radiolinkTaskHandle);
+            vTaskResume(mixesTaskHandle);
+        }
+    }
+    if(powerStatus == RC_POWER_OFF)
+    {
+        RCstatus = RC_CHRG_AND_JOYSTICK;
+        if(lastRCstatus == RC_INIT)
+        {
+            vTaskResume(joystickTaskHandle);
+        }
+        if(lastRCstatus == RC_DATA)
+        {
+            vTaskSuspend(radiolinkTaskHandle);
+            vTaskSuspend(mixesTaskHandle);
+            vTaskResume(joystickTaskHandle); 
+        }
+    }
+    lastRCstatus = RCstatus;
+}
+
 void statusTask(void* param)
 {
-    uint8_t powerStatus = 0;
+
     EventBits_t keyEvent;
     EventBits_t gimbalEvent;
+    Status_Update();
     while(1)
     {
         vTaskDelay(2);
         
-		gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
-		                                   GIMBAL_CALIBRATE_END,
-		                                   pdTRUE,
-	                                       pdTRUE,
-		                                   0);
-		if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
-		{
-            RGB_Set(BLUE,BRIGHTNESS_MAX);
-			RCstatus = lastRCstatus;
-		}
-        if(RCstatus == RADIO_DATA)
-        {
-            if(lastRCstatus == initStatus)
-            {
-                vTaskResume(radiolinkTaskHandle);
-                vTaskResume(mixesTaskHandle);
-            }
-            else if(lastRCstatus == joystickstatus)
-            {
-                vTaskSuspend(joystickTaskHandle);              
-                vTaskResume(radiolinkTaskHandle);
-                vTaskResume(mixesTaskHandle);
-            }
-            lastRCstatus = RCstatus;
-        } 
-        if(RCstatus == joystickstatus)
-        {
-            if(lastRCstatus == initStatus)
-            {
-                vTaskResume(joystickTaskHandle);
-            }
-            else if(lastRCstatus == joystickstatus)
-            {
-                vTaskSuspend(radiolinkTaskHandle);
-                vTaskSuspend(mixesTaskHandle);
-                vTaskResume(joystickTaskHandle);              
-            }
-            lastRCstatus = RCstatus;
-        }
-        
-        if(RCstatus == RADIO_CALIBARATION)
-        {
-            osDelay(200);
-            RGB_Twinkle(2,200);
-        }
-             
 		keyEvent= xEventGroupWaitBits( KeyEventHandle,
 		                               POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
 		                               pdTRUE,
@@ -97,17 +87,18 @@ void statusTask(void* param)
 		{    
             if(powerStatus)
             {
-                powerStatus = 0;
+                powerStatus = RC_POWER_OFF;
                 xEventGroupSetBits( powerEventHandle, POWER_OFF);
                 vTaskResume(powerTaskHandle);
             }
             else
             {
-                powerStatus = 1;
+                powerStatus = RC_POWER_ON;
                 xEventGroupSetBits( powerEventHandle, POWER_ON);
-                
             }
+            Status_Update();
         }
+        
 		if((keyEvent & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
 		{    
             xEventGroupSetBits( radioEventHandle, RADIOLINK_BIND);
@@ -115,8 +106,31 @@ void statusTask(void* param)
 		if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
 		{    
             xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
-            RCstatus = RADIO_CALIBARATION;
-        }         
-    }
+            if(RCstatus == RC_DATA)
+            {
+                RCstatus = RC_CALIBARATION;
+            }
+        }       
         
+		gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
+		                                   GIMBAL_CALIBRATE_END,
+		                                   pdTRUE,
+	                                       pdTRUE,
+		                                   0);
+		if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
+		{
+            RGB_Set(BLUE,BRIGHTNESS_MAX);
+			RCstatus = RC_DATA;
+		}
+
+        if(RCstatus == RC_CALIBARATION)
+        {
+            osDelay(200);
+            RGB_Twinkle(2,200);
+        }
+        else if(RCstatus == RC_CHRG_AND_JOYSTICK)
+        {
+            RGB_Breath();
+        }
+    }    
 }
