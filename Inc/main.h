@@ -60,12 +60,14 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define KEY_POWER_Pin GPIO_PIN_14
 #define KEY_POWER_GPIO_Port GPIOC
+#define POWER_EN_Pin GPIO_PIN_15
+#define POWER_EN_GPIO_Port GPIOC
 #define KEY_SETUP_Pin GPIO_PIN_1
 #define KEY_SETUP_GPIO_Port GPIOB
-#define PA_enable_Pin GPIO_PIN_10
-#define PA_enable_GPIO_Port GPIOB
-#define RGB_Output_Pin GPIO_PIN_11
-#define RGB_Output_GPIO_Port GPIOB
+#define PA_EN_Pin GPIO_PIN_10
+#define PA_EN_GPIO_Port GPIOB
+#define RGB_OUT_Pin GPIO_PIN_11
+#define RGB_OUT_GPIO_Port GPIOB
 #define SPI2_NSS_Pin GPIO_PIN_12
 #define SPI2_NSS_GPIO_Port GPIOB
 #define KEY_BIND_Pin GPIO_PIN_8
@@ -74,10 +76,10 @@ void Error_Handler(void);
 #define CRSF_TX_GPIO_Port GPIOA
 #define CRSF_RX_Pin GPIO_PIN_10
 #define CRSF_RX_GPIO_Port GPIOA
-#define externel_RF_on_Pin GPIO_PIN_15
-#define externel_RF_on_GPIO_Port GPIOA
-#define internel_RF_on_Pin GPIO_PIN_3
-#define internel_RF_on_GPIO_Port GPIOB
+#define EXTERNAL_RF_EN_Pin GPIO_PIN_15
+#define EXTERNAL_RF_EN_GPIO_Port GPIOA
+#define INTERNAL_RF_EN_Pin GPIO_PIN_3
+#define INTERNAL_RF_EN_GPIO_Port GPIOB
 #define SWB_H_Pin GPIO_PIN_4
 #define SWB_H_GPIO_Port GPIOB
 #define SWB_L_Pin GPIO_PIN_5
