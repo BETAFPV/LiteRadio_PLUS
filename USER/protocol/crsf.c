@@ -1,17 +1,17 @@
 #include "crsf.h"
 #include "usart.h"
 #include "function.h"
+#include "buzzer.h"
 
-uint8_t CRSF_Packet[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
+uint8_t crsfPacket[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
 uint8_t outBuffer[LinkStatisticsFrameLength + 4] = {0};
 static uint16_t channelDataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
 uint8_t crsfRSSI;
+
 static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint16_t controlDataBuff[8] = {0};
-
-uint8_t crsfRxBuff[10] = {0};
-static uint16_t crsfRxCount = 0;
+uint8_t crsfLinkCount= 0;
 void CRSF_SetBind()
 {
     HAL_Delay(1);
@@ -24,32 +24,47 @@ void CRSF_Init(uint8_t protocolIndex)
 
 uint16_t CRSF_Process(uint16_t* control_data)
 {
-    Get_CRSFPackage(CRSF_Packet,control_data);
-    HAL_UART_Transmit_DMA(&huart1,CRSF_Packet,26);
+
+    Get_CRSFPackage(crsfPacket,control_data);
+    HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
+    if(crsfRSSI<98 && crsfLinkCount>10)
+    {
+        xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
+    }
 	return 0; 
 }
 
-void Get_LinkStatis()
+void Get_LinkStatis(uint8_t* crsfRXPacket)
 {
-
-    if(outBuffer[0] == CRSF_ADDRESS_RADIO_TRANSMITTER)
+    
+    if(crsfRXPacket[0] == CRSF_ADDRESS_RADIO_TRANSMITTER)
     {
-        if(outBuffer[1] == (LinkStatisticsFrameLength + 2))
+        if(crsfRXPacket[1] == (LinkStatisticsFrameLength + 2))
         {
-            if(outBuffer[2] == CRSF_FRAMETYPE_LINK_STATISTICS)
+            if(crsfRXPacket[2] == CRSF_FRAMETYPE_LINK_STATISTICS)
             {
-                
-                uint8_t crc = crc8(&outBuffer[2], LinkStatisticsFrameLength + 1);
-                if(crc == outBuffer[LinkStatisticsFrameLength + 3])
-                {
-                    crsfRSSI = outBuffer[6];
-                }                    
+//                uint8_t crc = crc8(&CRSF_RXPacket[2], LinkStatisticsFrameLength + 1);
+//                if(crc == CRSF_RXPacket[LinkStatisticsFrameLength + 3])
+//                {
+                    crsfRSSI = crsfRXPacket[5];
+//                }
+                crsfLinkCount =255;              
             }
         }
+ 
     }
-    
+    else
+    {
+        if(crsfLinkCount > 0)
+        {
+            crsfLinkCount --;
+        }
+    }
+}
 
-    
+uint8_t Get_RSSI(void)
+{
+    return crsfRSSI;
 }
 
 void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
@@ -74,10 +89,10 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 #endif 	
 
 
-    channelDataBuff[ELEVATOR] =map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[ELEVATOR]):controlDataBuff[ELEVATOR],993,2000,165,1811);
-    channelDataBuff[AILERON] =map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[AILERON]) :controlDataBuff[AILERON],993,2000,165,1811);
-    channelDataBuff[THROTTLE] =map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[THROTTLE]):controlDataBuff[THROTTLE],993,2000,165,1811);
-    channelDataBuff[RUDDER] =map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[RUDDER])  :controlDataBuff[RUDDER],993,2000,165,1811);
+    channelDataBuff[ELEVATOR] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[ELEVATOR]):controlDataBuff[ELEVATOR],993,2000,165,1811);
+    channelDataBuff[AILERON] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[AILERON]) :controlDataBuff[AILERON],993,2000,165,1811);
+    channelDataBuff[THROTTLE] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[THROTTLE]):controlDataBuff[THROTTLE],993,2000,165,1811);
+    channelDataBuff[RUDDER] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[RUDDER])  :controlDataBuff[RUDDER],993,2000,165,1811);
 
 	channelDataBuff[4] = controlDataBuff[4];
     channelDataBuff[5] = controlDataBuff[5];

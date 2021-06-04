@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "adc.h"
 #include "tim.h"
+#include "crsf.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+static uint8_t crsfRXPacket[15] = {0};
 
 /* USER CODE END PV */
 
@@ -202,7 +204,7 @@ void DMA1_Channel4_IRQHandler(void)
 void DMA1_Channel5_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
-
+  Get_LinkStatis(crsfRXPacket);
   /* USER CODE END DMA1_Channel5_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
@@ -271,5 +273,11 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
     HAL_TIM_PWM_Stop_DMA(&htim2,TIM_CHANNEL_4);
 }
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_UART_Receive_DMA(&huart1,crsfRXPacket,15);
+}
+
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
