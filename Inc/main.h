@@ -58,6 +58,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define CRSF_EN_Pin GPIO_PIN_13
+#define CRSF_EN_GPIO_Port GPIOC
 #define KEY_POWER_Pin GPIO_PIN_14
 #define KEY_POWER_GPIO_Port GPIOC
 #define POWER_EN_Pin GPIO_PIN_15

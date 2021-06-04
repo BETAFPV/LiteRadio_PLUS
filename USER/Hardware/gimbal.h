@@ -33,10 +33,10 @@ extern EventGroupHandle_t gimbalEventHandle;
 //按电位器采取顺序排列
 typedef enum
 {
-  	RUDDER   = 0 ,       //yaw
-	THROTTLE = 1 ,       //throttle
-	AILERON  = 2 ,       //roll
-	ELEVATOR = 3 ,       //pitch
+	ELEVATOR = 2 ,      //pitch
+	AILERON  = 3 ,      //roll
+  	RUDDER   = 1 ,      //yaw
+	THROTTLE = 0 ,      //throttle
 }gimbalChannelTypeDef;
 
 typedef struct{

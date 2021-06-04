@@ -7,7 +7,7 @@
 #define D16_INTERVAL 9
 #define D8_INTERVAL 9
 #define SFHSS_INTERVAL 2
-#define CRSF_INTERVAL 7
+#define CRSF_INTERVAL 3
 
 
 #define RADIOLINK_BIND	        (0x01 << 0)	

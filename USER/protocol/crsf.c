@@ -25,21 +25,7 @@ void CRSF_Init(uint8_t protocolIndex)
 uint16_t CRSF_Process(uint16_t* control_data)
 {
     Get_CRSFPackage(CRSF_Packet,control_data);
-	HAL_HalfDuplex_EnableTransmitter(&huart1);
-    if(HAL_UART_Transmit_DMA(&huart1,CRSF_Packet,26)!= HAL_OK) //判断是否发送正常，如果出现异常则进入异常中断函数
-    {
-        Error_Handler();
-    }
-    if(crsfRxCount>999)
-    {
-        HAL_HalfDuplex_EnableReceiver(&huart1);
-        HAL_UART_Receive(&huart1, crsfRxBuff, 2, 200);
-        crsfRxCount = 0;
-    }
-    else
-    {
-        crsfRxCount++;        
-    }
+    HAL_UART_Transmit_DMA(&huart1,CRSF_Packet,26);
 	return 0; 
 }
 
@@ -88,10 +74,10 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 #endif 	
 
 
-    channelDataBuff[0] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[ELEVATOR]):controlDataBuff[ELEVATOR];
-    channelDataBuff[1] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[AILERON]) :controlDataBuff[AILERON];
-    channelDataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[THROTTLE]):controlDataBuff[THROTTLE];
-    channelDataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[RUDDER])  :controlDataBuff[RUDDER];
+    channelDataBuff[ELEVATOR] =map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[ELEVATOR]):controlDataBuff[ELEVATOR],993,2000,165,1811);
+    channelDataBuff[AILERON] =map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[AILERON]) :controlDataBuff[AILERON],993,2000,165,1811);
+    channelDataBuff[THROTTLE] =map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[THROTTLE]):controlDataBuff[THROTTLE],993,2000,165,1811);
+    channelDataBuff[RUDDER] =map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[RUDDER])  :controlDataBuff[RUDDER],993,2000,165,1811);
 
 	channelDataBuff[4] = controlDataBuff[4];
     channelDataBuff[5] = controlDataBuff[5];
