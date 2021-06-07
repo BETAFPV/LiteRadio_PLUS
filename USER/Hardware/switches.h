@@ -27,11 +27,18 @@ typedef enum
 
 #define SWB_L_GPIO_Port 	GPIOB
 
-#define SWD_GPIO_Port 		GPIOB
-
 #define SWC_H_GPIO_Port 	GPIOB
 
 #define SWC_L_GPIO_Port 	GPIOB
+
+#define SWD_GPIO_Port 		GPIOB
+
+#define SWITCH_SWA_STATUS()        HAL_GPIO_ReadPin(SWA_GPIO_Port, SWA_Pin)
+#define SWITCH_SWB_H_STATUS()     HAL_GPIO_ReadPin(SWB_H_GPIO_Port, SWA_Pin)
+#define SWITCH_SWB_L_STATUS()     HAL_GPIO_ReadPin(SWB_L_GPIO_Port, SWA_Pin)
+#define SWITCH_SWC_H_STATUS()		HAL_GPIO_ReadPin(SWC_H_GPIO_Por t, SWA_Pin)
+#define SWITCH_SWC_L_STATUS()		HAL_GPIO_ReadPin(SWA_GPIO_Port, SWA_Pin)
+#define SWITCH_SWD_STATUS()		HAL_GPIO_ReadPin(SWA_GPIO_Port, SWA_Pin)
 
 void switchesTask(void* param);
 uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex);

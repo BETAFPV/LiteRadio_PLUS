@@ -2,9 +2,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "gpio.h"
-
+#include "key.h"
 QueueHandle_t switchesValQueue = NULL;
-
 uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
 {
 	uint16_t switchValue;
@@ -15,7 +14,7 @@ uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
 		case SWA :
 			if(switchIndex == SWA)       //2POS
 			{
-				if(HAL_GPIO_ReadPin(SWA_GPIO_Port, SWA_Pin) != GPIO_PIN_SET)
+				if( HAL_GPIO_ReadPin(SWA_GPIO_Port, SWA_Pin) != RELEASED)
 				{
 					switchValue = SWITCH_MIN_VALUE;
 				}
