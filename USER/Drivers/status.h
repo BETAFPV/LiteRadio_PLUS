@@ -6,11 +6,18 @@
 
 typedef enum
 {
-    RC_INIT              = 0,
-  	RC_CALIBARATION      = 1,       
-	RC_DATA 	         = 2,      
-    RC_CHRG_AND_JOYSTICK = 3,
+    RC_INIT           = 0,
+    RC_SHUTDOWN          ,
+	RC_RADIOLINK 	     ,    
+    RC_CHRG_AND_JOYSTICK ,
 }RCstatus_e;
+
+typedef enum
+{
+    RF_DATA           = 0,
+    RF_CALIBARATION      ,   
+    RF_BIND              ,
+}RFstatus_e;
 
 void Status_Init(void);
 void Status_Update(void);
