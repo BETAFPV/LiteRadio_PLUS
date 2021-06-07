@@ -136,18 +136,18 @@ void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* controlData)
 	D8_SendPacket[17] = 0;
 	
 #ifdef MODE2    
-    gimbalReverseFlg.RUDDER    = 1;
+    gimbalReverseFlg.AILERON   = 0;
+    gimbalReverseFlg.ELEVATOR  = 1;
     gimbalReverseFlg.THROTTLE  = 0;
-    gimbalReverseFlg.AILERON   = 1;
-    gimbalReverseFlg.ELEVATOR  = 0;
+    gimbalReverseFlg.RUDDER    = 1;
 #else
     gimbalReverseFlg.RUDDER   = 1;
     gimbalReverseFlg.THROTTLE = 1;
     gimbalReverseFlg.AILERON  = 0;
     gimbalReverseFlg.ELEVATOR = 0;
 #endif    
-    Channel_DataBuff[0] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
-    Channel_DataBuff[1] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
+    Channel_DataBuff[0] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
+    Channel_DataBuff[1] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
     Channel_DataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
     Channel_DataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
 
@@ -286,7 +286,6 @@ uint16_t ReadFRSKYD8(uint16_t* controlData)
 				CC2500_Strobe(CC2500_SFTX);
 				CC2500_WriteData(D8_SendPacket, FRSKYD8_PACKET_LEN);
 				++FRSKYD8_BindCounts ; 
-				RGB_Toggle(FRSKYD8_BindCounts & 0x10);
 				
 			}  
 			else
@@ -297,7 +296,6 @@ uint16_t ReadFRSKYD8(uint16_t* controlData)
 				CC2500_SetPower(RF_POWER);           //设置发送功率
 				FRSKYD8_InitDeviceAddr(D8_Bind_flg) ;	
 				FRSKYD8Phase = FRSKYD8_DATA ; 	
-                RGB_Set(BLUE,BRIGHTNESS_MAX);
 			}
 			return 8830 ;
 		// Frsky D16 data
