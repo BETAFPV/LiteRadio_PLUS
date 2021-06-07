@@ -1,8 +1,8 @@
 #include "buzzer.h"
 #include "rgb.h"
-uint8_t buzzerCountCurr = 0;
-uint16_t onDelayCount = 0;
-uint16_t stopDelayCount = 0;
+static uint8_t buzzerCountCurr = 0;
+static uint16_t onDelayCount = 0;
+static uint16_t stopDelayCount = 0;
 EventGroupHandle_t buzzerEventHandle = NULL;
 
 void Buzzer_BeeStay(uint8_t tone,uint32_t stayTime)
@@ -148,7 +148,7 @@ void buzzerTask(void* param)
 
         vTaskDelay(5);        
 		buzzerEvent= xEventGroupWaitBits( buzzerEventHandle,
-		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING,
+		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING|RISS_WARNING_RING,
 		                              pdTRUE,
 	                                  pdFALSE,
 		                              0);
@@ -181,6 +181,18 @@ void buzzerTask(void* param)
 
         }
         
+        if((buzzerEvent & RISS_WARNING_RING) == RISS_WARNING_RING)
+        {
+            Buzzer_Start();
+            Buzzer_On(Do);
+            osDelay(200);
+            Buzzer_Stop();
+            osDelay(200);     
+            Buzzer_Start();
+            Buzzer_On(Do);
+            osDelay(200);
+            Buzzer_Stop();
+        }        
         switch(buzzerStatus)
         {
             case BUZZER_NORMAL:

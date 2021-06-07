@@ -15,7 +15,7 @@ extern EventGroupHandle_t buzzerEventHandle;
 #define SETUP_END_RING                  (0x01 << 4)
 #define POWER_ON_RING	                (0x01 << 5)	
 #define POWER_OFF_RING	                (0x01 << 6)	
-
+#define RISS_WARNING_RING	            (0x01 << 7)	
 
 typedef enum
 {
