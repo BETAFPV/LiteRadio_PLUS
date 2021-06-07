@@ -8,8 +8,8 @@ extern EventGroupHandle_t KeyEventHandle;
 
 #define LONG_PRESS_COUNT 	500	/*判断为长按时间（ms）*/
 
-#define PRESSED		0
-#define RELEASED	1
+#define PRESSED		GPIO_PIN_RESET
+#define RELEASED	GPIO_PIN_SET
 
 //按键状态
 #define BIND_SHORT_PRESS	    (0x01 << 0)	
