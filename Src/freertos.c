@@ -38,6 +38,7 @@
 #include "joystick.h"
 #include "frsky_d16.h"
 #include "status.h"
+#include "rgb.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -159,26 +160,28 @@ void startTask(void *param)
     {
     KeyEventHandle = xEventGroupCreate();   //创建事件
     buzzerEventHandle = xEventGroupCreate();   
-    powerEventHandle = xEventGroupCreate();
+    rgbEventHandle = xEventGroupCreate();  
+  //  powerEventHandle = xEventGroupCreate();
     radioEventHandle = xEventGroupCreate();
     gimbalEventHandle = xEventGroupCreate();
         
 	taskENTER_CRITICAL();	/*进入临界*/
         
-	xTaskCreate(statusTask, "STATUS", 100, NULL, 3, NULL);        
+    
 	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 3, NULL);
 	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
-	xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, &powerTaskHandle);
-	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 2, NULL);
+	//xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, &powerTaskHandle);
+	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 4, NULL);
     xTaskCreate(radiolinkTask, "DATA_PROCESS", 200, NULL, 4, &radiolinkTaskHandle);   
-    xTaskCreate(mixesTask, "MIXES", 600, NULL, 2, &mixesTaskHandle); 
+    xTaskCreate(mixesTask, "MIXES", 600, NULL, 3, &mixesTaskHandle); 
 	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 3, &joystickTaskHandle); 
     xTaskCreate(buzzerTask, "BUZZER", 50, NULL, 1, NULL); 
-        
+    xTaskCreate(rgbTask, "RGB", 50, NULL, 1, NULL);         
     vTaskSuspend(joystickTaskHandle);//挂起joystick
     vTaskSuspend(radiolinkTaskHandle);//挂起radiolink
     vTaskSuspend(mixesTaskHandle);//挂起mixes
-    
+    xTaskCreate(statusTask, "STATUS", 100, NULL, 3, NULL);
+        
     vTaskDelete(startTaskHandle);
     
 	taskEXIT_CRITICAL();
