@@ -17,11 +17,11 @@ void Buzzer_BeeUp()
 {
     Buzzer_Start();
     Buzzer_On(Do);
-    osDelay(400);
+    HAL_Delay(400);
     Buzzer_On(Re);
-    osDelay(400);
+    HAL_Delay(400);
     Buzzer_On(Mi);
-    osDelay(400);
+    HAL_Delay(400);
     Buzzer_Stop();
 }
 
@@ -29,11 +29,11 @@ void Buzzer_BeeDown()
 {
     Buzzer_Start();
     Buzzer_On(Mi);
-    osDelay(400);
+    HAL_Delay(400);
     Buzzer_On(Re);
-    osDelay(400);
+    HAL_Delay(400);
     Buzzer_On(Do);
-    osDelay(400);
+    HAL_Delay(400);
     Buzzer_Stop();
 }
 void Buzzer_BeeNumInit(uint8_t buzzerCountInit)
