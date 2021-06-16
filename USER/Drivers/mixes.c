@@ -1,62 +1,124 @@
 #include "mixes.h"
 #include "switches.h"
 #include "buzzer.h"
+#include "tim.h"
+#include "usbd_custom_hid_if.h"
+#include "stmflash.h"
 TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesValQueue = NULL;
-
+static mixData_t mixData[8];
 //初始化混控的参数
-void Mixes_Init(mixData_t* mixData)
-{
-    mixData[0].gimbalChannel=MIX_RUDDER;
-    mixData[1].gimbalChannel=MIX_THROTTLE;
-    mixData[2].gimbalChannel=MIX_AILERON;
-    mixData[3].gimbalChannel=MIX_ELEVATOR;
-    mixData[4].gimbalChannel=MIX_SWA;
-    mixData[5].gimbalChannel=MIX_SWB;
-    mixData[6].gimbalChannel=MIX_SWC;
-    mixData[7].gimbalChannel=MIX_SWD;
+uint16_t mixesBuff[8];
+uint16_t writeWWord[2] = {0};
+void Mixes_Init()
+{   
+    Mixes_ChannelUpdate();
+    Mixes_InverseUpdate();
+    Mixes_WeightUpdate();
+    Mixes_OffsetUpdate();
+//    mixData[0].gimbalChannel=MIX_RUDDER;
+//    mixData[1].gimbalChannel=MIX_THROTTLE;
+//    mixData[2].gimbalChannel=MIX_AILERON;
+//    mixData[3].gimbalChannel=MIX_ELEVATOR;
+//    mixData[4].gimbalChannel=MIX_SWA;
+//    mixData[5].gimbalChannel=MIX_SWB;
+//    mixData[6].gimbalChannel=MIX_SWC;
+//    mixData[7].gimbalChannel=MIX_SWD;
     
-    mixData[0].inverse = 0;
-    mixData[1].inverse = 0;
-    mixData[2].inverse = 0;
-    mixData[3].inverse = 0;
-    mixData[4].inverse = 0;
-    mixData[5].inverse = 0;
-    mixData[6].inverse = 0;
-    mixData[7].inverse = 0;
-    
-    mixData[0].weight = 100;
-    mixData[1].weight = 100;
-    mixData[2].weight = 100;
-    mixData[3].weight = 100;
-    mixData[4].weight = 100;
-    mixData[5].weight = 100;
-    mixData[6].weight = 100;
-    mixData[7].weight = 100;
-    
-    mixData[0].offset = 0;
-    mixData[1].offset = 0;
-    mixData[2].offset = 0;
-    mixData[3].offset = 0;
-    mixData[4].offset = 0;
-    mixData[5].offset = 0;
-    mixData[6].offset = 0;
-    mixData[7].offset = 0;    
+//    mixData[0].inverse = 0;
+//    mixData[1].inverse = 0;
+//    mixData[2].inverse = 0;
+//    mixData[3].inverse = 0;
+//    mixData[4].inverse = 0;
+//    mixData[5].inverse = 0;
+//    mixData[6].inverse = 0;
+//    mixData[7].inverse = 0;
+//    
+//    mixData[0].weight = 100;
+//    mixData[1].weight = 100;
+//    mixData[2].weight = 100;
+//    mixData[3].weight = 100;
+//    mixData[4].weight = 100;
+//    mixData[5].weight = 100;
+//    mixData[6].weight = 100;
+//    mixData[7].weight = 100;
+//    
+//    mixData[0].offset = 0;
+//    mixData[1].offset = 0;
+//    mixData[2].offset = 0;
+//    mixData[3].offset = 0;
+//    mixData[4].offset = 0;
+//    mixData[5].offset = 0;
+//    mixData[6].offset = 0;
+//    mixData[7].offset = 0;    
 }
 
+void Mixes_ChannelUpdate()
+{
+    STMFLASH_Read(MIX_CHANNEL_INPUT_ADDR,mixesBuff,8);     
+
+    mixData[0].gimbalChannel = (uint8_t)mixesBuff[0];
+    mixData[1].gimbalChannel = (uint8_t)mixesBuff[1];
+    mixData[2].gimbalChannel = (uint8_t)mixesBuff[2];
+    mixData[3].gimbalChannel = (uint8_t)mixesBuff[3];
+    mixData[4].gimbalChannel = (uint8_t)mixesBuff[4];
+    mixData[5].gimbalChannel = (uint8_t)mixesBuff[5];
+    mixData[6].gimbalChannel = (uint8_t)mixesBuff[6];
+    mixData[7].gimbalChannel = (uint8_t)mixesBuff[7];
+}
+
+void Mixes_InverseUpdate()
+{
+    STMFLASH_Read(MIX_CHANNEL_INVERSE_ADDR,mixesBuff,8);     
+
+    mixData[0].inverse = (uint8_t)mixesBuff[0];
+    mixData[1].inverse = (uint8_t)mixesBuff[1];
+    mixData[2].inverse = (uint8_t)mixesBuff[2];
+    mixData[3].inverse = (uint8_t)mixesBuff[3];
+    mixData[4].inverse = (uint8_t)mixesBuff[4];
+    mixData[5].inverse = (uint8_t)mixesBuff[5];
+    mixData[6].inverse = (uint8_t)mixesBuff[6];
+    mixData[7].inverse = (uint8_t)mixesBuff[7];
+}
+
+void Mixes_WeightUpdate()
+{
+    STMFLASH_Read(MIX_CHANNEL_WEIGHT_ADDR,mixesBuff,8);     
+
+    mixData[0].weight = (uint8_t)mixesBuff[0];
+    mixData[1].weight = (uint8_t)mixesBuff[1];
+    mixData[2].weight = (uint8_t)mixesBuff[2];
+    mixData[3].weight = (uint8_t)mixesBuff[3];
+    mixData[4].weight = (uint8_t)mixesBuff[4];
+    mixData[5].weight = (uint8_t)mixesBuff[5];
+    mixData[6].weight = (uint8_t)mixesBuff[6];
+    mixData[7].weight = (uint8_t)mixesBuff[7];
+}
+
+void Mixes_OffsetUpdate()
+{
+    STMFLASH_Read(MIX_CHANNEL_OFFSET_ADDR,mixesBuff,8);     
+
+    mixData[0].offset = (uint8_t)mixesBuff[0];
+    mixData[1].offset = (uint8_t)mixesBuff[1];
+    mixData[2].offset = (uint8_t)mixesBuff[2];
+    mixData[3].offset = (uint8_t)mixesBuff[3];
+    mixData[4].offset = (uint8_t)mixesBuff[4];
+    mixData[5].offset = (uint8_t)mixesBuff[5];
+    mixData[6].offset = (uint8_t)mixesBuff[6];
+    mixData[7].offset = (uint8_t)mixesBuff[7];
+}
 
 //摇杆通道补偿操作
-uint16_t Mixes_GimbalOffset(int16_t offset, uint16_t gimbalValCurr)
+uint16_t Mixes_GimbalOffset(uint8_t offset, uint16_t gimbalValCurr)
 {
-    if(offset < 0)
+    if(offset < 100)
     {
-        uint16_t offsetAbs;
-        offsetAbs = (uint16_t) - offset;
-        gimbalValCurr -= offsetAbs;
+        gimbalValCurr = gimbalValCurr - (100 - offset);
     }
     else
     {
-        gimbalValCurr += offset;
+        gimbalValCurr = gimbalValCurr + (offset -100);
     }
     return gimbalValCurr;
 }
@@ -124,11 +186,6 @@ uint16_t Mixes_SwitchInverse(uint8_t inverse, uint16_t gimbalValCurr)
 void mixesTask(void* param)
 {
     uint8_t mixIndex;
-    mixData_t mixData[8];
-    uint16_t reportData[8];
-    uint16_t gimbalVaBuff[4];
-    uint16_t switchesValBuff[4];
-    mixesValQueue = xQueueCreate(20,sizeof(reportData));
     uint16_t OutputCode[513] =      //摇杆ADC映射表
     {
         0,0,0,0,0,
@@ -191,10 +248,25 @@ void mixesTask(void* param)
         507,507,507,507,507,507,507,507,507,507,
         507,507,507,507,507,507,507,507,507,507,
     };
-    Mixes_Init(mixData);
+    uint16_t reportData[8];
+    uint16_t gimbalVaBuff[4];
+    uint16_t switchesValBuff[4];
+
+    mixesValQueue = xQueueCreate(20,sizeof(reportData));
+    Mixes_Init();
     while(1)
 	{
 		vTaskDelay(9);  
+        
+        STMFLASH_Read(CONFIGER_INFO_FLAG,writeWWord,1);
+
+        if(writeWWord[0] == 0x01)
+		{         
+            Mixes_Init();
+            writeWWord[0] = 0x00;
+            STMFLASH_Write(CONFIGER_INFO_FLAG,writeWWord,1);
+		}
+        
         xQueueReceive(gimbalValQueue,gimbalVaBuff,0);
         xQueueReceive(switchesValQueue,switchesValBuff,0);
         
@@ -248,8 +320,9 @@ void mixesTask(void* param)
         reportData[4] = mixData[4].output;
         reportData[5] = mixData[5].output;
         reportData[6] = mixData[6].output;        
-        reportData[7] = mixData[7].output;              
-        
+        reportData[7] = mixData[7].output;                      
         xQueueSend(mixesValQueue,reportData,0);
     }
 }
+
+
