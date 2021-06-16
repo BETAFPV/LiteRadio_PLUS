@@ -105,7 +105,7 @@ extern USBD_CUSTOM_HID_ItfTypeDef USBD_CustomHID_fops_FS;
   */
 
 /* USER CODE BEGIN EXPORTED_FUNCTIONS */
-
+void SaveMixValueToFlash(void);
 /* USER CODE END EXPORTED_FUNCTIONS */
 
 /**

@@ -23,7 +23,9 @@
 #include "usbd_custom_hid_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "mixes.h"
+#include "stmflash.h"
+#include "cmsis_os.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,7 +34,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+static uint8_t USB_Recive_Buffer[64]; 
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -236,16 +238,17 @@ static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
 {
   /* USER CODE BEGIN 6 */
     char i;
-    unsigned char USB_Recive_Buffer[64]; //USB接收缓存
+
     USBD_CUSTOM_HID_HandleTypeDef   *hhid;
-    unsigned char USB_Received_Count = 0;//USB接收数据计数  
+    unsigned char USB_Received_Count = 0;
     USB_Received_Count = USBD_GetRxCount( &hUsbDeviceFS,CUSTOM_HID_EPOUT_ADDR ); 
-    hhid = (USBD_CUSTOM_HID_HandleTypeDef*)hUsbDeviceFS.pClassData;//得到USB接收数据的储存地�?
+    hhid = (USBD_CUSTOM_HID_HandleTypeDef*)hUsbDeviceFS.pClassData;
     
     for(i=0;i<USB_Received_Count;i++) 
     {
-        USB_Recive_Buffer[i]=hhid->Report_buf[i];  //把接收到的数据保存到自定义的缓存区保�?
+        USB_Recive_Buffer[i]=hhid->Report_buf[i]; 
     } 
+    SaveMixValueToFlash();
     return (USBD_OK);
     
   /* USER CODE END 6 */
@@ -267,7 +270,46 @@ static int8_t USBD_CUSTOM_HID_SendReport_FS(uint8_t *report, uint16_t len)
 /* USER CODE END 7 */
 
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
-
+void SaveMixValueToFlash(void)
+{
+    uint16_t writeWord[8];
+    for(int i=0;i<8;i++)
+    {
+        writeWord[i] = (uint16_t)USB_Recive_Buffer[i+1];
+    }
+    switch (USB_Recive_Buffer[0])
+    {
+        case CHANNEILS_INPUT_ID:
+        {    
+            STMFLASH_Write(MIX_CHANNEL_INPUT_ADDR,writeWord,8);
+            break;
+        }
+        case CHANNEILS_REVERSE_ID:
+        {
+            STMFLASH_Write(MIX_CHANNEL_INVERSE_ADDR,writeWord,8);
+            break;
+        }
+        case CHANNEILS_WEIGHT_ID:
+        {
+            STMFLASH_Write(MIX_CHANNEL_WEIGHT_ADDR,writeWord,8);
+            break;
+        }
+        case CHANNEILS_OFFSET_ID:
+        {
+            STMFLASH_Write(MIX_CHANNEL_OFFSET_ADDR,writeWord,8);
+            break;
+        }
+        case CONFIGER_INFO_ID:
+        {
+            STMFLASH_Write(CONFIGER_INFO_ADDR,writeWord,8);
+            break;
+        }
+        default:
+            break;
+    }
+    writeWord[0] = 0x01;
+    STMFLASH_Write(CONFIGER_INFO_FLAG,writeWord,1);
+}
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 /**
   * @}
