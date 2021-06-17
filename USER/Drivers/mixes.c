@@ -4,12 +4,13 @@
 #include "tim.h"
 #include "usbd_custom_hid_if.h"
 #include "stmflash.h"
+#include "radiolink.h"
 TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesValQueue = NULL;
 static mixData_t mixData[8];
 //初始化混控的参数
 uint16_t mixesBuff[8];
-uint16_t writeWWord[2] = {0};
+
 void Mixes_Init()
 {   
     Mixes_ChannelUpdate();
@@ -185,6 +186,7 @@ uint16_t Mixes_SwitchInverse(uint8_t inverse, uint16_t gimbalValCurr)
 //混控任务
 void mixesTask(void* param)
 {
+    uint16_t writeFlag = 0x00;
     uint8_t mixIndex;
     uint16_t OutputCode[513] =      //摇杆ADC映射表
     {
@@ -258,13 +260,13 @@ void mixesTask(void* param)
 	{
 		vTaskDelay(9);  
         
-        STMFLASH_Read(CONFIGER_INFO_FLAG,writeWWord,1);
+        STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
-        if(writeWWord[0] == 0x01)
+        if(writeFlag == 0x01)
 		{         
             Mixes_Init();
-            writeWWord[0] = 0x00;
-            STMFLASH_Write(CONFIGER_INFO_FLAG,writeWWord,1);
+            writeFlag = 0x00;
+            STMFLASH_Write(CONFIGER_INFO_FLAG,&writeFlag,1);
 		}
         
         xQueueReceive(gimbalValQueue,gimbalVaBuff,0);

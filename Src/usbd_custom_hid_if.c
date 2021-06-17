@@ -26,6 +26,7 @@
 #include "mixes.h"
 #include "stmflash.h"
 #include "cmsis_os.h"
+#include "radiolink.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,6 +36,7 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static uint8_t USB_Recive_Buffer[64]; 
+
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -282,33 +284,50 @@ void SaveMixValueToFlash(void)
         case CHANNEILS_INPUT_ID:
         {    
             STMFLASH_Write(MIX_CHANNEL_INPUT_ADDR,writeWord,8);
+            
+            writeWord[0] = 0x01;
             break;
         }
         case CHANNEILS_REVERSE_ID:
         {
             STMFLASH_Write(MIX_CHANNEL_INVERSE_ADDR,writeWord,8);
+            
+            writeWord[0] = 0x01;
             break;
         }
         case CHANNEILS_WEIGHT_ID:
         {
             STMFLASH_Write(MIX_CHANNEL_WEIGHT_ADDR,writeWord,8);
+            
+            writeWord[0] = 0x01;
             break;
         }
         case CHANNEILS_OFFSET_ID:
         {
             STMFLASH_Write(MIX_CHANNEL_OFFSET_ADDR,writeWord,8);
+            
+            writeWord[0] = 0x01;
             break;
         }
         case CONFIGER_INFO_ID:
         {
-            STMFLASH_Write(CONFIGER_INFO_ADDR,writeWord,8);
+            STMFLASH_Read(FLASH_ADDR,&writeWord[1],1);
+            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[2],3);
+            
+            writeWord[0] = 0x01;
             break;
         }
+        case REQUEST_INFO_ID:
+        {
+            writeWord[0] = USB_Recive_Buffer[1];
+            break;
+        }
+        
         default:
             break;
     }
-    writeWord[0] = 0x01;
     STMFLASH_Write(CONFIGER_INFO_FLAG,writeWord,1);
+
 }
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 /**
