@@ -5,6 +5,6 @@
 #include "stm32f1xx_hal.h"
 
 void Delay_us(uint32_t nus);
-
+uint64_t getSysTimeUs(void);
 #endif
 
