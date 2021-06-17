@@ -48,13 +48,13 @@ void Status_Update()
         if(lastRCstatus == RC_SHUTDOWN)
         {
             vTaskResume(radiolinkTaskHandle);
-            vTaskResume(mixesTaskHandle);
+          //  vTaskResume(mixesTaskHandle);
         }
         if(lastRCstatus == RC_CHRG_AND_JOYSTICK)
         {
             vTaskSuspend(joystickTaskHandle); 
             vTaskResume(radiolinkTaskHandle);
-            vTaskResume(mixesTaskHandle);
+          //  vTaskResume(mixesTaskHandle);
         }
     }
     if(powerStatus == RC_POWER_OFF)
@@ -67,7 +67,7 @@ void Status_Update()
         if(lastRCstatus == RC_RADIOLINK)
         {
             vTaskSuspend(radiolinkTaskHandle);
-            vTaskSuspend(mixesTaskHandle);
+        //    vTaskSuspend(mixesTaskHandle);
             vTaskResume(joystickTaskHandle); 
         }
     }
@@ -104,10 +104,8 @@ void statusTask(void* param)
                 powerStatus = RC_POWER_OFF;
                 xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
                 xEventGroupSetBits( rgbEventHandle, POWER_OFF_RGB);
-             //   xEventGroupSetBits( powerEventHandle, POWER_OFF);
                 osDelay(1200);
                 POWER_PIN_HOLD_DOWN();
-             //   vTaskResume(powerTaskHandle);
             }
             else
             {
@@ -115,7 +113,6 @@ void statusTask(void* param)
                 xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
                 xEventGroupSetBits( rgbEventHandle, POWER_ON_RGB);
                 POWER_PIN_HOLD_UP();
-               // xEventGroupSetBits( powerEventHandle, POWER_ON);
             }
             Status_Update();
         }
