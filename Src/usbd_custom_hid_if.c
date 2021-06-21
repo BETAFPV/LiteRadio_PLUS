@@ -277,42 +277,20 @@ void SaveMixValueToFlash(void)
     uint16_t writeWord[8];
     for(int i=0;i<8;i++)
     {
-        writeWord[i] = (uint16_t)USB_Recive_Buffer[i+1];
+        writeWord[i] = (uint16_t)USB_Recive_Buffer[i];
     }
     switch (USB_Recive_Buffer[0])
     {
         case CHANNEILS_INPUT_ID:
         {    
-            STMFLASH_Write(MIX_CHANNEL_INPUT_ADDR,writeWord,8);
-            
-            writeWord[0] = 0x01;
-            break;
-        }
-        case CHANNEILS_REVERSE_ID:
-        {
-            STMFLASH_Write(MIX_CHANNEL_INVERSE_ADDR,writeWord,8);
-            
-            writeWord[0] = 0x01;
-            break;
-        }
-        case CHANNEILS_WEIGHT_ID:
-        {
-            STMFLASH_Write(MIX_CHANNEL_WEIGHT_ADDR,writeWord,8);
-            
-            writeWord[0] = 0x01;
-            break;
-        }
-        case CHANNEILS_OFFSET_ID:
-        {
-            STMFLASH_Write(MIX_CHANNEL_OFFSET_ADDR,writeWord,8);
-            
+            STMFLASH_Write(MIX_CHANNEL_1_INFO_ADDR+USB_Recive_Buffer[1]*8,&writeWord[2],4);
             writeWord[0] = 0x01;
             break;
         }
         case CONFIGER_INFO_ID:
         {
-            STMFLASH_Read(FLASH_ADDR,&writeWord[1],1);
-            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[2],3);
+            STMFLASH_Write(FLASH_ADDR,&writeWord[1],1);
+            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[2],5);
             
             writeWord[0] = 0x01;
             break;
@@ -329,6 +307,7 @@ void SaveMixValueToFlash(void)
     STMFLASH_Write(CONFIGER_INFO_FLAG,writeWord,1);
 
 }
+
 /* USER CODE END PRIVATE_FUNCTIONS_IMPLEMENTATION */
 /**
   * @}
