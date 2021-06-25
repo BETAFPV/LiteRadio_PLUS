@@ -212,7 +212,7 @@ static void __attribute__((unused)) Frsky_D16_build_Bind_packet(void)
 /*---------------------------------------------------------------------
 			build control data package					
 ----------------------------------------------------------------------*/
-void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* controlData)
+void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* d16ControlData)
 {
 	static uint8_t lpass;
 	uint16_t chan_0 ;
