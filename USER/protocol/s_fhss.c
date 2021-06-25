@@ -6,8 +6,7 @@
 #include "spi.h"
 #include "gimbal.h"
 #include "switches.h"
-//#include "sbus.h"
-static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
+#include "mixes.h"
 #define SFHSS_COARSE	0
 
 #define SFHSS_PACKET_LEN 13
@@ -156,7 +155,6 @@ void initSFHSS(uint8_t protocolIndex)
 	//SPI2_Init();
 	MProtocol_id = GetUniqueID();
 	SFHSS_get_tx_id();
-	
 	srand(SysTick->VAL);
 	fhss_code = rand() % 28;  // Initialize it to random 0-27 inclusive
 	CC2500_Reset(); 
@@ -175,7 +173,7 @@ int16_t convert_channel_16b_nolimit(uint8_t num, int16_t min, int16_t max)
 }
 
 uint16_t ch[4];
-static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* controlData)
+static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* sfhssControlData)
 {
 	
 	// command.bit0 is the packet number indicator: =0 -> SFHSS_DATA1, =1 -> SFHSS_DATA2
@@ -195,29 +193,15 @@ static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* controlDat
 
 	uint8_t ch_offset = (command&0x08) >> 1;			// CH1..CH4 or CH5..CH8
 
-#ifdef MODE2    
-    gimbalReverseFlg.RUDDER    = 1;
-    gimbalReverseFlg.THROTTLE  = 0;
-    gimbalReverseFlg.AILERON   = 1;
-    gimbalReverseFlg.ELEVATOR  = 0;
-#else
-    gimbalReverseFlg.RUDDER   = 1;
-    gimbalReverseFlg.THROTTLE = 1;
-    gimbalReverseFlg.AILERON  = 0;
-    gimbalReverseFlg.ELEVATOR = 0;
-#endif    
+    Channel_DataBuff[0] = sfhssControlData[MIX_AILERON];
+    Channel_DataBuff[1] = sfhssControlData[MIX_ELEVATOR];
+    Channel_DataBuff[2] = sfhssControlData[MIX_THROTTLE];
+    Channel_DataBuff[3] = sfhssControlData[MIX_RUDDER];
 
-    Channel_DataBuff[0] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
-    Channel_DataBuff[1] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
-    Channel_DataBuff[2] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
-    Channel_DataBuff[3] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
-
-	Channel_DataBuff[4] = controlData[4];
-    Channel_DataBuff[5] = controlData[5];
-    Channel_DataBuff[6] = controlData[6];
-    Channel_DataBuff[7] = controlData[7];
-
-
+	Channel_DataBuff[4] = sfhssControlData[4];
+    Channel_DataBuff[5] = sfhssControlData[5];
+    Channel_DataBuff[6] = sfhssControlData[6];
+    Channel_DataBuff[7] = sfhssControlData[7];
 		{	//Normal data
 			for(uint8_t i=0;i<4;i++)
 				ch[i] = convert_channel_16b_nolimit(CH_AETR[ch_offset+i],2000,1000);
