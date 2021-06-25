@@ -6,10 +6,10 @@
 #include "rgb.h"
 #include "main.h"
 #include "key.h"
+#include "mixes.h"
 #define FRSKYD8_PACKET_LEN  18
 #define FRSKYD8_BINDCHANNEL 47 						//The 47th channel is fixed as a bound channel 
 
-static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint8_t  D8_Bind_flg = 0 ; 
 uint16_t FRSKYD8_BindCounts = 0; 						
 uint8_t  FRSKYD8_Counts = 0;
@@ -118,15 +118,15 @@ static void __attribute__((unused)) Frsky_D8_build_Bind_packet(void)
 /*---------------------------------------------------------------------
 			build control data package					
 ----------------------------------------------------------------------*/
-void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* controlData)
+void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* d8ControlData)
 {
 	//固定码 + 遥控ID
 	D8_SendPacket[0] = 0x11;
 
 	//telemetry radio ID
-	D8_SendPacket[1]   = (TransmitterID >> 8) & 0xFF  ;
-	D8_SendPacket[2]   = TransmitterID & 0xFF ;           
-	D8_SendPacket[3] 	= FRSKYD8_Counts;
+	D8_SendPacket[1] = (TransmitterID >> 8) & 0xFF  ;
+	D8_SendPacket[2] = TransmitterID & 0xFF ;           
+	D8_SendPacket[3] = FRSKYD8_Counts;
 	D8_SendPacket[4] = 0x00;
 	D8_SendPacket[5] = 0x01;
 	
@@ -135,30 +135,16 @@ void  __attribute__((unused)) FRSKYD8_build_Data_packet(uint16_t* controlData)
 	D8_SendPacket[16] = 0;
 	D8_SendPacket[17] = 0;
 	
-#ifdef MODE2    
-    gimbalReverseFlg.AILERON   = 0;
-    gimbalReverseFlg.ELEVATOR  = 1;
-    gimbalReverseFlg.THROTTLE  = 0;
-    gimbalReverseFlg.RUDDER    = 1;
-#else
-    gimbalReverseFlg.RUDDER   = 1;
-    gimbalReverseFlg.THROTTLE = 1;
-    gimbalReverseFlg.AILERON  = 0;
-    gimbalReverseFlg.ELEVATOR = 0;
-#endif    
-    Channel_DataBuff[0] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
-    Channel_DataBuff[1] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
-    Channel_DataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
-    Channel_DataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
 
-//	Channel_DataBuff[4] = Get_SwitchValue(SWA);
-//    Channel_DataBuff[5] = Get_SwitchValue(SWB);
-//    Channel_DataBuff[6] = Get_SwitchValue(SWC);
-//    Channel_DataBuff[7] = Get_SwitchValue(SWD);
-	Channel_DataBuff[4] = controlData[4];
-    Channel_DataBuff[5] = controlData[5];
-    Channel_DataBuff[6] = controlData[6];
-    Channel_DataBuff[7] = controlData[7];
+    Channel_DataBuff[0] = d8ControlData[MIX_AILERON];
+    Channel_DataBuff[1] = d8ControlData[MIX_ELEVATOR];
+    Channel_DataBuff[2] = d8ControlData[MIX_THROTTLE];
+    Channel_DataBuff[3] = d8ControlData[MIX_RUDDER];
+
+	Channel_DataBuff[4] = d8ControlData[4];
+    Channel_DataBuff[5] = d8ControlData[5];
+    Channel_DataBuff[6] = d8ControlData[6];
+    Channel_DataBuff[7] = d8ControlData[7];
     
     
 	for(uint8_t i=0; i < 8; i++)
