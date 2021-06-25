@@ -249,38 +249,16 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* controlData)
 	{
 		startChan += 8;
 	}
-#ifdef MODE2    
-    gimbalReverseFlg.RUDDER    = 1;
-    gimbalReverseFlg.THROTTLE  = 0;
-    gimbalReverseFlg.AILERON   = 1;
-    gimbalReverseFlg.ELEVATOR  = 0;
-#else
-    gimbalReverseFlg.RUDDER   = 1;
-    gimbalReverseFlg.THROTTLE = 1;
-    gimbalReverseFlg.AILERON  = 0;
-    gimbalReverseFlg.ELEVATOR = 0;
-#endif    
-    
-//    typedef enum
-//{
-//  	RUDDER   = 0 ,       //yaw
-//	THROTTLE = 1 ,       //throttle
-//	AILERON  = 2 ,       //roll
-//	ELEVATOR = 3 ,       //pitch
-//}gimbalChannelTypeDef;
-    Channel_DataBuff[0] =(gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlData[ELEVATOR]):controlData[ELEVATOR];
-    Channel_DataBuff[1] =(gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlData[AILERON]) :controlData[AILERON];
-    Channel_DataBuff[2] =(gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlData[THROTTLE]):controlData[THROTTLE];
-    Channel_DataBuff[3] =(gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlData[RUDDER])  :controlData[RUDDER];
+  
+    Channel_DataBuff[0] = d16ControlData[MIX_AILERON];
+    Channel_DataBuff[1] = d16ControlData[MIX_ELEVATOR];
+    Channel_DataBuff[2] = d16ControlData[MIX_THROTTLE];
+    Channel_DataBuff[3] = d16ControlData[MIX_RUDDER];
 
-//	Channel_DataBuff[4] = Get_SwitchValue(SWA);
-//    Channel_DataBuff[5] = Get_SwitchValue(SWB);
-//    Channel_DataBuff[6] = Get_SwitchValue(SWC);
-//    Channel_DataBuff[7] = Get_SwitchValue(SWD);
-	Channel_DataBuff[4] = controlData[4];
-    Channel_DataBuff[5] = controlData[5];
-    Channel_DataBuff[6] = controlData[6];
-    Channel_DataBuff[7] = controlData[7];
+	Channel_DataBuff[4] = d16ControlData[4];
+    Channel_DataBuff[5] = d16ControlData[5];
+    Channel_DataBuff[6] = d16ControlData[6];
+    Channel_DataBuff[7] = d16ControlData[7];
 
 	//add Channel data
 	for(uint8_t i = 0; i <12 ; i+=3)
