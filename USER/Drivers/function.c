@@ -38,8 +38,6 @@ const unsigned char crc8tab[256] = {
 };
 
 
-
-static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint16_t channelDataBuff[4];
 void Get_ChipID(union ChipID *chipID)
 {
@@ -84,29 +82,14 @@ void GetSbusPackage(uint8_t* ChannelToSbus)
 	uint16_t switch_B_Temp;
 	uint16_t switch_C_Temp;
 	uint16_t switch_D_Temp;
-#ifdef MODE2        
-        gimbalReverseFlg.AILERON  = 0;
-        gimbalReverseFlg.ELEVATOR = 1;
-        gimbalReverseFlg.RUDDER   = 1;
-        gimbalReverseFlg.THROTTLE = 0;
-#else
-        gimbalReverseFlg.AILERON  = 0;
-        gimbalReverseFlg.ELEVATOR = 0;
-        gimbalReverseFlg.RUDDER   = 1;
-        gimbalReverseFlg.THROTTLE = 1;
-#endif 	
+      
 
-#ifdef FRSKY
-	channelDataBuff[0] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)) :Get_GimbalValue(ELEVATOR),993,2000,165,1811);
-	channelDataBuff[1] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE),993,2000,165,1811);
-	channelDataBuff[2] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))   :Get_GimbalValue(RUDDER)  ,993,2000,165,1811);
-	channelDataBuff[3] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON))  :Get_GimbalValue(AILERON) ,993,2000,165,1811);
-#else
-	channelDataBuff[0] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR)) :Get_GimbalValue(ELEVATOR),1,1024,178,1811);
-	channelDataBuff[1] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE)) :Get_GimbalValue(THROTTLE),1,1024,178,1811);
-	channelDataBuff[2] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER))   :Get_GimbalValue(RUDDER)  ,1,1024,178,1811);
-	channelDataBuff[3] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON))  :Get_GimbalValue(AILERON) ,1,1024,178,1811);
-#endif
+
+	channelDataBuff[0] = map(Get_GimbalValue(ELEVATOR),1,1024,178,1811);
+	channelDataBuff[1] = map(Get_GimbalValue(THROTTLE),1,1024,178,1811);
+	channelDataBuff[2] = map(Get_GimbalValue(RUDDER)  ,1,1024,178,1811);
+	channelDataBuff[3] = map(Get_GimbalValue(AILERON) ,1,1024,178,1811);
+    
 	switch_A_Temp = map(Get_SwitchValue(SWA),993,2000,163,1811);
 	switch_B_Temp = map(Get_SwitchValue(SWB),993,2000,163,1811);
 	switch_C_Temp = map(Get_SwitchValue(SWC),993,2000,163,1811);
