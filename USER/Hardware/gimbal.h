@@ -11,8 +11,6 @@
 extern QueueHandle_t gimbalValQueue;
 extern EventGroupHandle_t gimbalEventHandle;
 #define GIMBAL_VAL_QUEUE_SIZE           (4*sizeof(uint16_t))
-#define MODE2 //摇杆操控模式选择 --> #define MODE2：美国手 / 注释掉#define MODE2：日本手
-//摇杆数据隐射
 
 #define ELEVATOR_MAXVALUE_ADDR 0x08007800
 #define ELEVATOR_MIDVALUE_ADDR 0x08007802
@@ -39,12 +37,6 @@ typedef enum
 	THROTTLE = 0 ,      //throttle
 }gimbalChannelTypeDef;
 
-typedef struct{
-    uint8_t THROTTLE:1;       
-	uint8_t AILERON:1 ;      
-	uint8_t RUDDER:1;       
-	uint8_t ELEVATOR:1;  
-}GimbalReverseTypeDef;
 
 #define CHANNEL_OUTPUT_MAX 2010
 #define CHANNEL_OUTPUT_MID 1500
