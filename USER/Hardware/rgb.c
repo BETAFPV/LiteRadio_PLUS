@@ -156,9 +156,9 @@ void RGB_Breath_Up(uint8_t colorIndex)
     rgbBrightness = BRIGHTNESS_MIN;
     while(rgbBrightness<BRIGHTNESS_MAX)
     {
-        rgbBrightness+=20;
+        rgbBrightness++;
         RGB_Set(colorIndex,rgbBrightness);
-        osDelay(200);
+        osDelay(10);
     }
 }
 void RGB_Breath_Down(uint8_t colorIndex)
@@ -166,9 +166,9 @@ void RGB_Breath_Down(uint8_t colorIndex)
     rgbBrightness = BRIGHTNESS_MAX;
     while(rgbBrightness>BRIGHTNESS_MIN)
     {
-        rgbBrightness-=20;
+        rgbBrightness--;
         RGB_Set(colorIndex,rgbBrightness);
-        osDelay(200);
+        osDelay(10);
     }
 }
 void RGB_Breath(uint8_t colorIndex)
@@ -177,26 +177,28 @@ void RGB_Breath(uint8_t colorIndex)
     {
         if(rgbBrightness>BRIGHTNESS_MIN)
         {
-            rgbBrightness-=20;
+							rgbBrightness--;
         }
         else
         {
             rgbBreathStatus = BREATH_UP;
         }
+				osDelay(10);
     }
     if(rgbBreathStatus == BREATH_UP)
     {
         if(rgbBrightness<BRIGHTNESS_MAX)
         {
-            rgbBrightness+=20;
+					rgbBrightness++;
         }
         else
         {
             rgbBreathStatus = BREATH_DOWN;
         }
+				osDelay(5);
     }
     RGB_Set(colorIndex,rgbBrightness);
-    osDelay(200);
+
 }
 
 void rgbTask(void* param)

@@ -10,8 +10,8 @@
 #define BREATH_DOWN 0
 #define BREATH_UP 1
 
-#define BRIGHTNESS_MIN 30
-#define BRIGHTNESS_MAX 230
+#define BRIGHTNESS_MIN 0
+#define BRIGHTNESS_MAX 255
 
 #define BIND_RGB	              (0x01 << 0)	
 #define SETUP_RGB           	  (0x01 << 1)	
