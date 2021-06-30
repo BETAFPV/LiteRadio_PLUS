@@ -2,14 +2,13 @@
 #include "usart.h"
 #include "function.h"
 #include "buzzer.h"
-
+#include "mixes.h"
 uint8_t crsfPacket[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
 uint8_t outBuffer[LinkStatisticsFrameLength + 4] = {0};
 static uint16_t channelDataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
 uint8_t crsfRSSI;
 
-static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
 uint16_t controlDataBuff[8] = {0};
 uint8_t crsfLinkCount= 0;
 void CRSF_SetBind()
@@ -22,10 +21,10 @@ void CRSF_Init(uint8_t protocolIndex)
     HAL_Delay(1);
 }
 
-uint16_t CRSF_Process(uint16_t* control_data)
+uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
 {
 
-    Get_CRSFPackage(crsfPacket,control_data);
+    Get_CRSFPackage(crsfPacket,crsfcontrol_data);
     HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
     if(crsfRSSI<98 && crsfLinkCount>10)
     {
@@ -75,24 +74,10 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 	uint16_t SWD_Temp;
     uint32_t dataVal[16];
       
-    
-#ifdef MODE2        
-    gimbalReverseFlg.AILERON  = 0;
-    gimbalReverseFlg.ELEVATOR = 1;
-    gimbalReverseFlg.RUDDER   = 1;
-    gimbalReverseFlg.THROTTLE = 0;
-#else
-    gimbalReverseFlg.AILERON  = 0;
-    gimbalReverseFlg.ELEVATOR = 0;
-    gimbalReverseFlg.RUDDER   = 1;
-    gimbalReverseFlg.THROTTLE = 1;
-#endif 	
-
-
-    channelDataBuff[ELEVATOR] = map((gimbalReverseFlg.ELEVATOR == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[ELEVATOR]):controlDataBuff[ELEVATOR],993,2000,165,1811);
-    channelDataBuff[AILERON] = map((gimbalReverseFlg.AILERON  == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[AILERON]) :controlDataBuff[AILERON],993,2000,165,1811);
-    channelDataBuff[THROTTLE] = map((gimbalReverseFlg.THROTTLE == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[THROTTLE]):controlDataBuff[THROTTLE],993,2000,165,1811);
-    channelDataBuff[RUDDER] = map((gimbalReverseFlg.RUDDER   == 1)?(2*CHANNEL_OUTPUT_MID - controlDataBuff[RUDDER])  :controlDataBuff[RUDDER],993,2000,165,1811);
+    channelDataBuff[MIX_ELEVATOR] = map(controlDataBuff[MIX_ELEVATOR],993,2000,165,1811);
+    channelDataBuff[MIX_AILERON] = map(controlDataBuff[MIX_AILERON],993,2000,165,1811);
+    channelDataBuff[MIX_THROTTLE] = map(controlDataBuff[MIX_THROTTLE],993,2000,165,1811);
+    channelDataBuff[MIX_RUDDER] = map(controlDataBuff[MIX_RUDDER],993,2000,165,1811);
 
 	channelDataBuff[4] = controlDataBuff[4];
     channelDataBuff[5] = controlDataBuff[5];
@@ -105,10 +90,10 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 	SWD_Temp = map(channelDataBuff[7],993,2000,163,1811);  
     
 
-    dataVal[0] = channelDataBuff[AILERON] ;
-    dataVal[1] = channelDataBuff[ELEVATOR];
-    dataVal[2] = channelDataBuff[THROTTLE];
-    dataVal[3] = channelDataBuff[RUDDER];
+    dataVal[0] = channelDataBuff[MIX_AILERON] ;
+    dataVal[1] = channelDataBuff[MIX_ELEVATOR];
+    dataVal[2] = channelDataBuff[MIX_THROTTLE];
+    dataVal[3] = channelDataBuff[MIX_RUDDER];
     dataVal[4] = SWA_Temp;
     dataVal[5] = SWB_Temp;
     dataVal[6] = SWC_Temp;
