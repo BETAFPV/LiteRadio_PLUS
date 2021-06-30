@@ -31,7 +31,6 @@
 #include "gimbal.h"
 #include "switches.h"
 #include "key.h"
-#include "power_switch.h"
 #include "buzzer.h"
 #include "radiolink.h"
 #include "mixes.h"
@@ -58,7 +57,6 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
 TaskHandle_t startTaskHandle;
 
 /* USER CODE END Variables */
@@ -68,9 +66,7 @@ osStaticThreadDef_t defaultTaskControlBlock;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
-void startTask(void *param);   
-
+void startTask(void *param);  
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
@@ -127,7 +123,7 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle);
+  xTaskCreate(startTask, "START_TASK", 100, NULL, 2, &startTaskHandle);  
   /* USER CODE END RTOS_THREADS */
 
 }
@@ -146,8 +142,8 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   for(;;)
-  {   
-    osDelay(1);
+  {
+    osDelay(10);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -158,34 +154,31 @@ void startTask(void *param)
 {
     for(;;)
     {
-    KeyEventHandle = xEventGroupCreate();   //鍒涘缓浜嬩欢
-    buzzerEventHandle = xEventGroupCreate();   
-    rgbEventHandle = xEventGroupCreate();  
-  //  powerEventHandle = xEventGroupCreate();
-    radioEventHandle = xEventGroupCreate();
-    gimbalEventHandle = xEventGroupCreate();
+        KeyEventHandle = xEventGroupCreate();   //创建事件
+        buzzerEventHandle = xEventGroupCreate();   
+        rgbEventHandle = xEventGroupCreate();  
+        radioEventHandle = xEventGroupCreate();
+        gimbalEventHandle = xEventGroupCreate(); 
+			
+        taskENTER_CRITICAL();	/*进入临界*/
+			
+        xTaskCreate(statusTask, "STATUS", 128, NULL, 3, NULL);    
+        xTaskCreate(radiolinkTask, "DATA_PROCESS", 128, NULL, 3, &radiolinkTaskHandle);		
+        xTaskCreate(gimbalTask, "GIMBAL", 128, NULL, 3, NULL);
+        xTaskCreate(switchesTask, "SWITCHES", 128, NULL, 2, NULL);
+        xTaskCreate(mixesTask, "MIXES", 640, NULL, 3, &mixesTaskHandle); 
+        xTaskCreate(keyTask, "BUTTON_SCAN", 64, NULL, 3, NULL);
+        xTaskCreate(rgbTask, "RGB", 128, NULL, 3, NULL);       
+
+        xTaskCreate(buzzerTask, "BUZZER", 64, NULL, 1, NULL);         
+        xTaskCreate(joystickTask, "JOYSTICK", 128, NULL, 3, &joystickTaskHandle); 
+  
+        vTaskSuspend(joystickTaskHandle);//挂起joystick
+        vTaskSuspend(radiolinkTaskHandle);//挂起radiolink
         
-	taskENTER_CRITICAL();	/*杩涘叆涓寸晫*/
-        
-    
-	xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 3, NULL);
-	xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
-	//xTaskCreate(powerswitchTask, "POWERSWITCH", 100, NULL, 2, &powerTaskHandle);
-	xTaskCreate(keyTask, "BUTTON_SCAN", 100, NULL, 4, NULL);
-    xTaskCreate(radiolinkTask, "DATA_PROCESS", 200, NULL, 4, &radiolinkTaskHandle);   
-    xTaskCreate(mixesTask, "MIXES", 600, NULL, 3, &mixesTaskHandle); 
-	xTaskCreate(joystickTask, "JOYSTICK", 100, NULL, 3, &joystickTaskHandle); 
-    xTaskCreate(buzzerTask, "BUZZER", 50, NULL, 1, NULL); 
-    xTaskCreate(rgbTask, "RGB", 50, NULL, 1, NULL);         
-    vTaskSuspend(joystickTaskHandle);//鎸傝捣joystick
-    vTaskSuspend(radiolinkTaskHandle);//鎸傝捣radiolink
-    vTaskSuspend(mixesTaskHandle);//鎸傝捣mixes
-    xTaskCreate(statusTask, "STATUS", 100, NULL, 3, NULL);
-        
-    vTaskDelete(startTaskHandle);
-    
-	taskEXIT_CRITICAL();
-    osDelay(1);
+        vTaskDelete(startTaskHandle);
+        taskEXIT_CRITICAL();
+        osDelay(1);
     }
 }     
 /* USER CODE END Application */
