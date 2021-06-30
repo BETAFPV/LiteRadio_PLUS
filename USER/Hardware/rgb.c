@@ -207,7 +207,6 @@ void rgbTask(void* param)
 	while(1)
 	{   
 
-        vTaskDelay(5);        
 		rgbEvent = xEventGroupWaitBits( rgbEventHandle,
 		                               POWER_ON_RGB|POWER_OFF_RGB|BIND_RGB|SETUP_RGB|DATA_RGB|SHUTDOWN_RGB|CHRG_AND_JOYSTICK_RGB,
 		                               pdTRUE,
@@ -258,6 +257,7 @@ void rgbTask(void* param)
                 RGB_Breath(GREEN);                
             }   
         }
+        vTaskDelay(1);       
     }
 }
 

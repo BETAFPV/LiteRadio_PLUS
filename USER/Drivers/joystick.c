@@ -5,6 +5,9 @@
 #include "mixes.h"
 #include "stmflash.h"
 #include "radiolink.h"
+#include "function.h"
+#include "status.h"
+static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
 
 void joystickTask(void *param) 
@@ -15,7 +18,6 @@ void joystickTask(void *param)
 
 	while(1)
 	{
-		vTaskDelay(5);
             xQueueReceive(mixesValQueue,mixValBuff,0);
         //RUDDER   = 0 ,       //yaw
         //THROTTLE = 1 ,       //throttle
@@ -51,6 +53,7 @@ void joystickTask(void *param)
         reportData[7] = mixValBuff[7];
         
 
+		    vTaskDelay(joystickDelayTime);
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
         if(writeFlag != 0x01)

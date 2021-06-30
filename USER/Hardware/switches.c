@@ -181,10 +181,10 @@ uint16_t JoyStickValMapToChannelVal(uint16_t switch_val)
 void switchesTask(void* param)
 {
     static uint16_t switchesBuff[4] = {0};
-	switchesValQueue = xQueueCreate(20,sizeof(switchesBuff));
-	while(1)
-	{
-		vTaskDelay(15);
+    switchesValQueue = xQueueCreate(20,sizeof(switchesBuff));
+    while(1)
+    {
+        vTaskDelay(10);
         
 		switchesBuff[SWA] =  Get_SwitchValue(SWA);
 		switchesBuff[SWB] =  Get_SwitchValue(SWB);

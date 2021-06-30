@@ -12,12 +12,14 @@
 #include "tim.h"
 #include "delay.h"
 
+#include "status.h"
 TaskHandle_t radiolinkTaskHandle;
 EventGroupHandle_t radioEventHandle;
 static uint16_t controlData[8];
 static uint8_t versionSelectFlg = 3;
 static uint32_t delayTime = 0;
 static uint32_t delayTimeUs = 0;
+static uint32_t radiolinkDelayTime ;
 void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* controlData);
@@ -30,6 +32,7 @@ void radiolinkTask(void* param)
 {
     //TickType_t xLastWakeTime;   
     EventBits_t radioEvent;
+		radiolinkDelayTime = Get_ProtocolDelayTime();
     switch(versionSelectFlg)
 	{
 		case 0: RF_Init = FRSKYD16_Init;
@@ -69,8 +72,8 @@ void radiolinkTask(void* param)
     while(1)
     {
      //   xLastWakeTime = xTaskGetTickCount();
-        vTaskDelay(delayTime);
         xQueueReceive(mixesValQueue,controlData,0);
+        vTaskDelay(radiolinkDelayTime);
         radioEvent= xEventGroupWaitBits( radioEventHandle,
                                          RADIOLINK_BIND,
 		                                 pdTRUE,

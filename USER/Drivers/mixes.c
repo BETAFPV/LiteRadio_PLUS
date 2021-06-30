@@ -5,6 +5,8 @@
 #include "usbd_custom_hid_if.h"
 #include "stmflash.h"
 #include "radiolink.h"
+#include "status.h"
+static uint32_t mixesDelayTime;
 TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesValQueue = NULL;
 static mixData_t mixData[8];
@@ -174,11 +176,12 @@ void mixesTask(void* param)
     uint16_t switchesValBuff[4];
     uint16_t controlmode = 1;
     STMFLASH_Read(CONFIGER_MODE_ADDR,&controlmode,1);
+		mixesDelayTime = Get_ProtocolDelayTime();
     mixesValQueue = xQueueCreate(20,sizeof(reportData));
     Mixes_Init();
     while(1)
-	{
-		vTaskDelay(9);  
+    {
+        vTaskDelay(mixesDelayTime);  
         
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 

@@ -37,7 +37,55 @@ void Status_Init()
     {
         RGB_TwinkleForInit((protocolIndex+1),400);
     }
-    Version_Init(protocolIndex); 
+    Version_Init(protocolIndex);
+		 switch(protocolIndex)
+    {
+        case 0:
+				{
+            protocolDelayTime = D16_INTERVAL;
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);        
+            break;
+				}
+        case 1: 
+				{
+            protocolDelayTime = D16_INTERVAL;
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
+            break;
+				}
+        case 2: 
+				{
+            protocolDelayTime = D8_INTERVAL;
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
+            break;
+				}
+        case 3: 
+				{
+            protocolDelayTime = SFHSS_INTERVAL;
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
+            break;
+				}
+        case 4: 
+				{
+            protocolDelayTime = CRSF_INTERVAL;
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                
+            break;
+				}
+        default:
+				{
+            break;
+				}
+    }	
+}
+
+uint32_t Get_ProtocolDelayTime()
+{
+    return protocolDelayTime;
+}
+
+uint8_t Get_ProtocolIndex()
+{
+    uint8_t currProtocolIndex = (uint8_t)protocolIndex;
+    return currProtocolIndex;
 }
 
 void Status_Update()
@@ -82,7 +130,7 @@ void statusTask(void* param)
 
     while(1)
     {
-        vTaskDelay(2);
+        vTaskDelay(1);
         if(lastRCstatus == RC_INIT)
         {
             osDelay(3000);
