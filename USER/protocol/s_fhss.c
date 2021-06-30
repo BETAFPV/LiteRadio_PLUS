@@ -193,14 +193,14 @@ static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* sfhssContr
 
 	uint8_t ch_offset = (command&0x08) >> 1;			// CH1..CH4 or CH5..CH8
 
-    Channel_DataBuff[0] = sfhssControlData[MIX_AILERON];
-    Channel_DataBuff[1] = sfhssControlData[MIX_ELEVATOR];
-    Channel_DataBuff[2] = sfhssControlData[MIX_THROTTLE];
-    Channel_DataBuff[3] = sfhssControlData[MIX_RUDDER];
+    Channel_DataBuff[0] = sfhssControlData[MIX_THROTTLE];
+    Channel_DataBuff[1] = sfhssControlData[MIX_RUDDER];
+    Channel_DataBuff[2] = sfhssControlData[MIX_ELEVATOR];
+    Channel_DataBuff[3] = sfhssControlData[MIX_AILERON];
 
-	Channel_DataBuff[4] = sfhssControlData[4];
+    Channel_DataBuff[4] = sfhssControlData[4];
     Channel_DataBuff[5] = sfhssControlData[5];
-    Channel_DataBuff[6] = sfhssControlData[6];
+	Channel_DataBuff[6] = sfhssControlData[6];
     Channel_DataBuff[7] = sfhssControlData[7];
 		{	//Normal data
 			for(uint8_t i=0;i<4;i++)
