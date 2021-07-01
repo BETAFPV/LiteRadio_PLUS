@@ -9,6 +9,7 @@
 #include "mixes.h"
 #include "buzzer.h"
 static uint16_t protocolIndex;
+static uint32_t protocolDelayTime;
 static uint8_t RCstatus = RC_SHUTDOWN;
 static uint8_t lastRCstatus = RC_SHUTDOWN;
 static uint8_t RFstatus = RF_DATA;
@@ -16,11 +17,11 @@ static uint8_t powerStatus = RC_POWER_OFF;
 static uint8_t bindCount = 0;
 void Status_Init()
 {
-    STMFLASH_Read(FLASH_ADDR,&protocolIndex,1);
+    STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
     if(protocolIndex > 4)
     {
         protocolIndex = 0;
-        STMFLASH_Write(FLASH_ADDR,&protocolIndex,1);
+        STMFLASH_Write(CONFIGER_INFO_ADDR,&protocolIndex,1);
     }
     
     if(HAL_GPIO_ReadPin(KEY_BIND_GPIO_Port,KEY_BIND_Pin) == GPIO_PIN_RESET)
@@ -31,11 +32,11 @@ void Status_Init()
             protocolIndex = 0;
         }
 
-        STMFLASH_Write(FLASH_ADDR,&protocolIndex,1);
+        STMFLASH_Write(CONFIGER_INFO_ADDR,&protocolIndex,1);
     }
     if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port,KEY_POWER_Pin) == GPIO_PIN_RESET)
     {
-        RGB_TwinkleForInit((protocolIndex+1),400);
+        RGB_TwinkleForInit((protocolIndex+1),300);
     }
     Version_Init(protocolIndex);
 		 switch(protocolIndex)
