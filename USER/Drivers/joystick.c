@@ -15,45 +15,29 @@ void joystickTask(void *param)
     uint16_t writeFlag = 0x00;
     uint16_t reportData[8];
     uint16_t mixValBuff[8];
-
-	while(1)
-	{
-            xQueueReceive(mixesValQueue,mixValBuff,0);
-        //RUDDER   = 0 ,       //yaw
-        //THROTTLE = 1 ,       //throttle
-        //AILERON  = 2 ,       //roll
-        //ELEVATOR = 3 ,       //pitch
-
-//        //x轴
-//		reportData[3] = mixValBuff[RUDDER];
-//        //y轴
-//		reportData[4] = mixValBuff[THROTTLE];
-//        //z轴
-//        reportData[5] = mixValBuff[ELEVATOR];
-
-//		//x旋转		
-//		reportData[0] = mixValBuff[AILERON];
-//        //y旋转
-//		reportData[1] = mixValBuff[4];
-//		//z旋转
-//        reportData[2] = mixValBuff[5];
-//        
-//        //滑块1
-//		reportData[6] = mixValBuff[6];
-//        //滑块2
-//		reportData[7] = mixValBuff[7];
-
-        reportData[0] = mixValBuff[AILERON];
-        reportData[1] = mixValBuff[ELEVATOR];
-        reportData[2] = mixValBuff[THROTTLE];
-        reportData[3] = mixValBuff[RUDDER];
-        reportData[4] = mixValBuff[4];
-        reportData[5] = mixValBuff[5];
-        reportData[6] = mixValBuff[6];
-        reportData[7] = mixValBuff[7];
-        
-
+		joystickDelayTime = Get_ProtocolDelayTime();
+    while(1)
+		{
 		    vTaskDelay(joystickDelayTime);
+		    uxTaskGetStackHighWaterMarkdebug_1 = uxTaskGetStackHighWaterMark(NULL);
+        xQueueReceive(mixesValQueue,mixValBuff,0);
+
+        // reportData[0] = mixValBuff[0];
+        // reportData[1] = mixValBuff[1];
+        // reportData[2] = mixValBuff[2];
+        // reportData[3] = mixValBuff[3];
+        // reportData[4] = mixValBuff[4];
+        // reportData[5] = mixValBuff[5];
+        // reportData[6] = mixValBuff[6];
+        // reportData[7] = mixValBuff[7];
+				reportData[0] = map(mixValBuff[0],988,2020,0,2047);
+				reportData[1] = map(mixValBuff[1],988,2020,0,2047);
+				reportData[2] = map(mixValBuff[2],988,2020,0,2047);
+				reportData[3] = map(mixValBuff[3],988,2020,0,2047);
+				reportData[4] = map(mixValBuff[4],988,2020,0,2047);
+				reportData[5] = map(mixValBuff[5],988,2020,0,2047);
+				reportData[6] = map(mixValBuff[6],988,2020,0,2047);
+				reportData[7] = map(mixValBuff[7],988,2020,0,2047);
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
         if(writeFlag != 0x01)
