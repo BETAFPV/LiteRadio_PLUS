@@ -13,7 +13,6 @@ static uint8_t highThrottleFlg = 1;//开机油门标志 1：油门没有打到�
 static uint8_t calibrationStatus = 0;
 QueueHandle_t gimbalValQueue = NULL;
 EventGroupHandle_t gimbalEventHandle = NULL;
-
 static uint32_t gimbalDelayTime;
 
 uint16_t Sampling_MaxMinData[4][3] = 
@@ -105,13 +104,10 @@ void Check_HighThrottle(void)
     if(timeCount<1000) timeCount++;
     if(timeCount==1000)
     {
-#ifdef MODE2
         Throttle_Value = Get_GimbalValue(THROTTLE);
-#else
-        Throttle_Value = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(THROTTLE);
-#endif
-    if(Throttle_Value<HIGH_THROTTLE_THRESHOLD)        
-        highThrottleFlg = 0;
+        
+        if(Throttle_Value<HIGH_THROTTLE_THRESHOLD)        
+            highThrottleFlg = 0;
     }
 }
 
@@ -143,7 +139,7 @@ void SaveCalibrationValueToFlash(void)
 
 void ReadCalibrationValueForFlash(void)
 {
-	STMFLASH_Read(ELEVATOR_MAXVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MAXDAT],1);
+    STMFLASH_Read(ELEVATOR_MAXVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MAXDAT],1);
     STMFLASH_Read(ELEVATOR_MIDVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MIDDAT],1);
     STMFLASH_Read(ELEVATOR_MINVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MINDAT],1);
     
@@ -245,35 +241,33 @@ void Gimbal_Init()
 
 void gimbalTask(void* param)
 {
-
-	EventBits_t gimbalEvent;
+    EventBits_t gimbalEvent;
     static uint16_t gimbalBuff[4] = {0};
-	gimbalValQueue = xQueueCreate(20,sizeof(gimbalBuff));
-	while(1)
-	{
 		gimbalDelayTime = Get_ProtocolDelayTime();
+    gimbalValQueue = xQueueCreate(20,sizeof(gimbalBuff));
+    while(1)
+    {
         vTaskDelay(gimbalDelayTime);
 
         gimbalBuff[THROTTLE] = Get_GimbalValue(THROTTLE);
-		gimbalBuff[AILERON] = Get_GimbalValue(AILERON);
-        gimbalBuff[RUDDER] = Get_GimbalValue(RUDDER);//反的
-		gimbalBuff[ELEVATOR] = Get_GimbalValue(ELEVATOR);//反的
+        gimbalBuff[RUDDER] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER);
+        gimbalBuff[AILERON] = Get_GimbalValue(AILERON);
 
-		gimbalEvent= xEventGroupWaitBits( gimbalEventHandle,
+        gimbalBuff[ELEVATOR] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR);
+
+        gimbalEvent= xEventGroupWaitBits( gimbalEventHandle,
 		                                  GIMBAL_CALIBRATE_IN,
 		                                  pdTRUE,
 	                                      pdFALSE,
 		                                  0);
-		if((gimbalEvent & GIMBAL_CALIBRATE_IN) == GIMBAL_CALIBRATE_IN)
-		{
-			calibrationStatus +=1;
-		}
+        if((gimbalEvent & GIMBAL_CALIBRATE_IN) == GIMBAL_CALIBRATE_IN)
+        {
+            calibrationStatus += 1;
+        }
         if(calibrationStatus > 0 && calibrationStatus <= 3)
         {
             GimbalCalibrateProcess();
         }
-		xQueueSend(gimbalValQueue,gimbalBuff,0);
-
-	}
+        xQueueSend(gimbalValQueue,gimbalBuff,0);
+    }
 }
-

@@ -6,10 +6,10 @@
 
 typedef enum
 {
-    RC_INIT           = 0,
-    RC_SHUTDOWN          ,
-	RC_RADIOLINK 	     ,    
-    RC_CHRG_AND_JOYSTICK ,
+    RC_INIT             = 0,
+    RC_SHUTDOWN            ,
+    RC_RADIOLINK 	         ,    
+    RC_CHRG_AND_JOYSTICK   ,
 }RCstatus_e;
 
 typedef enum

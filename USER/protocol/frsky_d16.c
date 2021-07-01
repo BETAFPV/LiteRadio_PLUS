@@ -13,8 +13,6 @@
 
 TaskHandle_t frskyd16TaskHandle;
 
-static GimbalReverseTypeDef gimbalReverseFlg;//摇杆输出反向标志 0：不反向 1：反向
-
 #ifdef LBT
 	#define FRSKYD16_PACKET_LEN  33
 #else
@@ -232,7 +230,7 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* d16ControlDat
 	SendPacket[2]   = TransmitterID & 0xFF ;           
 	SendPacket[3] 	= 0x02;
 	
-	//  
+	
 	SendPacket[4] = (FRSKYD16_ctr<<6) + FRSKYD16_Channel_Num; 
 	SendPacket[5] = FRSKYD16_CountsRst;
 	SendPacket[6] = 0x01;
@@ -240,11 +238,11 @@ void  __attribute__((unused)) FRSKYD16_build_Data_packet(uint16_t* d16ControlDat
 	
 	if(FRSKYD16_Channel_Num == 0x21) 
 	  FRSKYD16_Channel_Num = 0x21 ; 
-	//
+	
 	SendPacket[7] = 0;
 	SendPacket[8] = 0;
 	
-	//
+	
 	if (lpass & 1) 
 	{
 		startChan += 8;
@@ -404,7 +402,6 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 		  	if(FRSKYD16_BindCounts < 600)
 			{    
                 ++FRSKYD16_BindCounts ;    
-				RGB_Toggle(FRSKYD16_BindCounts & 0x10);
 				FRSKYD16_TuneChannel(FRSKYD16_BINDCHANNEL) ; 
 				CC2500_SetPower(CC2500_POWER_17);
 				CC2500_Strobe(CC2500_SFRX);
@@ -421,7 +418,6 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 				//FRSKYD16_InitDeviceAddr(Bind_flg) ;	
 				CC2500_SetPower(RF_POWER);
 				FRSKYD16Phase = FRSKYD16_DATA ; 
-                RGB_Set(BLUE,BRIGHTNESS_MAX);
 			}
 		break;
 		// Frsky D16 data

@@ -119,44 +119,43 @@ void Buzzer_On(uint8_t tone)
 
 void Buzzer_Start()
 {
-	HAL_TIM_PWM_Start(&htim3,BUZZER_PWM_CH);
+    HAL_TIM_PWM_Start(&htim3,BUZZER_PWM_CH);
 }
 
 void Buzzer_Stop()
 {
-	HAL_TIM_PWM_Stop(&htim3,BUZZER_PWM_CH);
+    HAL_TIM_PWM_Stop(&htim3,BUZZER_PWM_CH);
 }
 
 void HAL_TIM_SET_COMPARE(uint16_t compare)
 {	
-	htim3.Instance->CCR1 = compare;
+    htim3.Instance->CCR1 = compare;
 }
 
 void HAL_TIM_SET_AUTORELOAD(uint16_t arr)
 {
-	htim3.Instance->ARR = arr;
-	htim3.Init.Period = arr;
+    htim3.Instance->ARR = arr;
+    htim3.Init.Period = arr;
 }
 
 void buzzerTask(void* param)
 {
-	EventBits_t buzzerEvent;
+    EventBits_t buzzerEvent;
     uint8_t buzzerStatus = BUZZER_NORMAL;
     uint8_t lastBuzzerStatus = BUZZER_NORMAL;
-	while(1)
-	{   
-
+    while(1)
+    {   
         vTaskDelay(5);        
-		buzzerEvent= xEventGroupWaitBits( buzzerEventHandle,
+        buzzerEvent= xEventGroupWaitBits( buzzerEventHandle,
 		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING|RISS_WARNING_RING,
 		                              pdTRUE,
 	                                  pdFALSE,
 		                              0);
-		/*POWER RING*/
+        /*POWER RING*/
         if((buzzerEvent & POWER_ON_RING) == POWER_ON_RING)
-		{         
+        {         
             Buzzer_BeeUp();
-		}
+        }
         if((buzzerEvent & POWER_OFF_RING) == POWER_OFF_RING)
         {				
             Buzzer_BeeDown();
@@ -223,6 +222,5 @@ void buzzerTask(void* param)
             }
         }
         lastBuzzerStatus = buzzerStatus;
-
-	}
+    }
 }

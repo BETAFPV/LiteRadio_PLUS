@@ -206,7 +206,6 @@ static void __attribute__((unused)) SFHSS_build_data_packet(uint16_t* sfhssContr
 			for(uint8_t i=0;i<4;i++)
 				ch[i] = convert_channel_16b_nolimit(CH_AETR[ch_offset+i],2000,1000);
 		}
-
 	
 	// XK		[0]=0x81 [3]=0x00 [4]=0x00
 	// T8J		[0]=0x81 [3]=0x42 [4]=0x07
@@ -269,17 +268,17 @@ uint16_t ReadSFHSS(uint16_t* controlData)
 			SFHSS_send_packet();
 			phase = SFHSS_DATA2;
 			return SFHSS_DATA2_TIMING;								// original 1650
-		//break;
+//		//break;
         case SFHSS_DATA2:
 			SFHSS_build_data_packet(controlData);
 			SFHSS_send_packet();
 			SFHSS_calc_next_chan();
 			phase = SFHSS_TUNE;
-        //return SFHSS_TUNE_TIMING;
+        return SFHSS_TUNE_TIMING;
         //return (SFHSS_PACKET_PERIOD-SFHSS_DATA2_TIMING-SFHSS_TUNE_TIMING);
 			//return (SFHSS_PACKET_PERIOD -2000 -SFHSS_DATA2_TIMING);	// original 2000
-        return SFHSS_TUNE_TIMING;
-        //break;
+//        return SFHSS_TUNE_TIMING;
+//        //break;
 		case SFHSS_TUNE:
 			phase = SFHSS_DATA1;
 			//sbus_checkrx();

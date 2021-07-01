@@ -14,7 +14,6 @@ static uint8_t RCstatus = RC_SHUTDOWN;
 static uint8_t lastRCstatus = RC_SHUTDOWN;
 static uint8_t RFstatus = RF_DATA;
 static uint8_t powerStatus = RC_POWER_OFF;
-static uint8_t bindCount = 0;
 void Status_Init()
 {
     STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
@@ -101,13 +100,11 @@ void Status_Update()
         if(lastRCstatus == RC_SHUTDOWN)
         {
             vTaskResume(radiolinkTaskHandle);
-          //  vTaskResume(mixesTaskHandle);
         }
         if(lastRCstatus == RC_CHRG_AND_JOYSTICK)
         {
             vTaskSuspend(joystickTaskHandle); 
             vTaskResume(radiolinkTaskHandle);
-          //  vTaskResume(mixesTaskHandle);
         }
     }
     if(powerStatus == RC_POWER_OFF)
@@ -124,7 +121,6 @@ void Status_Update()
         if(lastRCstatus == RC_RADIOLINK)
         {
             vTaskSuspend(radiolinkTaskHandle);
-        //    vTaskSuspend(mixesTaskHandle);
             vTaskResume(joystickTaskHandle); 
         }
     }
@@ -149,13 +145,13 @@ void statusTask(void* param)
         {
             Status_Update();
         }
-		keyEvent= xEventGroupWaitBits( KeyEventHandle,
+        keyEvent= xEventGroupWaitBits( KeyEventHandle,
 		                               POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
 		                               pdTRUE,
 	                                   pdFALSE,
 		                               0);  
-		if((keyEvent & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
-		{    
+        if((keyEvent & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
+        {    
             if(powerStatus)
             {
                 powerStatus = RC_POWER_OFF;
@@ -174,16 +170,16 @@ void statusTask(void* param)
             Status_Update();
         }
         
-		if((keyEvent & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
-		{    
+        if((keyEvent & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
+        {    
             if(RCstatus != RC_CHRG_AND_JOYSTICK)
             {
                 xEventGroupSetBits( radioEventHandle, RADIOLINK_BIND);
                 RFstatus = RF_BIND;
             }
         }    
-		if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
-		{    
+        if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
+        {    
             if(RCstatus != RC_CHRG_AND_JOYSTICK)
             {
                 xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
@@ -194,15 +190,15 @@ void statusTask(void* param)
             }   
         }       
         
-		gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
+        gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
 		                                   GIMBAL_CALIBRATE_END,
 		                                   pdTRUE,
 	                                       pdTRUE,
 		                                   0);
-		if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
-		{
-			RFstatus = RF_DATA;
-		}
+        if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
+        {
+            RFstatus = RF_DATA;
+        }
 
         switch (RCstatus)
         {

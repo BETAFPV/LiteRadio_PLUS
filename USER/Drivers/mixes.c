@@ -7,11 +7,12 @@
 #include "radiolink.h"
 #include "status.h"
 static uint32_t mixesDelayTime;
+UBaseType_t uxTaskGetStackHighWaterMarkdebug;
 TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesValQueue = NULL;
 static mixData_t mixData[8];
-//初始化混控的参数
 uint16_t mixesBuff[8];
+size_t debug;
 
 void Mixes_Init()
 {   
@@ -23,15 +24,18 @@ void Mixes_Init()
 
 void Mixes_ChannelUpdate(uint8_t channel)
 {
-    STMFLASH_Read(MIX_CHANNEL_1_INFO_ADDR+channel*8,mixesBuff,4);     
-
+    STMFLASH_Read(CACHE_MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);     
+//    mixesBuff[0] = channel;
+//    mixesBuff[1] = 0;
+//    mixesBuff[2] = 100;
+//    mixesBuff[3] = 100;
     mixData[channel].gimbalChannel = (uint8_t)mixesBuff[0];
-    mixData[channel].inverse= (uint8_t)mixesBuff[1];
+    mixData[channel].reverse= (uint8_t)mixesBuff[1];
     mixData[channel].weight = (uint8_t)mixesBuff[2];
     mixData[channel].offset = (uint8_t)mixesBuff[3];
 }
 
-//摇杆通道补偿操作
+/*通道补偿运算*/
 uint16_t Mixes_GimbalOffset(uint8_t offset, uint16_t gimbalValCurr)
 {
     if(offset < 100)
@@ -45,7 +49,7 @@ uint16_t Mixes_GimbalOffset(uint8_t offset, uint16_t gimbalValCurr)
     return gimbalValCurr;
 }
 
-//摇杆通道比例操作
+/*通道比例运算*/
 uint16_t Mixes_GimbalWeight(uint8_t weight, uint16_t gimbalValCurr)
 {
     if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
@@ -59,10 +63,10 @@ uint16_t Mixes_GimbalWeight(uint8_t weight, uint16_t gimbalValCurr)
     return gimbalValCurr;
 }
 
-//摇杆通道反向操作
-uint16_t Mixes_GimbalInverse(uint8_t inverse, uint16_t gimbalValCurr,uint16_t* outputcode)
+/*通道反向运算*/
+uint16_t Mixes_Gimbalreverse(uint8_t reverse, uint16_t gimbalValCurr,uint16_t* outputcode)
 {
-    if(inverse)
+    if(reverse)
     {
         if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
         {
@@ -88,9 +92,9 @@ uint16_t Mixes_GimbalInverse(uint8_t inverse, uint16_t gimbalValCurr,uint16_t* o
     return gimbalValCurr;
 }
 //开关通道反向操作
-uint16_t Mixes_SwitchInverse(uint8_t inverse, uint16_t gimbalValCurr)
+uint16_t Mixes_Switchreverse(uint8_t reverse, uint16_t gimbalValCurr)
 {
-    if(inverse)
+    if(reverse)
     {
         if(gimbalValCurr > CHANNEL_OUTPUT_MID) 
         {
@@ -186,46 +190,39 @@ void mixesTask(void* param)
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
         if(writeFlag == 0x01)
-		{         
+        {         
             Mixes_Init();
             writeFlag = 0x00;
             STMFLASH_Write(CONFIGER_INFO_FLAG,&writeFlag,1);
-		}
+        }
         
         xQueueReceive(gimbalValQueue,gimbalVaBuff,0);
         xQueueReceive(switchesValQueue,switchesValBuff,0);
         
-        
-        //THROTTLE  = 0 ,       //throttle
-        //RUDDER = 1 ,       //yaw
-        //ELEVATOR = 2 ,       //pitch
-        //AILERON = 3 ,       //roll
-        
-        if(controlmode == 1)//日本手
+        /*日本手模式1，美国手模式0*/
+        if(controlmode == 1)
         {
-            reportData[0] = gimbalVaBuff[2];
-            reportData[1] = gimbalVaBuff[1];
-            reportData[2] = gimbalVaBuff[0];
-            reportData[3] = gimbalVaBuff[3];        
+            reportData[AILERON] = gimbalVaBuff[AILERON];
+            reportData[ELEVATOR] = gimbalVaBuff[THROTTLE];
+            reportData[THROTTLE] = gimbalVaBuff[ELEVATOR];
+            reportData[RUDDER] = gimbalVaBuff[RUDDER];        
         }
-        else//美国手
+        else
         {
-            reportData[0] = gimbalVaBuff[0];
-            reportData[1] = gimbalVaBuff[1];
-            reportData[2] = gimbalVaBuff[2];
-            reportData[3] = gimbalVaBuff[3];         
+            reportData[AILERON] = gimbalVaBuff[AILERON];
+            reportData[ELEVATOR] = gimbalVaBuff[ELEVATOR];  
+            reportData[THROTTLE] = gimbalVaBuff[THROTTLE];
+            reportData[RUDDER] = gimbalVaBuff[RUDDER];            
         }
         
-
-
-		reportData[4] = switchesValBuff[0];
-		reportData[5] = switchesValBuff[1];
-		reportData[6] = switchesValBuff[2];
-		reportData[7] = switchesValBuff[3];   
+        reportData[4] = switchesValBuff[0];
+        reportData[5] = switchesValBuff[1];
+        reportData[6] = switchesValBuff[2];
+        reportData[7] = switchesValBuff[3];   
 
         for(mixIndex = 0;mixIndex < 8;mixIndex++)
         {
-            mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];
+            
             if(mixData[mixIndex].gimbalChannel < 4)
             {
                 switch (mixData[mixIndex].gimbalChannel)
@@ -259,23 +256,27 @@ void mixesTask(void* param)
                 
                 if(mixData[mixIndex].gimbalChannel == MIX_THROTTLE)
                 {
-                    //油门映射
-                    mixData[mixIndex].output = Mixes_GimbalInverse(mixData[mixIndex].inverse, mixData[mixIndex].output, THROTTLE_OutputCode);
+                    /*油门通道映射*/
+                    mixData[mixIndex].output = Mixes_Gimbalreverse(mixData[mixIndex].reverse, mixData[mixIndex].output, THROTTLE_OutputCode);
                 }
                 else
                 {
-                    //非油门映射
-                    mixData[mixIndex].output = Mixes_GimbalInverse(mixData[mixIndex].inverse, mixData[mixIndex].output, OutputCode);
+                    /*非油门通道映射*/
+                    mixData[mixIndex].output = Mixes_Gimbalreverse(mixData[mixIndex].reverse, mixData[mixIndex].output, OutputCode);
                 }
-                //通道补偿
+								
+                /*通道补偿*/
                 mixData[mixIndex].output = Mixes_GimbalOffset(mixData[mixIndex].offset, mixData[mixIndex].output);
-                //通道比例
+								
+                /*通道比例*/
                 mixData[mixIndex].output = Mixes_GimbalWeight(mixData[mixIndex].weight, mixData[mixIndex].output);
                 
             }
             if(mixData[mixIndex].gimbalChannel >= 4)
             {
-                mixData[mixIndex].output = Mixes_SwitchInverse(mixData[mixIndex].inverse, mixData[mixIndex].output);
+							
+                mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];
+                mixData[mixIndex].output = Mixes_Switchreverse(mixData[mixIndex].reverse, mixData[mixIndex].output);
             }
         }
         
@@ -288,6 +289,8 @@ void mixesTask(void* param)
         reportData[6] = mixData[6].output;        
         reportData[7] = mixData[7].output;                      
         xQueueSend(mixesValQueue,reportData,0);
+        debug = xPortGetFreeHeapSize();
+        uxTaskGetStackHighWaterMarkdebug = uxTaskGetStackHighWaterMark(NULL);
     }
 }
 
