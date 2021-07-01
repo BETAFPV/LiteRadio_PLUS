@@ -52,10 +52,10 @@
 
 #define CACHE_MIX_CHANNEL_INFO_ADDR 0x8007100
 
-#define MIX_RUDDER     0x00      
-#define MIX_THROTTLE   0x01      
-#define MIX_AILERON    0x02    
-#define MIX_ELEVATOR   0x03    
+#define MIX_AILERON    0x00      
+#define MIX_ELEVATOR   0x01  
+#define MIX_THROTTLE   0x02   
+#define MIX_RUDDER     0x03    
 #define MIX_SWA        0x04       //2POS
 #define MIX_SWB        0x05       //3POS
 #define MIX_SWC        0x06       //3POS
