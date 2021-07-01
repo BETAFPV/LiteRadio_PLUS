@@ -34,40 +34,30 @@ void radiolinkTask(void* param)
     EventBits_t radioEvent;
 		radiolinkDelayTime = Get_ProtocolDelayTime();
     switch(versionSelectFlg)
-	{
-		case 0: RF_Init = FRSKYD16_Init;
+    {
+        case 0: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
-				RF_Process = ReadFRSKYD16;
-                delayTime = D16_INTERVAL;
-                HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);        
-				break;
-		case 1: RF_Init = FRSKYD16_Init;
+                RF_Process = ReadFRSKYD16;      
+                break;
+        case 1: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
-				RF_Process = ReadFRSKYD16;
-                delayTime = D16_INTERVAL;
-                HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
-				break;
-		case 2: RF_Init = initFRSKYD8;
+                RF_Process = ReadFRSKYD16;
+                break;
+        case 2: RF_Init = initFRSKYD8;
                 RF_Bind = D8_SetBind;
-				RF_Process = ReadFRSKYD8;
-                delayTime = D8_INTERVAL;
-                HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
-				break;
+                RF_Process = ReadFRSKYD8;
+                break;
         case 3: RF_Init = initSFHSS;
-				RF_Process = ReadSFHSS;
+                RF_Process = ReadSFHSS;
                 RF_Bind = SFHSS_SetBind;
-                delayTime = SFHSS_INTERVAL;
-                HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
-				break;
+                break;
         case 4: RF_Init = CRSF_Init;
-				RF_Process = CRSF_Process;
-                RF_Bind = CRSF_SetBind;
-                delayTime = CRSF_INTERVAL;
-                HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                
-				break;
-		default:
-				break;
-	}
+                RF_Process = CRSF_Process;
+                RF_Bind = CRSF_SetBind;               
+                break;
+        default:
+                break;
+    }
     RF_Init(versionSelectFlg);
     while(1)
     {
