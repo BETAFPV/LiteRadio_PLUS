@@ -92,6 +92,10 @@ void Status_Update()
 {
     if(powerStatus == RC_POWER_ON)
     {
+        if(protocolIndex == 4)
+				{
+				    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);   
+				}
         RCstatus = RC_RADIOLINK;
         if(lastRCstatus == RC_SHUTDOWN)
         {
@@ -106,7 +110,11 @@ void Status_Update()
         }
     }
     if(powerStatus == RC_POWER_OFF)
-    {
+    {		
+        if(protocolIndex == 4)
+				{
+				    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);   
+				}
         RCstatus = RC_CHRG_AND_JOYSTICK;
         if(lastRCstatus == RC_SHUTDOWN)
         {
