@@ -41,21 +41,22 @@ void joystickTask(void *param)
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
         if(writeFlag != 0x01)
-		{    
+				{    
             if(writeFlag == 0x02)
             {
                 reportData[0] = CONFIGER_INFO_ID;
-                STMFLASH_Read(FLASH_ADDR,&reportData[1],1);
-                STMFLASH_Read(CONFIGER_INFO_POWER,&reportData[2],5);
+                STMFLASH_Read(CONFIGER_INFO_ADDR,&reportData[1],6);
+                reportData[7] = 0xFFFE;
             }
             else if(0 < writeFlag && writeFlag <= 0x0A)
             {
                 reportData[0] = CHANNEILS_INFO_ID;
-                reportData[1] = writeFlag- 0x02;
+                reportData[1] = writeFlag- 0x03;
                 STMFLASH_Read(MIX_CHANNEL_1_INFO_ADDR + 8*(writeFlag - 0x03),&reportData[2],4);
+                reportData[7] = 0xFFFE;
             }
         }
         USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &reportData, 8*sizeof(uint16_t));
-	}
+    }
 }
 

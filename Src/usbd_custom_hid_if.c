@@ -283,15 +283,13 @@ void SaveMixValueToFlash(void)
     {
         case CHANNEILS_INPUT_ID:
         {    
-            STMFLASH_Write(MIX_CHANNEL_1_INFO_ADDR+USB_Recive_Buffer[1]*8,&writeWord[2],4);
+            STMFLASH_Write(CACHE_MIX_CHANNEL_INFO_ADDR+USB_Recive_Buffer[1]*8,&writeWord[2],4);
             writeWord[0] = 0x01;
             break;
         }
         case CONFIGER_INFO_ID:
         {
-            STMFLASH_Write(FLASH_ADDR,&writeWord[1],1);
-            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[2],5);
-            
+            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],6);          
             writeWord[0] = 0x01;
             break;
         }
@@ -300,7 +298,13 @@ void SaveMixValueToFlash(void)
             writeWord[0] = USB_Recive_Buffer[1];
             break;
         }
-        
+        case REQUESET_SAVE_ID:
+        {
+            uint16_t channelBuff[32];
+            STMFLASH_Read(CACHE_MIX_CHANNEL_INFO_ADDR,channelBuff,32);
+            STMFLASH_Write(MIX_CHANNEL_INFO_ADDR,channelBuff,32);
+            break;
+        }
         default:
             break;
     }
