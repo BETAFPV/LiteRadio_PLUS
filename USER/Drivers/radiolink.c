@@ -11,15 +11,13 @@
 #include "key.h"
 #include "tim.h"
 #include "delay.h"
-
 #include "status.h"
 TaskHandle_t radiolinkTaskHandle;
 EventGroupHandle_t radioEventHandle;
-static uint16_t controlData[8];
+static uint16_t rfcontrolData[8];
 static uint8_t versionSelectFlg = 3;
-static uint32_t delayTime = 0;
-static uint32_t delayTimeUs = 0;
 static uint32_t radiolinkDelayTime ;
+uint16_t debug_0;
 void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* controlData);
@@ -28,9 +26,10 @@ void Version_Init(uint16_t protocolIndex)
     versionSelectFlg = protocolIndex;
 }
 
+
+
 void radiolinkTask(void* param)
 {
-    //TickType_t xLastWakeTime;   
     EventBits_t radioEvent;
 		radiolinkDelayTime = Get_ProtocolDelayTime();
     switch(versionSelectFlg)
@@ -59,22 +58,21 @@ void radiolinkTask(void* param)
                 break;
     }
     RF_Init(versionSelectFlg);
+		
     while(1)
     {
-     //   xLastWakeTime = xTaskGetTickCount();
-        xQueueReceive(mixesValQueue,controlData,0);
         vTaskDelay(radiolinkDelayTime);
+        xQueueReceive(mixesValQueue,rfcontrolData,0);
         radioEvent= xEventGroupWaitBits( radioEventHandle,
                                          RADIOLINK_BIND,
-		                                 pdTRUE,
-	                                     pdFALSE,
-		                                 0);
-		if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
-		{
+                                         pdTRUE,
+                                         pdFALSE,
+                                         0);
+        if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
+        {
             RF_Bind();
-		}  
-        
-        RF_Process(controlData);
+        }       
+        RF_Process(rfcontrolData);
     }
 }
 
