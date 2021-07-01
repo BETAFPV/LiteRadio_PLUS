@@ -20,10 +20,8 @@ void powerswitchTask(void* param)
 		                                 0);
 		if((powerEvent & POWER_ON) == POWER_ON)
 		{
-            xEventGroupSetBits( buzzerEventHandle, POWER_ON_RING);
-            POWER_PIN_HOLD_UP();
+
             RGB_Breath_Up(BLUE);
-            
             taskENTER_CRITICAL();	/*Ω¯»Î¡ŸΩÁ*/
             
             vTaskSuspend(powerTaskHandle);
@@ -34,7 +32,7 @@ void powerswitchTask(void* param)
 		{
             RGB_Set(BLACK,BRIGHTNESS_MAX);
             xEventGroupSetBits( buzzerEventHandle, POWER_OFF_RING);
-            RGB_Breath_Down(RED);
+           // RGB_Breath_Down(RED);
             POWER_PIN_HOLD_DOWN();
 		}        
 	}

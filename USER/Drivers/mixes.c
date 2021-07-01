@@ -228,6 +228,34 @@ void mixesTask(void* param)
             mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];
             if(mixData[mixIndex].gimbalChannel < 4)
             {
+                switch (mixData[mixIndex].gimbalChannel)
+                {
+                    case MIX_AILERON:
+                    {
+                        mixData[mixIndex].output = reportData[AILERON];
+                        break;
+                    }
+                    case MIX_ELEVATOR:
+                    {
+                        mixData[mixIndex].output = reportData[ELEVATOR];
+                        break;
+                    }
+                    case MIX_THROTTLE:
+                    {
+                        mixData[mixIndex].output = reportData[THROTTLE];
+                        break;
+                    } 
+                    case MIX_RUDDER:
+                    {
+                        mixData[mixIndex].output = reportData[RUDDER];
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
+  
                 
                 if(mixData[mixIndex].gimbalChannel == MIX_THROTTLE)
                 {
