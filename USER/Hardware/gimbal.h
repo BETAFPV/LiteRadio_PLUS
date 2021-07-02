@@ -67,8 +67,7 @@ void gimbalTask(void* param);
 uint16_t Get_GimbalValue(gimbalChannelTypeDef channel);
 void SaveCalibrationValueToFlash(void);
 void ReadCalibrationValueForFlash(void);
-void Check_HighThrottle(void);
-uint8_t Get_highThrottleFlg(void);
+uint8_t Check_HighThrottle(void);
 void GimbalCalibrateProcess(void);
 uint8_t get_calibrationMode(void);
 
