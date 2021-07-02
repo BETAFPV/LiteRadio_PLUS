@@ -15,7 +15,7 @@ typedef enum
 
 #define SWITCH_MAX_VALUE 2000
 #define SWITCH_MID_VALUE 1500
-#define SWITCH_MIN_VALUE 988
+#define SWITCH_MIN_VALUE 1000
 
 #define SWITCH_JOYSTICK_MAX_VALUE 4094
 #define SWITCH_JOYSTICK_MID_VALUE 2047
@@ -42,8 +42,6 @@ typedef enum
 
 void switchesTask(void* param);
 uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex);
-uint16_t GetSwitchJoyStickValue(SwitchesChannelTypeDef switchIndex);
-uint16_t JoyStickValMapToChannelVal(uint16_t switch_val);
 #endif
 
 
