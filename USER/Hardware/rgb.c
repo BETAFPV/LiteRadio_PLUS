@@ -91,7 +91,7 @@ void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
     uint8_t i;
     for(i=0; i<num; i++)
     {
-        RGB_Set(BLUE,BRIGHTNESS_MAX);
+        RGB_Set(RED,BRIGHTNESS_MAX);
         HAL_Delay(twinkleDelayTime);
         RGB_Set(BLACK,BRIGHTNESS_MAX);
         HAL_Delay(twinkleDelayTime);
@@ -112,13 +112,12 @@ void RGB_BindTwinkle()
 }
 
 void RGB_SetupTwinkle()
-{
-    
+{    
     if(onDelayCount == 0)
     {
         RGB_Set(RED,BRIGHTNESS_MAX);    
     }
-    if(onDelayCount < 20)
+    if(onDelayCount < 500)
     {
         onDelayCount++;
     }
@@ -133,7 +132,7 @@ void RGB_SetupTwinkle()
         {
             stopDelayCount = 0;
             onDelayCount = 0;
-            osDelay(200);
+            osDelay(500);
         }        
     }
    
@@ -165,25 +164,25 @@ void RGB_Breath(uint8_t colorIndex)
     {
         if(rgbBrightness>BRIGHTNESS_MIN)
         {
-							rgbBrightness--;
+            rgbBrightness--;
         }
         else
         {
             rgbBreathStatus = BREATH_UP;
         }
-				osDelay(10);
+        osDelay(10);
     }
     if(rgbBreathStatus == BREATH_UP)
     {
         if(rgbBrightness<BRIGHTNESS_MAX)
         {
-					rgbBrightness++;
+            rgbBrightness++;
         }
         else
         {
             rgbBreathStatus = BREATH_DOWN;
         }
-				osDelay(5);
+        osDelay(5);
     }
     RGB_Set(colorIndex,rgbBrightness);
 
@@ -192,6 +191,9 @@ void RGB_Breath(uint8_t colorIndex)
 void rgbTask(void* param)
 {
     EventBits_t rgbEvent;
+    
+    highThrottleFlag = 1;
+    
     while(1)
     {   
         vTaskDelay(1);       
@@ -200,50 +202,32 @@ void rgbTask(void* param)
                                         pdTRUE,
                                         pdFALSE,
                                         0);
-				/*POWER RGB*/
-				if((rgbEvent & POWER_ON_RGB) == POWER_ON_RGB)
-				{         
-						RGB_Breath_Up(BLUE);
-						rgbEvent &= ~CHRG_AND_JOYSTICK_RGB;
-				}
-				if((rgbEvent & POWER_OFF_RGB) == POWER_OFF_RGB)
-				{				
-						RGB_Breath_Down(BLUE);
-						rgbEvent &= ~DATA_RGB;
-				}
-						
-				/*SETUP RGB*/
-				if((rgbEvent & BIND_RGB) == BIND_RGB)
-				{
-						bindStatus = 1;
-						RGB_BindTwinkle();
-				}        
-				if((rgbEvent & SETUP_RGB) == SETUP_RGB)
-				{
-						RGB_SetupTwinkle();
-				}
-				if((rgbEvent & DATA_RGB) == DATA_RGB)
-				{
-						if(bindStatus == 0)
-						{
-						}
-				}
-				if((rgbEvent & SHUTDOWN_RGB) == SHUTDOWN_RGB)
-				{
-						RGB_Set(YELLOW,BRIGHTNESS_MAX);
-				}
-				
-				if((rgbEvent & CHRG_AND_JOYSTICK_RGB) == CHRG_AND_JOYSTICK_RGB)
-				{
-						if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
-						{
-								RGB_Breath(RED);
-						}
-						else
-						{
-								RGB_Breath(GREEN);                
-						}   
-				}
+        /*POWER RGB*/
+        if((rgbEvent & POWER_ON_RGB) == POWER_ON_RGB)
+        {         
+            RGB_Breath_Up(RED);
+            rgbEvent &= ~CHRG_AND_JOYSTICK_RGB;
+        }
+        if((rgbEvent & POWER_OFF_RGB) == POWER_OFF_RGB)
+        {				
+            RGB_Breath_Down(BLUE);
+            rgbEvent &= ~DATA_RGB;
+        }
+                
+        /*SETUP RGB*/
+        if((rgbEvent & BIND_RGB) == BIND_RGB)
+        {
+            bindStatus = 1;
+            RGB_BindTwinkle();
+        }        
+        if((rgbEvent & SETUP_RGB) == SETUP_RGB)
+        {
+            RGB_SetupTwinkle();
+        }
+        if((rgbEvent & DATA_RGB) == DATA_RGB)
+        {
+            if(bindStatus == 0)
+            {
                 if(highThrottleFlag)
                 {
                     highThrottleFlag = Check_HighThrottle();
@@ -253,6 +237,24 @@ void rgbTask(void* param)
                 {
                    RGB_Set(BLUE,BRIGHTNESS_MAX); 
                 }
+            }
+        }
+        if((rgbEvent & SHUTDOWN_RGB) == SHUTDOWN_RGB)
+        {
+            RGB_Set(YELLOW,BRIGHTNESS_MAX);
+        }
+        
+        if((rgbEvent & CHRG_AND_JOYSTICK_RGB) == CHRG_AND_JOYSTICK_RGB)
+        {
+            if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
+            {
+                RGB_Breath(RED);
+            }
+            else
+            {
+                RGB_Breath(GREEN);                
+            }   
+        }
     }
 }
 

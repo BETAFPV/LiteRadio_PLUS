@@ -235,10 +235,10 @@ static void __attribute__((unused)) SFHSS_send_packet()
 
 uint16_t ReadSFHSS(uint16_t* controlData)
 {
-	switch(phase)
-	{
-		case SFHSS_START:
-			rf_ch_num = 0;
+    switch(phase)
+    {
+        case SFHSS_START:
+            rf_ch_num = 0;
 			SFHSS_tune_chan();
 			phase = SFHSS_CAL;
 			return 2000;
@@ -256,12 +256,12 @@ uint16_t ReadSFHSS(uint16_t* controlData)
 			return 2000;
             //break;
 		/* Work cycle: 6.8ms */
-//#define SFHSS_PACKET_PERIOD	6798
-//#define SFHSS_DATA2_TIMING	1630//1647
-//#define SFHSS_TUNE_TIMING	2020
-#define SFHSS_PACKET_PERIOD	6798
-#define SFHSS_DATA2_TIMING	2020//1647
-#define SFHSS_TUNE_TIMING	2020
+    //#define SFHSS_PACKET_PERIOD	6798
+    //#define SFHSS_DATA2_TIMING	1630//1647
+    //#define SFHSS_TUNE_TIMING	2020
+    #define SFHSS_PACKET_PERIOD	6798
+    #define SFHSS_DATA2_TIMING	2020//1647
+    #define SFHSS_TUNE_TIMING	2020
 			// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
 		case SFHSS_DATA1:
 			SFHSS_build_data_packet(controlData);

@@ -7,9 +7,9 @@
 #include "buzzer.h"
 #include "radiolink.h"
 #include "status.h"
+
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibrationMode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
-static uint8_t highThrottleFlg = 1;//开机油门标志 1：油门没有打到最底 0：油门打到底
 static uint8_t calibrationStatus = 0;
 QueueHandle_t gimbalValQueue = NULL;
 EventGroupHandle_t gimbalEventHandle = NULL;
@@ -31,7 +31,7 @@ return : Gimbal Channel Value
 uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 {
 	uint16_t ADTemp = 0 ; 
-	uint16_t outputTemp = 0 ;
+    uint16_t outputTemp = 0 ;
 	if((channel == RUDDER) || (channel == ELEVATOR) || (channel == AILERON) ||(channel == THROTTLE))
 	{
 		if(calibrationMode == 0)   //如果当前运行状态不在校准模式，正常执行
@@ -188,7 +188,6 @@ void GimbalCalibrateProcess(void)
 				Sampling_MaxMinData[AILERON][MINDAT] = Sampling_MaxMinData[AILERON][MIDDAT];
 				MidValueGetSta = 0x01;          //设置已经保存标志位，防止重复保存读写Flash 容易损坏flash
 			}
-		//	RGB_Twinkle(2);
             xEventGroupSetBits(buzzerEventHandle,SETUP_MINMAX_RING);  
 			if(Get_AdcValue(THROTTLE) > Sampling_MaxMinData[THROTTLE][MAXDAT])    
 				Sampling_MaxMinData[THROTTLE][MAXDAT] = Get_AdcValue(THROTTLE);
