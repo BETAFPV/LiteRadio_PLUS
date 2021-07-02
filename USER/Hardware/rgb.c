@@ -1,6 +1,7 @@
 #include "rgb.h"
 #include "math.h"
 #include "tim.h"
+#include "gimbal.h"
 EventGroupHandle_t rgbEventHandle;
 
 static uint16_t onDelayCount = 0;
@@ -11,7 +12,7 @@ uint8_t rgbBuff[25];
 uint8_t rgbDelayCount;
 static uint16_t rgbBrightness;
 static uint8_t rgbBreathStatus;
-
+static uint8_t highThrottleFlag;
 void Color_Set(uint8_t colorIndex,uint8_t brightness)
 {
     switch (colorIndex)
@@ -225,7 +226,6 @@ void rgbTask(void* param)
 				{
 						if(bindStatus == 0)
 						{
-								RGB_Set(BLUE,BRIGHTNESS_MAX);
 						}
 				}
 				if((rgbEvent & SHUTDOWN_RGB) == SHUTDOWN_RGB)
@@ -244,6 +244,15 @@ void rgbTask(void* param)
 								RGB_Breath(GREEN);                
 						}   
 				}
+                if(highThrottleFlag)
+                {
+                    highThrottleFlag = Check_HighThrottle();
+                    RGB_Set(RED,BRIGHTNESS_MAX);
+                }
+                else
+                {
+                   RGB_Set(BLUE,BRIGHTNESS_MAX); 
+                }
     }
 }
 

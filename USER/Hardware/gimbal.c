@@ -97,23 +97,19 @@ uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 }
 
 
-void Check_HighThrottle(void)
+uint8_t Check_HighThrottle(void)
 {
-    static uint16_t timeCount = 0;
     uint16_t Throttle_Value = 0;
-    if(timeCount<1000) timeCount++;
-    if(timeCount==1000)
-    {
-        Throttle_Value = Get_GimbalValue(THROTTLE);
-        
-        if(Throttle_Value<HIGH_THROTTLE_THRESHOLD)        
-            highThrottleFlg = 0;
-    }
-}
+    Throttle_Value = Get_GimbalValue(THROTTLE);
 
-uint8_t Get_highThrottleFlg(void)
-{
-	return highThrottleFlg;
+    if(Throttle_Value < HIGH_THROTTLE_THRESHOLD) 
+    {        
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
 }
 
 
