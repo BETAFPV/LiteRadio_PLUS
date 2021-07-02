@@ -30,14 +30,14 @@ void joystickTask(void *param)
         // reportData[5] = mixValBuff[5];
         // reportData[6] = mixValBuff[6];
         // reportData[7] = mixValBuff[7];
-				reportData[0] = map(mixValBuff[0],988,2020,0,2047);
-				reportData[1] = map(mixValBuff[1],988,2020,0,2047);
-				reportData[2] = map(mixValBuff[2],988,2020,0,2047);
-				reportData[3] = map(mixValBuff[3],988,2020,0,2047);
-				reportData[4] = map(mixValBuff[4],988,2020,0,2047);
-				reportData[5] = map(mixValBuff[5],988,2020,0,2047);
-				reportData[6] = map(mixValBuff[6],988,2020,0,2047);
-				reportData[7] = map(mixValBuff[7],988,2020,0,2047);
+        reportData[0] = map(mixValBuff[0],1000,2000,0,2047);
+        reportData[1] = map(mixValBuff[1],1000,2000,0,2047);
+        reportData[2] = map(mixValBuff[2],1000,2000,0,2047);
+        reportData[3] = map(mixValBuff[3],1000,2000,0,2047);
+        reportData[4] = map(mixValBuff[4],1000,2000,0,2047);
+        reportData[5] = map(mixValBuff[5],1000,2000,0,2047);
+        reportData[6] = map(mixValBuff[6],1000,2000,0,2047);
+        reportData[7] = map(mixValBuff[7],1000,2000,0,2047);
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
         if(writeFlag != 0x01)

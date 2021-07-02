@@ -14,7 +14,7 @@ uint16_t GetUniqueID(void);
 void GetSbusPackage(uint8_t* ChannelToSbus);
 uint8_t crc8(const uint8_t * ptr, uint32_t len);
 
-uint16_t map(float Oxy, float Omin, float Omax, float Nmin, float Nmax);
+uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax);
 //定义各通道名称(最大支持8通道)
 typedef enum
 { 

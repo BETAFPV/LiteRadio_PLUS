@@ -53,7 +53,7 @@ void Get_ChipID(union ChipID *chipID)
 							  Nmin: 映射后区间的最小值 Nmax：映射后区间的最小值
 *返 回 值：Nxy:映射后的数
 **************************/
-uint16_t map(float Oxy, float Omin, float Omax, float Nmin, float Nmax)
+uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax)
 {
 	uint16_t Nxy;
 //    float temp = 0.0;
