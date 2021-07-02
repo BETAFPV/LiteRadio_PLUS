@@ -74,21 +74,20 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 	uint16_t SWD_Temp;
     uint32_t dataVal[16];
       
-    channelDataBuff[MIX_ELEVATOR] = map(controlDataBuff[MIX_ELEVATOR],993,2000,165,1811);
-    channelDataBuff[MIX_AILERON] = map(controlDataBuff[MIX_AILERON],993,2000,165,1811);
-    channelDataBuff[MIX_THROTTLE] = map(controlDataBuff[MIX_THROTTLE],993,2000,165,1811);
-    channelDataBuff[MIX_RUDDER] = map(controlDataBuff[MIX_RUDDER],993,2000,165,1811);
-
+    channelDataBuff[MIX_ELEVATOR] = map(controlDataBuff[MIX_ELEVATOR],1000,2000,192,1792);
+    channelDataBuff[MIX_AILERON] = map(controlDataBuff[MIX_AILERON],1000,2000,192,1792);
+    channelDataBuff[MIX_THROTTLE] = map(controlDataBuff[MIX_THROTTLE],1000,2000,192,1792);
+    channelDataBuff[MIX_RUDDER] = map(controlDataBuff[MIX_RUDDER],1000,2000,192,1792);
 	channelDataBuff[4] = controlDataBuff[4];
     channelDataBuff[5] = controlDataBuff[5];
     channelDataBuff[6] = controlDataBuff[6];
     channelDataBuff[7] = controlDataBuff[7];
     
-	SWA_Temp = map(channelDataBuff[4],993,2000,163,1811);
-	SWB_Temp = map(channelDataBuff[5],993,2000,163,1811);
-	SWC_Temp = map(channelDataBuff[6],993,2000,163,1811);
-	SWD_Temp = map(channelDataBuff[7],993,2000,163,1811);  
-    
+	SWA_Temp = map(channelDataBuff[4],1000,2000,192,1792);
+	SWB_Temp = map(channelDataBuff[5],1000,2000,192,1792);
+	SWC_Temp = map(channelDataBuff[6],1000,2000,192,1792);
+	SWD_Temp = map(channelDataBuff[7],1000,2000,192,1792);  
+
 
     dataVal[0] = channelDataBuff[MIX_AILERON] ;
     dataVal[1] = channelDataBuff[MIX_ELEVATOR];
