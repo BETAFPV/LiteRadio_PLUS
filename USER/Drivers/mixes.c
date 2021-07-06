@@ -6,6 +6,7 @@
 #include "stmflash.h"
 #include "radiolink.h"
 #include "status.h"
+#include "function.h"
 static uint32_t mixesDelayTime;
 UBaseType_t uxTaskGetStackHighWaterMarkdebug;
 TaskHandle_t mixesTaskHandle;
@@ -40,11 +41,11 @@ uint16_t Mixes_GimbalOffset(uint8_t offset, uint16_t gimbalValCurr)
 {
     if(offset < 100)
     {
-        gimbalValCurr = gimbalValCurr - (100 - offset);
+        gimbalValCurr = gimbalValCurr - 500 + map(offset,0,100,0,500);
     }
     else
     {
-        gimbalValCurr = gimbalValCurr + (offset -100);
+        gimbalValCurr = gimbalValCurr + map(offset,100,200,0,500);
     }
     return gimbalValCurr;
 }
@@ -72,7 +73,7 @@ uint16_t Mixes_Gimbalreverse(uint8_t reverse, uint16_t gimbalValCurr,uint16_t* o
         {
             gimbalValCurr = CHANNEL_OUTPUT_MID - outputcode[gimbalValCurr - CHANNEL_OUTPUT_MID];
         }
-        else		            
+        else
         {
             gimbalValCurr = CHANNEL_OUTPUT_MID + outputcode[CHANNEL_OUTPUT_MID - gimbalValCurr];            
         }
@@ -84,14 +85,14 @@ uint16_t Mixes_Gimbalreverse(uint8_t reverse, uint16_t gimbalValCurr,uint16_t* o
             gimbalValCurr = CHANNEL_OUTPUT_MID + outputcode[gimbalValCurr - CHANNEL_OUTPUT_MID];
 
         }
-        else		            
+        else   
         {
             gimbalValCurr = CHANNEL_OUTPUT_MID - outputcode[CHANNEL_OUTPUT_MID - gimbalValCurr];            
         }    
     }
     return gimbalValCurr;
 }
-//开关通道反向操作
+/*开关通道反向操作*/
 uint16_t Mixes_Switchreverse(uint8_t reverse, uint16_t gimbalValCurr)
 {
     if(reverse)
@@ -100,7 +101,7 @@ uint16_t Mixes_Switchreverse(uint8_t reverse, uint16_t gimbalValCurr)
         {
             gimbalValCurr = CHANNEL_OUTPUT_MID - (gimbalValCurr - CHANNEL_OUTPUT_MID);
         }
-        else		            
+        else
         {
             gimbalValCurr = CHANNEL_OUTPUT_MID + (CHANNEL_OUTPUT_MID - gimbalValCurr);            
         }
