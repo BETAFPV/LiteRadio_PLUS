@@ -9,6 +9,10 @@
 //AILERON  = 2 ,       //roll
 //ELEVATOR = 3 ,       //pitch
 
+#define MIX_CHANNEL_OUTPUT_MAX 2000
+#define MIX_CHANNEL_OUTPUT_MID 1500
+#define MIX_CHANNEL_OUTPUT_MIN 1000
+
 #define CHANNEILS_INFO_ID 0x01
 
 #define INTERNAL_CONFIGER_INFO_ID 0x05
