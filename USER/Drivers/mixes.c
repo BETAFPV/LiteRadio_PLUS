@@ -298,6 +298,10 @@ void mixesTask(void* param)
         reportData[6] = mixData[6].output;        
         reportData[7] = mixData[7].output;                      
         xQueueSend(mixesValQueue,reportData,0);
+        if(crsfData.lastConfigStatus == CONFIG_CRSF_ON && crsfData.configStatus == CONFIG_CRSF_ON)
+        {
+            xQueueSend(mixesValQueue,reportData,0);    
+        }
         debug = xPortGetFreeHeapSize();
         uxTaskGetStackHighWaterMarkdebug = uxTaskGetStackHighWaterMark(NULL);
     }

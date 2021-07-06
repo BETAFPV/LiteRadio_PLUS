@@ -8,6 +8,7 @@
 #include "joystick.h"
 #include "mixes.h"
 #include "buzzer.h"
+uint8_t configerRequest;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
 static uint8_t RCstatus = RC_SHUTDOWN;
@@ -242,6 +243,30 @@ void statusTask(void* param)
                 else
                 {
                     xEventGroupSetBits( rgbEventHandle, CHRG_AND_JOYSTICK_RGB);                
+                }
+
+                if(configerRequest == 0x20)
+                {
+                    crsfData.configStatus = CONFIG_CRSF_OFF;
+                    configerRequest = 0x01;
+                }
+                else if(configerRequest == 0x21)
+                {
+                    crsfData.configStatus = CONFIG_CRSF_ON;
+                    configerRequest = 0x01;
+                }
+
+                if(crsfData.lastConfigStatus == CONFIG_CRSF_OFF && crsfData.configStatus == CONFIG_CRSF_ON)
+                {
+                    vTaskResume(radiolinkTaskHandle);
+                    crsfData.lastConfigStatus = CONFIG_CRSF_ON;
+                    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);    
+                }
+                else if(crsfData.lastConfigStatus == CONFIG_CRSF_ON && crsfData.configStatus == CONFIG_CRSF_OFF)
+                {
+                    vTaskSuspend(radiolinkTaskHandle);
+                    crsfData.lastConfigStatus = CONFIG_CRSF_OFF;
+                    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET); 
                 }
                 break;
             }
