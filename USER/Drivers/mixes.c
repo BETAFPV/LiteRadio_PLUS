@@ -109,6 +109,19 @@ uint16_t Mixes_Switchreverse(uint8_t reverse, uint16_t gimbalValCurr)
     return gimbalValCurr;
 }
 
+uint16_t Mixes_ValueLimit(uint16_t gimbalValCurr)
+{
+    if(gimbalValCurr > MIX_CHANNEL_OUTPUT_MAX)
+    {
+        gimbalValCurr = MIX_CHANNEL_OUTPUT_MAX;
+    }
+    else if(gimbalValCurr < MIX_CHANNEL_OUTPUT_MIN)
+    {
+        gimbalValCurr = MIX_CHANNEL_OUTPUT_MIN;
+    }
+    return gimbalValCurr;
+}
+
 //混控任务
 void mixesTask(void* param)
 {
