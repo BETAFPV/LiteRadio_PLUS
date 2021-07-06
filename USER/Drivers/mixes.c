@@ -7,6 +7,7 @@
 #include "radiolink.h"
 #include "status.h"
 #include "function.h"
+#include "crsf.h"
 static uint32_t mixesDelayTime;
 UBaseType_t uxTaskGetStackHighWaterMarkdebug;
 TaskHandle_t mixesTaskHandle;
@@ -200,13 +201,10 @@ void mixesTask(void* param)
     {
         vTaskDelay(mixesDelayTime);  
         
-        STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
-
-        if(writeFlag == 0x01)
+        if(configerRequest == 0x01)
         {         
             Mixes_Init();
-            writeFlag = 0x00;
-            STMFLASH_Write(CONFIGER_INFO_FLAG,&writeFlag,1);
+            configerRequest = 0x00;
         }
         
         xQueueReceive(gimbalValQueue,gimbalVaBuff,0);

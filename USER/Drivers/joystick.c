@@ -11,7 +11,6 @@ static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
 void joystickTask(void *param) 
 {
-    uint16_t writeFlag = 0x00;
     uint16_t reportData[8];
     uint16_t mixValBuff[8];
 		joystickDelayTime = Get_ProtocolDelayTime();
@@ -29,21 +28,22 @@ void joystickTask(void *param)
         reportData[5] = map(mixValBuff[5],1000,2000,0,2047);
         reportData[6] = map(mixValBuff[6],1000,2000,0,2047);
         reportData[7] = map(mixValBuff[7],1000,2000,0,2047);
-        STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
         if(configerRequest != 0x01)
         {    
             if(configerRequest == 0x02)
             {
                 reportData[0] = CONFIGER_INFO_ID;
-                STMFLASH_Read(CONFIGER_INFO_ADDR,&reportData[1],6);
+                STMFLASH_Read(CONFIGER_INFO_ADDR,&reportData[1],3);
                 reportData[7] = 0xFFFE;
             }
-            else if(0 < writeFlag && writeFlag <= 0x0A)
+            else if(0 < configerRequest && configerRequest <= 0x0A)
             {
                 reportData[0] = CHANNEILS_INFO_ID;
-                reportData[1] = writeFlag- 0x03;
-                STMFLASH_Read(MIX_CHANNEL_1_INFO_ADDR + 8*(writeFlag - 0x03),&reportData[2],4);
+                reportData[1] = configerRequest- 0x03;
+                STMFLASH_Read(MIX_CHANNEL_1_INFO_ADDR + 8*(configerRequest - 0x03),&reportData[2],4);
+                reportData[7] = 0xFFFE;
+            }
                 reportData[7] = 0xFFFE;
             }
         }

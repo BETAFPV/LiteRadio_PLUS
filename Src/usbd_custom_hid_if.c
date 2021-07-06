@@ -27,6 +27,7 @@
 #include "stmflash.h"
 #include "cmsis_os.h"
 #include "radiolink.h"
+#include "crsf.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -284,18 +285,19 @@ void SaveMixValueToFlash(void)
         case CHANNEILS_INPUT_ID:
         {    
             STMFLASH_Write(CACHE_MIX_CHANNEL_INFO_ADDR+USB_Recive_Buffer[1]*8,&writeWord[2],4);
-            writeWord[0] = 0x01;
+            configerRequest = 0x01;
             break;
         }
         case CONFIGER_INFO_ID:
         {
             STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],6);          
-            writeWord[0] = 0x01;
+            configerRequest = 0x01;
+            break;
             break;
         }
         case REQUEST_INFO_ID:
         {
-            writeWord[0] = USB_Recive_Buffer[1];
+            configerRequest = USB_Recive_Buffer[1];
             break;
         }
         case REQUESET_SAVE_ID:
