@@ -265,17 +265,16 @@ void mixesTask(void* param)
                     /*非油门通道映射*/
                     mixData[mixIndex].output = Mixes_Gimbalreverse(mixData[mixIndex].reverse, mixData[mixIndex].output, OutputCode);
                 }
-								
+
                 /*通道补偿*/
                 mixData[mixIndex].output = Mixes_GimbalOffset(mixData[mixIndex].offset, mixData[mixIndex].output);
-								
+
                 /*通道比例*/
                 mixData[mixIndex].output = Mixes_GimbalWeight(mixData[mixIndex].weight, mixData[mixIndex].output);
-                
+                mixData[mixIndex].output = Mixes_ValueLimit(mixData[mixIndex].output);
             }
             if(mixData[mixIndex].gimbalChannel >= 4)
             {
-							
                 mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];
                 mixData[mixIndex].output = Mixes_Switchreverse(mixData[mixIndex].reverse, mixData[mixIndex].output);
             }
