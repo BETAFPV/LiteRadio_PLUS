@@ -33,7 +33,7 @@ void joystickTask(void *param)
         {    
             if(configerRequest == 0x02)
             {
-                reportData[0] = CONFIGER_INFO_ID;
+                reportData[0] = INTERNAL_CONFIGER_INFO_ID;
                 STMFLASH_Read(CONFIGER_INFO_ADDR,&reportData[1],3);
                 reportData[7] = 0xFFFE;
             }

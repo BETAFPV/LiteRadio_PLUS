@@ -288,11 +288,14 @@ void SaveMixValueToFlash(void)
             configerRequest = 0x01;
             break;
         }
-        case CONFIGER_INFO_ID:
+        case INTERNAL_CONFIGER_INFO_ID:
         {
             STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],6);          
             configerRequest = 0x01;
             break;
+        }
+        case EXTERNAL_CONFIGER_INFO_ID:
+        {
             break;
         }
         case REQUEST_INFO_ID:
