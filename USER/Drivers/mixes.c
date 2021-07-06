@@ -193,8 +193,8 @@ void mixesTask(void* param)
     uint16_t gimbalVaBuff[4];
     uint16_t switchesValBuff[4];
     uint16_t controlmode = 1;
-		mixesDelayTime = Get_ProtocolDelayTime();
     STMFLASH_Read(CONFIGER_INFO_MODE,&controlmode,1);
+    mixesDelayTime = Get_ProtocolDelayTime();
     mixesValQueue = xQueueCreate(20,sizeof(reportData));
     Mixes_Init();
     while(1)
@@ -233,7 +233,6 @@ void mixesTask(void* param)
         reportData[5] = switchesValBuff[1];
         reportData[6] = switchesValBuff[2];
         reportData[7] = switchesValBuff[3];   
-
         for(mixIndex = 0;mixIndex < 8;mixIndex++)
         {
             

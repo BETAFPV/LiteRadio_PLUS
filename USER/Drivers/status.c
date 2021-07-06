@@ -38,40 +38,40 @@ void Status_Init()
         RGB_TwinkleForInit((protocolIndex+1),300);
     }
     Version_Init(protocolIndex);
-		 switch(protocolIndex)
+    switch(protocolIndex)
     {
         case 0:
-				{
+        {
             protocolDelayTime = D16_INTERVAL;
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);        
             break;
-				}
+        }
         case 1: 
-				{
+        {
             protocolDelayTime = D16_INTERVAL;
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
             break;
-				}
+        }
         case 2: 
-				{
+        {
             protocolDelayTime = D8_INTERVAL;
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
             break;
-				}
+        }
         case 3: 
-				{
+        {
             protocolDelayTime = SFHSS_INTERVAL;
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
             break;
-				}
+        }
         case 4: 
-				{
+        {
             protocolDelayTime = CRSF_INTERVAL;
             HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                
             break;
-				}
+        }
         default:
-				{
+        {
             break;
 				}
     }	
@@ -92,10 +92,10 @@ void Status_Update()
 {
     if(powerStatus == RC_POWER_ON)
     {
-        if(protocolIndex == 4)
-				{
-				    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);   
-				}
+       if(protocolIndex == 4)
+       {
+           HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);
+       }
         RCstatus = RC_RADIOLINK;
         if(lastRCstatus == RC_SHUTDOWN)
         {
@@ -109,10 +109,10 @@ void Status_Update()
     }
     if(powerStatus == RC_POWER_OFF)
     {		
-        if(protocolIndex == 4)
-        {
-            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);   
-        }
+       if(protocolIndex == 4)
+       {
+           HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);   
+       }
         RCstatus = RC_CHRG_AND_JOYSTICK;
         if(lastRCstatus == RC_SHUTDOWN)
         {
@@ -191,10 +191,10 @@ void statusTask(void* param)
         }       
         
         gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
-		                                   GIMBAL_CALIBRATE_END,
-		                                   pdTRUE,
-	                                       pdTRUE,
-		                                   0);
+                                           GIMBAL_CALIBRATE_END,
+                                           pdTRUE,
+                                           pdTRUE,
+                                           0);
         if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
         {
             RFstatus = RF_DATA;

@@ -9,7 +9,6 @@
 #include "status.h"
 static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
-
 void joystickTask(void *param) 
 {
     uint16_t writeFlag = 0x00;
@@ -17,19 +16,11 @@ void joystickTask(void *param)
     uint16_t mixValBuff[8];
 		joystickDelayTime = Get_ProtocolDelayTime();
     while(1)
-		{
-		    vTaskDelay(joystickDelayTime);
-		    uxTaskGetStackHighWaterMarkdebug_1 = uxTaskGetStackHighWaterMark(NULL);
+	{
+	    vTaskDelay(joystickDelayTime);
+	    uxTaskGetStackHighWaterMarkdebug_1 = uxTaskGetStackHighWaterMark(NULL);
         xQueueReceive(mixesValQueue,mixValBuff,0);
-
-        // reportData[0] = mixValBuff[0];
-        // reportData[1] = mixValBuff[1];
-        // reportData[2] = mixValBuff[2];
-        // reportData[3] = mixValBuff[3];
-        // reportData[4] = mixValBuff[4];
-        // reportData[5] = mixValBuff[5];
-        // reportData[6] = mixValBuff[6];
-        // reportData[7] = mixValBuff[7];
+     
         reportData[0] = map(mixValBuff[0],1000,2000,0,2047);
         reportData[1] = map(mixValBuff[1],1000,2000,0,2047);
         reportData[2] = map(mixValBuff[2],1000,2000,0,2047);
@@ -40,9 +31,9 @@ void joystickTask(void *param)
         reportData[7] = map(mixValBuff[7],1000,2000,0,2047);
         STMFLASH_Read(CONFIGER_INFO_FLAG,&writeFlag,1);
 
-        if(writeFlag != 0x01)
-				{    
-            if(writeFlag == 0x02)
+        if(configerRequest != 0x01)
+        {    
+            if(configerRequest == 0x02)
             {
                 reportData[0] = CONFIGER_INFO_ID;
                 STMFLASH_Read(CONFIGER_INFO_ADDR,&reportData[1],6);

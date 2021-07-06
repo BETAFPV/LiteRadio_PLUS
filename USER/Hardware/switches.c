@@ -93,7 +93,7 @@ void switchesTask(void* param)
         switchesBuff[SWB] =  Get_SwitchValue(SWB);
         switchesBuff[SWC] =  Get_SwitchValue(SWC);
         switchesBuff[SWD] =  Get_SwitchValue(SWD);
-        
+       
         xQueueSend(switchesValQueue,switchesBuff,0);
     }
 }

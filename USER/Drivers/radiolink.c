@@ -27,7 +27,6 @@ void Version_Init(uint16_t protocolIndex)
 }
 
 
-
 void radiolinkTask(void* param)
 {
     EventBits_t radioEvent;

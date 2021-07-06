@@ -69,9 +69,9 @@ uint8_t Get_RSSI(void)
 void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 {
     uint16_t SWA_Temp;
-	uint16_t SWB_Temp;
-	uint16_t SWC_Temp;
-	uint16_t SWD_Temp;
+    uint16_t SWB_Temp;
+    uint16_t SWC_Temp;
+    uint16_t SWD_Temp;
     uint32_t dataVal[16];
       
     channelDataBuff[MIX_ELEVATOR] = map(controlDataBuff[MIX_ELEVATOR],1000,2000,192,1792);
@@ -83,10 +83,10 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
     channelDataBuff[6] = controlDataBuff[6];
     channelDataBuff[7] = controlDataBuff[7];
     
-	SWA_Temp = map(channelDataBuff[4],1000,2000,192,1792);
-	SWB_Temp = map(channelDataBuff[5],1000,2000,192,1792);
-	SWC_Temp = map(channelDataBuff[6],1000,2000,192,1792);
-	SWD_Temp = map(channelDataBuff[7],1000,2000,192,1792);  
+    SWA_Temp = map(channelDataBuff[4],1000,2000,192,1792);
+    SWB_Temp = map(channelDataBuff[5],1000,2000,192,1792);
+    SWC_Temp = map(channelDataBuff[6],1000,2000,192,1792);
+    SWD_Temp = map(channelDataBuff[7],1000,2000,192,1792);  
 
 
     dataVal[0] = channelDataBuff[MIX_AILERON] ;

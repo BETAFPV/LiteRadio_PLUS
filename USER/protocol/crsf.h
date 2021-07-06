@@ -21,7 +21,5 @@ void CRSF_SetBind(void);
 void CRSF_Init(uint8_t protocolIndex);
 uint16_t CRSF_Process(uint16_t* controlData);
 void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff);
-
 void Get_LinkStatis(uint8_t* CRSF_RXPacket);
-uint8_t Get_RSSI(void);
 #endif
