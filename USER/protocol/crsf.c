@@ -127,3 +127,17 @@ void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
     }
     *buf++ = crc8(crc_start, 23);
 }
+
+void Send_CRSFParameterPackage(uint8_t dataType,uint8_t dataParameter)
+{
+    dataToCRSF[0] = CRSF_ADDRESS_CRSF_TRANSMITTER; //MODULE ADDRESS: 0xEE
+    dataToCRSF[1] = 0x06; // 1(ID) + 4 + 1(CRC)
+    dataToCRSF[2] = CRSF_FRAMETYPE_PARAMETER_WRITE;
+    dataToCRSF[3] = CRSF_ADDRESS_CRSF_TRANSMITTER;
+    dataToCRSF[4] = CRSF_ADDRESS_RADIO_TRANSMITTER;
+    dataToCRSF[5] = dataType;
+    dataToCRSF[6] = dataParameter;
+    uint8_t * cdataToCRSF = &dataToCRSF[2];
+    dataToCRSF[7] = crc8(cdataToCRSF, 5);  
+    HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8);    
+}

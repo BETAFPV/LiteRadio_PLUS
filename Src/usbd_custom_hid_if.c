@@ -310,6 +310,13 @@ void SaveMixValueToFlash(void)
             STMFLASH_Write(MIX_CHANNEL_INFO_ADDR,channelBuff,32);
             break;
         }
+        case REQUESET_CRSF_ID:
+        {
+            crsfData.setDataType = USB_Recive_Buffer[1];
+            crsfData.setDataParameter = USB_Recive_Buffer[2];
+            crsfData.setDataFlag = 1;
+            break;
+        }
         default:
             break;
     }
