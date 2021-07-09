@@ -290,7 +290,15 @@ void SaveMixValueToFlash(void)
         }
         case INTERNAL_CONFIGER_INFO_ID:
         {
-            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],6);          
+            if(writeWord[1]>3)
+            {
+                STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],2); 
+            }
+            else
+            {
+                STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],3); 
+            }
+            HAL_NVIC_SystemReset();         
             configerRequest = 0x01;
             break;
         }
