@@ -7,10 +7,10 @@ uint8_t crsfPacket[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
 uint8_t outBuffer[LinkStatisticsFrameLength + 4] = {0};
 static uint16_t channelDataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
-uint8_t crsfRSSI;
-
+crsfData_t crsfData;
 uint16_t controlDataBuff[8] = {0};
 uint8_t crsfLinkCount= 0;
+uint8_t dataToCRSF[8];
 void CRSF_SetBind()
 {
     HAL_Delay(1);
@@ -22,16 +22,27 @@ void CRSF_Init(uint8_t protocolIndex)
 }
 
 uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
-{
-
-    Get_CRSFPackage(crsfPacket,crsfcontrol_data);
-    HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
-    if(crsfRSSI<98 && crsfLinkCount>10)
+{   
+    if(crsfData.setDataFlag)
+    {
+        Send_CRSFParameterPackage(crsfData.setDataType,crsfData.setDataParameter);
+        crsfData.setDataFlag = 0;
+    }
+    else
+    {
+        Get_CRSFPackage(crsfPacket,crsfcontrol_data);
+        HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
+    }
+    if(crsfData.RSSI<80 && crsfLinkCount>10)
     {
         xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
     }
+
+
+
 	return 0; 
 }
+
 
 void Get_LinkStatis(uint8_t* crsfRXPacket)
 {
@@ -45,12 +56,21 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
 //                uint8_t crc = crc8(&CRSF_RXPacket[2], LinkStatisticsFrameLength + 1);
 //                if(crc == CRSF_RXPacket[LinkStatisticsFrameLength + 3])
 //                {
-                    crsfRSSI = crsfRXPacket[5];
+                    crsfData.RSSI = crsfRXPacket[5];
 //                }
                 crsfLinkCount =255;              
             }
         }
- 
+        else if(crsfRXPacket[1] == 0x0E)
+        {
+            if(crsfRXPacket[2] == CRSF_FRAMETYPE_PARAMETER_WRITE)
+            {
+                crsfData.rate = crsfRXPacket[7];
+                crsfData.TLM = crsfRXPacket[8];
+                crsfData.power = crsfRXPacket[9];
+                crsfData.regulatoryDomainIndex = crsfRXPacket[10];
+            }
+        }
     }
     else
     {
@@ -61,10 +81,6 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
     }
 }
 
-uint8_t Get_RSSI(void)
-{
-    return crsfRSSI;
-}
 
 void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff)
 {
@@ -137,7 +153,7 @@ void Send_CRSFParameterPackage(uint8_t dataType,uint8_t dataParameter)
     dataToCRSF[4] = CRSF_ADDRESS_RADIO_TRANSMITTER;
     dataToCRSF[5] = dataType;
     dataToCRSF[6] = dataParameter;
-    uint8_t * cdataToCRSF = &dataToCRSF[2];
-    dataToCRSF[7] = crc8(cdataToCRSF, 5);  
+    uint8_t * pointDataToCRSF = &dataToCRSF[2];
+    dataToCRSF[7] = crc8(pointDataToCRSF, 5);  
     HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8);    
 }

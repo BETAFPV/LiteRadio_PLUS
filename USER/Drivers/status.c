@@ -8,6 +8,7 @@
 #include "joystick.h"
 #include "mixes.h"
 #include "buzzer.h"
+#include "crsf.h"
 uint8_t configerRequest;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;

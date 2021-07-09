@@ -7,6 +7,8 @@
 #include "radiolink.h"
 #include "function.h"
 #include "status.h"
+#include "crsf.h"
+
 static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
 void joystickTask(void *param) 
@@ -44,6 +46,15 @@ void joystickTask(void *param)
                 STMFLASH_Read(MIX_CHANNEL_1_INFO_ADDR + 8*(configerRequest - 0x03),&reportData[2],4);
                 reportData[7] = 0xFFFE;
             }
+            else if( configerRequest == 0x10)
+            {
+                reportData[0] = EXTERNAL_CONFIGER_INFO_ID;
+                reportData[1] = 0x04;
+                STMFLASH_Read(CONFIGER_INFO_MODE_ADDR,&reportData[2],1);
+                reportData[3] = crsfData.rate;
+                reportData[4] = crsfData.TLM;
+                reportData[5] = crsfData.power; 
+                reportData[6] = crsfData.regulatoryDomainIndex; 
                 reportData[7] = 0xFFFE;
             }
         }
