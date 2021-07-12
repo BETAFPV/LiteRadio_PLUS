@@ -3,6 +3,7 @@
 #include "function.h"
 #include "buzzer.h"
 #include "mixes.h"
+#include "status.h"
 uint8_t crsfPacket[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
 uint8_t outBuffer[LinkStatisticsFrameLength + 4] = {0};
@@ -11,6 +12,7 @@ crsfData_t crsfData;
 uint16_t controlDataBuff[8] = {0};
 uint8_t crsfLinkCount= 0;
 uint8_t dataToCRSF[8];
+uint16_t requestCount;
 void CRSF_SetBind()
 {
     HAL_Delay(1);
@@ -69,6 +71,15 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
                 crsfData.TLM = crsfRXPacket[8];
                 crsfData.power = crsfRXPacket[9];
                 crsfData.regulatoryDomainIndex = crsfRXPacket[10];
+                if(requestCount > 50)
+                {
+                    configerRequest = 0x10;
+                    requestCount = 0;
+                }
+                else
+                {
+                    requestCount++;
+                }
             }
         }
     }

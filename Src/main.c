@@ -36,12 +36,14 @@
 #include "gimbal.h"
 #include "switches.h"
 #include "key.h"
-#include "power_switch.h"
 #include "buzzer.h"
 #include "mixes.h"
 #include "joystick.h"
 #include "rgb.h"
 #include "status.h"
+#include "delay.h"
+#include "radiolink.h"
+#include "SEGGER_RTT.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -112,6 +114,7 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  SEGGER_SYSVIEW_Conf();	
   Gimbal_Init();  
   Status_Init();
   /* USER CODE END 2 */

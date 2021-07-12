@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "crsf.h": "c",
+        "status.h": "c",
+        "joystick.h": "c"
+    }
+}

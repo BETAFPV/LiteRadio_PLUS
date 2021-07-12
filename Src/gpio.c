@@ -27,7 +27,7 @@
 /* Configure GPIO                                                             */
 /*----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
-
+#ifdef LiteRadio_Plus_CC2500 
 /* USER CODE END 1 */
 
 /** Configure pins as
@@ -115,6 +115,7 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
+#endif
 
 /* USER CODE END 2 */
 

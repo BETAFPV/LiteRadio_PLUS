@@ -162,16 +162,16 @@ void startTask(void *param)
 			
         taskENTER_CRITICAL();	/*进入临界*/
 			
-        xTaskCreate(statusTask, "STATUS", 128, NULL, 3, NULL);    
-        xTaskCreate(radiolinkTask, "DATA_PROCESS", 128, NULL, 3, &radiolinkTaskHandle);		
-        xTaskCreate(gimbalTask, "GIMBAL", 128, NULL, 3, NULL);
-        xTaskCreate(switchesTask, "SWITCHES", 128, NULL, 2, NULL);
-        xTaskCreate(mixesTask, "MIXES", 640, NULL, 3, &mixesTaskHandle); 
-        xTaskCreate(keyTask, "BUTTON_SCAN", 64, NULL, 3, NULL);
+        xTaskCreate(statusTask, "STATUS", 80, NULL, 3, NULL);    
+        xTaskCreate(radiolinkTask, "DATA_PROCESS", 256, NULL, 3, &radiolinkTaskHandle);		
+        xTaskCreate(gimbalTask, "GIMBAL", 100, NULL, 3, NULL);
         xTaskCreate(rgbTask, "RGB", 128, NULL, 3, NULL);       
-
         xTaskCreate(buzzerTask, "BUZZER", 64, NULL, 1, NULL);         
-        xTaskCreate(joystickTask, "JOYSTICK", 128, NULL, 3, &joystickTaskHandle); 
+        xTaskCreate(joystickTask, "JOYSTICK", 128, NULL, 3, &joystickTaskHandle);
+        xTaskCreate(switchesTask, "SWITCHES", 100, NULL, 2, NULL);
+        xTaskCreate(mixesTask, "MIXES", 600, NULL, 3, &mixesTaskHandle); 
+        xTaskCreate(keyTask, "BUTTON_SCAN", 80, NULL, 3, NULL);
+ 
   
         vTaskSuspend(joystickTaskHandle);//挂起joystick
         vTaskSuspend(radiolinkTaskHandle);//挂起radiolink

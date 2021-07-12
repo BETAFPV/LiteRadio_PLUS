@@ -130,9 +130,6 @@ uint8_t CC2500_Init(uint8_t versionSelectFlg)
     uint8_t (*cc2500_config)[2];
     uint8_t RF_POWER = 0xff;
     uint8_t CC2500RestError_flag = 0;
-    //使能PA
-	HAL_GPIO_WritePin(GPIOB,RF_IRQ_Pin,GPIO_PIN_SET);
-   
 
 	if(!CC2500_Reset())
 	{

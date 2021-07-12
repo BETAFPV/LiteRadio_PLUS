@@ -27,6 +27,7 @@
 #include "stmflash.h"
 #include "cmsis_os.h"
 #include "radiolink.h"
+#include "status.h"
 #include "crsf.h"
 /* USER CODE END INCLUDE */
 
@@ -150,10 +151,10 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
 	0xc0,               /*End Collection*/
     
     0x09, 0x01,                    //   USAGE (Vendor Usage 1) 每个功能的一个卷标志
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)    表示每个传输数据限定�?0
-    0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)    表示每个传输数据的最大�?�限定为255
-    0x95, 0x40,                    //   REPORT_COUNT (64) 每次接收的数据长度，这里�?64�?
-    0x75, 0x08,                    //   REPORT_SIZE (8)        传输字段的宽度为8bit，表示每个传输的数据范围�?0~ffff ffff
+    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)    表示每个传输数据限定�?0
+    0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)    表示每个传输数据的最大�?�限定为255
+    0x95, 0x40,                    //   REPORT_COUNT (64) 每次接收的数据长度，这里�?64�?
+    0x75, 0x08,                    //   REPORT_SIZE (8)        传输字段的宽度为8bit，表示每个传输的数据范围�?0~ffff ffff
     0x91, 0x02,                    //   OUTPUT (Data,Var,Abs) 表示USB设备要接收PC的数据的功能
     
   /* USER CODE END 0 */
@@ -328,7 +329,6 @@ void SaveMixValueToFlash(void)
         default:
             break;
     }
-    STMFLASH_Write(CONFIGER_INFO_FLAG,writeWord,1);
 
 }
 

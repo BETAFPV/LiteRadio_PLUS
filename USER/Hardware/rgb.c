@@ -7,7 +7,7 @@ EventGroupHandle_t rgbEventHandle;
 static uint16_t onDelayCount = 0;
 static uint16_t stopDelayCount = 0;
 static uint8_t bindStatus = 0;
-static uint8_t color[3] = {0};//color[0]为绿色，color[1]为红色，color[2]为蓝色
+static uint8_t color[3] = {0};//color[0]为锟斤拷色锟斤拷color[1]为锟斤拷色锟斤拷color[2]为锟斤拷色
 uint8_t rgbBuff[25];
 uint8_t rgbDelayCount;
 static uint16_t rgbBrightness;
@@ -85,7 +85,7 @@ void RGB_Set(uint8_t colorIndex,uint8_t brightness)
 }
 
 
-/*任务未开始调度时需要使用HAL_Delay*/
+/*锟斤拷锟斤拷未锟斤拷始锟斤拷锟斤拷时锟斤拷要使锟斤拷HAL_Delay*/
 void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
 {
     uint8_t i;

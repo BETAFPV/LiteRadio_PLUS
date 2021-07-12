@@ -9,6 +9,7 @@
 #include "mixes.h"
 #include "buzzer.h"
 #include "crsf.h"
+uint8_t test_1,test_2,test_3;
 uint8_t configerRequest;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
@@ -75,8 +76,8 @@ void Status_Init()
         default:
         {
             break;
-				}
-    }	
+        }
+    }
 }
 
 uint32_t Get_ProtocolDelayTime()
@@ -215,7 +216,6 @@ void statusTask(void* param)
                     case RF_DATA:
                     {
                         xEventGroupSetBits( rgbEventHandle, DATA_RGB);
-                        
                         break;
                     }
                     case RF_CALIBARATION:
@@ -226,7 +226,8 @@ void statusTask(void* param)
                     case RF_BIND:
                     {
                         xEventGroupSetBits( rgbEventHandle, BIND_RGB);
-                        RFstatus = RF_DATA;                            
+                        RFstatus = RF_DATA;
+                        break;                            
                     }
                     default:
                     {
@@ -277,6 +278,5 @@ void statusTask(void* param)
             }
         
         }
-        
     }    
 }
