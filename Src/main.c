@@ -36,12 +36,14 @@
 #include "gimbal.h"
 #include "switches.h"
 #include "key.h"
-#include "power_switch.h"
 #include "buzzer.h"
 #include "mixes.h"
 #include "joystick.h"
 #include "rgb.h"
 #include "status.h"
+#include "delay.h"
+#include "radiolink.h"
+#include "sx1280.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -112,8 +114,19 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+#ifdef LiteRadio_Plus_CC2500
+    CC2500_GPIO_Disable();
+
+#endif  
+
   Gimbal_Init();  
+
   Status_Init();
+#ifdef LiteRadio_Plus_SX1280
+  
+ // HAL_GPIO_WritePin(GPIOA, SX1280_TXRX_EN_Pin|EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);
+ 
+#endif
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */

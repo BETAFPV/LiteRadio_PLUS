@@ -12,10 +12,15 @@
 #include "tim.h"
 #include "delay.h"
 #include "status.h"
+#include "sx1280.h"
+#include "sx1280hal.h"
+#include "common.h"
+
+
 TaskHandle_t radiolinkTaskHandle;
 EventGroupHandle_t radioEventHandle;
 static uint16_t rfcontrolData[8];
-static uint8_t versionSelectFlg = 3;
+static uint8_t versionSelectFlg;
 static uint32_t radiolinkDelayTime ;
 uint16_t debug_0;
 void (*RF_Init)(uint8_t protocolIndex);
@@ -26,13 +31,13 @@ void Version_Init(uint16_t protocolIndex)
     versionSelectFlg = protocolIndex;
 }
 
-
 void radiolinkTask(void* param)
 {
     EventBits_t radioEvent;
 		radiolinkDelayTime = Get_ProtocolDelayTime();
     switch(versionSelectFlg)
     {
+#ifdef LiteRadio_Plus_CC2500
         case 0: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
                 RF_Process = ReadFRSKYD16;      
@@ -49,9 +54,14 @@ void radiolinkTask(void* param)
                 RF_Process = ReadSFHSS;
                 RF_Bind = SFHSS_SetBind;
                 break;
+#endif         
         case 4: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
                 RF_Bind = CRSF_SetBind;               
+                break;
+        case 5: RF_Init = setup;
+                RF_Process = SendRCdataToRF;
+                RF_Bind = SX1280_SetBind;               
                 break;
         default:
                 break;
@@ -72,6 +82,21 @@ void radiolinkTask(void* param)
             RF_Bind();
         }       
         RF_Process(rfcontrolData);
+
     }
 }
 
+void GenerateChannelDataHybridSwitch8(volatile uint8_t* Buffer, uint16_t* controlDataBuff)
+{
+  Buffer[0] = RC_DATA_PACKET & 0x03;
+  Buffer[1] = ((controlDataBuff[0]) >> 3);
+  Buffer[2] = ((controlDataBuff[1]) >> 3);
+  Buffer[3] = ((controlDataBuff[2]) >> 3);
+  Buffer[4] = ((controlDataBuff[3]) >> 3);
+  Buffer[5] = ((controlDataBuff[0] & 0x06) << 5) |
+                           ((controlDataBuff[1] & 0x06) << 3) |
+                           ((controlDataBuff[2] & 0x06) << 1) |
+                           ((controlDataBuff[3] & 0x06) >> 1);
+
+  Buffer[6] =  0x00;
+}

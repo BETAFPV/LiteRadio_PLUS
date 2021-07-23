@@ -262,8 +262,6 @@ void mixesTask(void* param)
                         break;
                     }
                 }
-  
-                
                 if(mixData[mixIndex].gimbalChannel == MIX_THROTTLE)
                 {
                     /*油门通道映射*/
@@ -303,7 +301,7 @@ void mixesTask(void* param)
             xQueueSend(mixesValQueue,reportData,0);    
         }
         debug = xPortGetFreeHeapSize();
-        uxTaskGetStackHighWaterMarkdebug = uxTaskGetStackHighWaterMark(NULL);
+     //   uxTaskGetStackHighWaterMarkdebug = uxTaskGetStackHighWaterMark(NULL);
     }
 }
 

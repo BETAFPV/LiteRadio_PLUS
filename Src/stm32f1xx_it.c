@@ -28,6 +28,7 @@
 #include "adc.h"
 #include "tim.h"
 #include "crsf.h"
+#include "sx1280.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -281,6 +282,27 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line[15:10] interrupts.
+  */
+void EXTI15_10_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI15_10_IRQn 0 */
+
+  /* USER CODE END EXTI15_10_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
+  /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+    if (SX1280.InterruptAssignment == SX1280_INTERRUPT_RX_DONE)
+    {
+        SX1280_RXnbISR();
+    }
+    else if (SX1280.InterruptAssignment == SX1280_INTERRUPT_TX_DONE)
+    {
+        SX1280_TXnbISR();
+    }
+  /* USER CODE END EXTI15_10_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

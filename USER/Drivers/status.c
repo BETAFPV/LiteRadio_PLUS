@@ -9,6 +9,7 @@
 #include "mixes.h"
 #include "buzzer.h"
 #include "crsf.h"
+uint8_t test_1,test_2,test_3;
 uint8_t configerRequest;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
@@ -19,7 +20,8 @@ static uint8_t powerStatus = RC_POWER_OFF;
 void Status_Init()
 {
     STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
-    if(protocolIndex > 4)
+    protocolIndex = 5;
+    if(protocolIndex > 5)
     {
         protocolIndex = 0;
         STMFLASH_Write(CONFIGER_INFO_ADDR,&protocolIndex,1);
@@ -28,7 +30,7 @@ void Status_Init()
     if(HAL_GPIO_ReadPin(KEY_BIND_GPIO_Port,KEY_BIND_Pin) == GPIO_PIN_RESET)
     {
         protocolIndex++;
-        if(protocolIndex > 4)
+        if(protocolIndex > 5)
         {
             protocolIndex = 0;
         }
@@ -39,6 +41,7 @@ void Status_Init()
     {
         RGB_TwinkleForInit((protocolIndex+1),300);
     }
+ 
     Version_Init(protocolIndex);
     switch(protocolIndex)
     {
@@ -66,17 +69,19 @@ void Status_Init()
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
             break;
         }
+        case 5: 
         case 4: 
         {
             protocolDelayTime = CRSF_INTERVAL;
             HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                
             break;
-        }
+        } 
         default:
         {
             break;
-				}
-    }	
+        }
+    }
+
 }
 
 uint32_t Get_ProtocolDelayTime()
@@ -215,7 +220,6 @@ void statusTask(void* param)
                     case RF_DATA:
                     {
                         xEventGroupSetBits( rgbEventHandle, DATA_RGB);
-                        
                         break;
                     }
                     case RF_CALIBARATION:
@@ -226,7 +230,8 @@ void statusTask(void* param)
                     case RF_BIND:
                     {
                         xEventGroupSetBits( rgbEventHandle, BIND_RGB);
-                        RFstatus = RF_DATA;                            
+                        RFstatus = RF_DATA;
+                        break;                            
                     }
                     default:
                     {
@@ -277,6 +282,5 @@ void statusTask(void* param)
             }
         
         }
-        
     }    
 }

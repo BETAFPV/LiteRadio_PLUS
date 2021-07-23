@@ -38,7 +38,9 @@
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+#ifdef LiteRadio_Plus_CC2500
+void CC2500_GPIO_Disable(void);
+#endif
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

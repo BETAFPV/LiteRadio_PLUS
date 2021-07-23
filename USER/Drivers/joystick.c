@@ -8,18 +8,19 @@
 #include "function.h"
 #include "status.h"
 #include "crsf.h"
-
 static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
+UBaseType_t uxTaskGetStackHighWaterMarkdebug_1;
 void joystickTask(void *param) 
 {
     uint16_t reportData[8];
     uint16_t mixValBuff[8];
-		joystickDelayTime = Get_ProtocolDelayTime();
+
+    joystickDelayTime = Get_ProtocolDelayTime();
     while(1)
-	{
-	    vTaskDelay(joystickDelayTime);
-	    uxTaskGetStackHighWaterMarkdebug_1 = uxTaskGetStackHighWaterMark(NULL);
+    {
+        vTaskDelay(joystickDelayTime);
+     //   uxTaskGetStackHighWaterMarkdebug_1 = uxTaskGetStackHighWaterMark(NULL);
         xQueueReceive(mixesValQueue,mixValBuff,0);
      
         reportData[0] = map(mixValBuff[0],1000,2000,0,2047);

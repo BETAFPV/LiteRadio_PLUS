@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "crsf.h": "c",
+        "status.h": "c",
+        "joystick.h": "c",
+        "cc2500.h": "c",
+        "s_fhss.h": "c",
+        "fhss.h": "c"
+    }
+}
