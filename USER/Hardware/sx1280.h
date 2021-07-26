@@ -69,7 +69,6 @@ void EnterBindingMode(void);
 void ExitBindingMode(void);
 void SendUIDOverMSP(void);
 
-
 void SX1280_Init(void);
 void SX1280_Reset(void);
 uint16_t SX1280_GetFirmwareVersion(void);
@@ -95,4 +94,5 @@ void SX1280_TXnbISR(void);
 void SX1280_RXnbISR(void);
 /*power*/
 PowerLevels_e SX1280_SetPower(PowerLevels_e Power);
+
 #endif

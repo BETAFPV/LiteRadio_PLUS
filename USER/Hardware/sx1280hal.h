@@ -4,9 +4,6 @@
 #include "cmsis_os.h"
 #include "sx1280reg.h"
 
-
-
-
 void SX1280_HalWriteCommandVal(SX1280_RadioCommands_t command, uint8_t val);
 void SX1280_HalWriteCommandBuffer(SX1280_RadioCommands_t command, uint8_t *buffer, uint16_t size);
 void SX1280_HalReadRegisters(uint16_t address, uint8_t *buffer, uint16_t size);

@@ -27,10 +27,10 @@ void Mixes_Init()
 void Mixes_ChannelUpdate(uint8_t channel)
 {
     STMFLASH_Read(CACHE_MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);     
-//    mixesBuff[0] = channel;
-//    mixesBuff[1] = 0;
-//    mixesBuff[2] = 100;
-//    mixesBuff[3] = 100;
+    mixesBuff[0] = channel;
+    mixesBuff[1] = 0;
+    mixesBuff[2] = 100;
+    mixesBuff[3] = 100;
     mixData[channel].gimbalChannel = (uint8_t)mixesBuff[0];
     mixData[channel].reverse= (uint8_t)mixesBuff[1];
     mixData[channel].weight = (uint8_t)mixesBuff[2];

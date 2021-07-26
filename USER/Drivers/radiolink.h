@@ -28,7 +28,6 @@ extern EventGroupHandle_t radioEventHandle;
 void Version_Init(uint16_t protocolIndex);
 void radiolinkTask(void* param);
 
-void GenerateChannelDataHybridSwitch8(volatile uint8_t* Buffer, uint16_t* controlDataBuff);
 
 #endif
 

@@ -15,6 +15,7 @@ void GetSbusPackage(uint8_t* ChannelToSbus);
 uint8_t crc8(const uint8_t * ptr, uint32_t len);
 
 uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax);
+#ifdef LiteRadio_Plus_CC2500
 //定义各通道名称(最大支持8通道)
 typedef enum
 { 
@@ -31,6 +32,6 @@ typedef enum
 	AUX11		= 14 , 
 	AUX12		= 15 , 
 }ChannelTypeDef ;
-
+#endif
 
 #endif

@@ -247,7 +247,6 @@ void gimbalTask(void* param)
         gimbalBuff[THROTTLE] = Get_GimbalValue(THROTTLE);
         gimbalBuff[RUDDER] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER);
         gimbalBuff[AILERON] = Get_GimbalValue(AILERON);
-
         gimbalBuff[ELEVATOR] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR);
 
         gimbalEvent= xEventGroupWaitBits( gimbalEventHandle,

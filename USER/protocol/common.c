@@ -1,7 +1,14 @@
 #include "common.h"
+#include "function.h"
+#include "mixes.h"
+#include "crsf.h"
 uint8_t UID[6];
 uint16_t crc14tab[ELRS_CRC_LEN] = {0};
+uint16_t elrsControlData[8] = {0};
 
+static uint8_t currentSwitches[N_SWITCHES] = {0};
+static uint8_t sentSwitches[N_SWITCHES] = {0};
+static uint8_t nextSwitchIndex = 0; // for round-robin sequential switches
 #if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) || defined(Regulatory_Domain_AU_433) || defined(Regulatory_Domain_EU_433)
 
 #include "SX127xDriver.h"
@@ -98,9 +105,9 @@ connectionState_e connectionStatePrev = disconnected;
 
 uint8_t BindingUID[6] = {0, 1, 2, 3, 4, 5}; // Special binding UID values
 
-uint8_t MasterUID[6] ; // Special binding UID values
+uint8_t MasterUID[6]; // Special binding UID values
 
-uint16_t CRCInitializer ;
+uint16_t CRCInitializer;
 
 #define RSSI_FLOOR_NUM_READS 5 // number of times to sweep the noise foor to get avg. RSSI reading
 #define MEDIAN_SIZE 20
@@ -154,6 +161,135 @@ uint16_t RateEnumToHz(expresslrs_RFrates_e eRate)
     }
 }
 
+void GenerateChannelDataHybridSwitch8(volatile uint8_t* Buffer, uint16_t* elrsControlData)
+{
+    uint32_t dataVal[16];
+    uint16_t elrsChannelDataBuff[4];
+    elrsChannelDataBuff[MIX_ELEVATOR] = map(elrsControlData[MIX_ELEVATOR],1000,2000,192,1792);
+    elrsChannelDataBuff[MIX_AILERON] = map(elrsControlData[MIX_AILERON],1000,2000,192,1792);
+    elrsChannelDataBuff[MIX_THROTTLE] = map(elrsControlData[MIX_THROTTLE],1000,2000,192,1792);
+    elrsChannelDataBuff[MIX_RUDDER] = map(elrsControlData[MIX_RUDDER],1000,2000,192,1792);  
+    
+    dataVal[0] = elrsChannelDataBuff[MIX_AILERON];
+    dataVal[1] = elrsChannelDataBuff[MIX_ELEVATOR];
+    dataVal[2] = elrsChannelDataBuff[MIX_THROTTLE];
+    dataVal[3] = elrsChannelDataBuff[MIX_RUDDER];  
+    
+    Buffer[0] = RC_DATA_PACKET & 0x03;
+    Buffer[1] = ((dataVal[0]) >> 3);
+    Buffer[2] = ((dataVal[1]) >> 3);
+    Buffer[3] = ((dataVal[2]) >> 3);
+    Buffer[4] = ((dataVal[3]) >> 3);
+    Buffer[5] = ((dataVal[0] & 0x06) << 5) |
+                           ((dataVal[1] & 0x06) << 3) |
+                           ((dataVal[2] & 0x06) << 1) |
+                           ((dataVal[3] & 0x06) >> 1);
+                           
+    CRSF_UpdateSwitchValues(elrsControlData);
+    
+    uint8_t nextSwitchIndex = CRSF_GetNextSwitchIndex();
+    // Actually send switchIndex - 1 in the packet, to shift down 1-7 (0b111) to 0-6 (0b110)
+    // If the two high bits are 0b11, the receiver knows it is the last switch and can use
+    // that bit to store data
+    uint8_t bitclearedSwitchIndex = nextSwitchIndex - 1;
+    // currentSwitches[] is 0-15 for index 6, 0-2 for index 0-5
+    // Rely on currentSwitches to *only* have values in that rang
+    uint8_t value = currentSwitches[nextSwitchIndex];
+
+    Buffer[6] =   currentSwitches[0] << 6 |bitclearedSwitchIndex << 3 | value;
+    
+    CRSF_SetSentSwitch(nextSwitchIndex, value);
+}
+
+void CRSF_UpdateSwitchValues(uint16_t* elrsControlData)
+{
+    uint32_t dataVal[16];
+
+    dataVal[4] = map(elrsControlData[4],1000,2000,192,1792);
+    dataVal[5] = map(elrsControlData[5],1000,2000,192,1792);
+    dataVal[6] = map(elrsControlData[6],1000,2000,192,1792);
+    dataVal[7] = map(elrsControlData[7],1000,2000,192,1792);  
+    dataVal[8] = DEFAULT_VALUE;
+    dataVal[9] = DEFAULT_VALUE;
+    dataVal[10] = DEFAULT_VALUE;    
+    dataVal[11] = DEFAULT_VALUE;  
+    dataVal[12] = DEFAULT_VALUE;
+    dataVal[13] = DEFAULT_VALUE;
+    dataVal[14] = DEFAULT_VALUE;
+    dataVal[15] = DEFAULT_VALUE;
+    
+    // AUX1 is arm switch, one bit
+    currentSwitches[0] = CRSF_to_BIT(dataVal[4]);
+
+    // AUX2-(N-1) are Low Resolution, "7pos" (6+center)
+    const uint16_t CHANNEL_BIN_COUNT = 6;
+    const uint16_t CHANNEL_BIN_SIZE = CRSF_CHANNEL_VALUE_SPAN / CHANNEL_BIN_COUNT;
+    for (int i = 1; i < N_SWITCHES-1; i++)
+    {
+        uint16_t ch = dataVal[i + 4];
+        // If channel is within 1/4 a BIN of being in the middle use special value 7
+        if (ch < (CRSF_CHANNEL_VALUE_MID-CHANNEL_BIN_SIZE/4)
+            || ch > (CRSF_CHANNEL_VALUE_MID+CHANNEL_BIN_SIZE/4))
+            currentSwitches[i] = CRSF_to_N(ch, CHANNEL_BIN_COUNT) & 0x07;
+        else
+            currentSwitches[i] = 7;
+    } // for N_SWITCHES
+
+    // AUXx is High Resolution 16-pos (4-bit)
+    currentSwitches[N_SWITCHES-1] = CRSF_to_N(dataVal[N_SWITCHES-1 + 4], 16) & 0x0F;
+}
+
+void CRSF_SetSentSwitch(uint8_t index, uint8_t value)
+{
+    sentSwitches[index] = value;
+}
+
+int8_t CRSF_GetNextSwitchIndex()
+{
+    int firstSwitch = 0; // sequential switches includes switch 0
+
+    firstSwitch = 1; // skip 0 since it is sent on every packet
+
+    // look for a changed switch
+    int i;
+    for (i = firstSwitch; i < N_SWITCHES; i++)
+    {
+        if (currentSwitches[i] != sentSwitches[i])
+            break;
+    }
+    // if we didn't find a changed switch, we get here with i==N_SWITCHES
+    if (i == N_SWITCHES)
+    {
+        i = nextSwitchIndex;
+    }
+
+    // keep track of which switch to send next if there are no changed switches
+    // during the next call.
+    nextSwitchIndex = (i + 1) % 8;
+
+
+    // for hydrid switches 0 is sent on every packet, skip it in round-robin
+    if (nextSwitchIndex == 0)
+    {
+        nextSwitchIndex = 1;
+    }
+
+    return i;
+}
+
+// Returns 1 if val is greater than CRSF_CHANNEL_VALUE_MID
+uint8_t CRSF_to_BIT(uint16_t val)
+{
+    return (val > CRSF_CHANNEL_VALUE_MID) ? 1 : 0;
+}
+
+
+// Convert CRSF (172-1811) to 0-(cnt-1)
+uint16_t CRSF_to_N(uint16_t val, uint16_t cnt)
+{
+    // The span is increased by one to prevent the max val from returning cnt
+    return (val - CRSF_CHANNEL_VALUE_MIN) * cnt / (CRSF_CHANNEL_VALUE_SPAN + 1);
+}
 void generateCrc14Table(void)
 {
     uint16_t crc;

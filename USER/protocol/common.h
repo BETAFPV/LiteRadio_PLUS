@@ -15,7 +15,8 @@
 #endif
 
 #define ELRS_CRC_LEN 256
-#define ELRS_CRC14_POLY 0x2E57
+#define ELRS_CRC_POLY 0x07 // 0x83
+#define ELRS_CRC14_POLY 0x2E57 // 0x372B
 
 #define ELRS_TELEMETRY_TYPE_LINK 0x01
 #define ELRS_TELEMETRY_TYPE_DATA 0x02
@@ -39,6 +40,18 @@
 #define MSP_DATA_PACKET 0x01
 #define TLM_PACKET 0x03
 #define SYNC_PACKET 0x02
+
+// current and sent switch values
+#define N_SWITCHES 8
+
+#define AUX1 4
+#define AUX2 5
+#define AUX3 6
+#define AUX4 7
+#define AUX5 8
+#define AUX6 9
+#define AUX7 10
+#define AUX8 11
 
 extern uint8_t BindingUID[6];
 extern uint8_t UID[6];
@@ -109,7 +122,6 @@ typedef struct expresslrs_rf_pref_params_s
 
 } expresslrs_rf_pref_params_s;
 
-
 #if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) || defined(Regulatory_Domain_AU_433) || defined(Regulatory_Domain_EU_433)
 #define RATE_MAX 4
 #define RATE_DEFAULT 0
@@ -148,10 +160,6 @@ typedef struct expresslrs_mod_settings_s
 
 #endif
 
-
-void generateCrc14Table(void);
-uint16_t calcCrc14(uint8_t *data, uint8_t len, uint16_t crc);
-
 expresslrs_mod_settings_s *get_elrs_airRateConfig(int8_t index);
 expresslrs_rf_pref_params_s *get_elrs_RFperfParams(int8_t index);
 
@@ -165,17 +173,14 @@ extern uint8_t ExpressLRS_nextAirRateIndex;
 //extern expresslrs_mod_settings_s *ExpressLRS_prevAirRate;
 uint8_t enumRatetoIndex(expresslrs_RFrates_e rate);
 
+void GenerateChannelDataHybridSwitch8(volatile uint8_t* Buffer, uint16_t* controlDataBuff);
+int8_t CRSF_GetNextSwitchIndex(void);
+void CRSF_SetSentSwitch(uint8_t index, uint8_t value);
+void CRSF_UpdateSwitchValues(uint16_t* elrsControlData);
+uint8_t CRSF_to_BIT(uint16_t val);
+uint16_t CRSF_to_N(uint16_t val, uint16_t cnt);
 
-#define AUX1 4
-#define AUX2 5
-#define AUX3 6
-#define AUX4 7
-#define AUX5 8
-#define AUX6 9
-#define AUX7 10
-#define AUX8 11
-
-#define ELRS_CRC_POLY 0x07 // 0x83
-#define ELRS_CRC14_POLY 0x2E57 // 0x372B
+void generateCrc14Table(void);
+uint16_t calcCrc14(uint8_t *data, uint8_t len, uint16_t crc);
 
 #endif

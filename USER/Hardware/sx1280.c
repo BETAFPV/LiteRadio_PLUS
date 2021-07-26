@@ -14,7 +14,6 @@ void SX1280_Init()
     SX1280.currBW = SX1280_LORA_BW_0800;
     SX1280.currSF = SX1280_LORA_SF6;
     SX1280.currCR = SX1280_LORA_CR_4_7;
-   // SX1280.currFreq = 2400000000;
     SX1280.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
     SX1280.IQinverted = 0;
     SX1280.InterruptAssignment = SX1280_INTERRUPT_NONE;
@@ -79,7 +78,7 @@ void SX1280_RXnbISR()
 void SX1280_Reset(void)
 {
     HAL_GPIO_WritePin(SX1280_RST_GPIO_Port, SX1280_RST_Pin, GPIO_PIN_RESET);
-    HAL_Delay(100);
+    HAL_Delay(50);
     HAL_GPIO_WritePin(SX1280_RST_GPIO_Port, SX1280_RST_Pin, GPIO_PIN_SET);
     HAL_Delay(100);
 }

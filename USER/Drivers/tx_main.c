@@ -316,10 +316,10 @@ void setup(uint8_t protocolIndex)
     UID[4] = 126;
     UID[5] = 228;
     
+    FHSSrandomiseFHSSsequence(UID); 
+    
     SX1280_Reset();
-    FHSSrandomiseFHSSsequence(UID);
-
-    while(firmwareRev == 0)
+    while(firmwareRev == 0|| (firmwareRev == 65535))
     {
         firmwareRev= SX1280_GetFirmwareVersion();
     }

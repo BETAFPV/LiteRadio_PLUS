@@ -69,11 +69,16 @@ void Status_Init()
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
             break;
         }
-        case 5: 
         case 4: 
         {
             protocolDelayTime = CRSF_INTERVAL;
-            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
+            break;
+        } 
+        case 5:
+        {
+            protocolDelayTime = CRSF_INTERVAL;        
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);            
             break;
         } 
         default:

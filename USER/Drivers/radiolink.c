@@ -22,10 +22,11 @@ EventGroupHandle_t radioEventHandle;
 static uint16_t rfcontrolData[8];
 static uint8_t versionSelectFlg;
 static uint32_t radiolinkDelayTime ;
-uint16_t debug_0;
+
 void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* controlData);
+
 void Version_Init(uint16_t protocolIndex)
 {
     versionSelectFlg = protocolIndex;
@@ -86,17 +87,4 @@ void radiolinkTask(void* param)
     }
 }
 
-void GenerateChannelDataHybridSwitch8(volatile uint8_t* Buffer, uint16_t* controlDataBuff)
-{
-  Buffer[0] = RC_DATA_PACKET & 0x03;
-  Buffer[1] = ((controlDataBuff[0]) >> 3);
-  Buffer[2] = ((controlDataBuff[1]) >> 3);
-  Buffer[3] = ((controlDataBuff[2]) >> 3);
-  Buffer[4] = ((controlDataBuff[3]) >> 3);
-  Buffer[5] = ((controlDataBuff[0] & 0x06) << 5) |
-                           ((controlDataBuff[1] & 0x06) << 3) |
-                           ((controlDataBuff[2] & 0x06) << 1) |
-                           ((controlDataBuff[3] & 0x06) >> 1);
 
-  Buffer[6] =  0x00;
-}
