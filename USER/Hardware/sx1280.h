@@ -62,6 +62,7 @@ typedef struct
 extern SX1280_t SX1280;
 
 void setup(uint8_t protocolIndex);
+void loop(void);
 void ProcessTLMpacket(void);
 void RXdoneISR(void);
 void TXdoneISR(void);

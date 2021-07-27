@@ -21,7 +21,7 @@ TaskHandle_t radiolinkTaskHandle;
 EventGroupHandle_t radioEventHandle;
 static uint16_t rfcontrolData[8];
 static uint8_t versionSelectFlg;
-static uint32_t radiolinkDelayTime ;
+uint32_t radiolinkDelayTime ;
 
 void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
@@ -81,6 +81,7 @@ void radiolinkTask(void* param)
         if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
         {
             RF_Bind();
+            radiolinkDelayTime = 2;
         }       
         RF_Process(rfcontrolData);
 

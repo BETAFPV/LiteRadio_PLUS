@@ -6,6 +6,7 @@
 
 volatile uint8_t NonceTX;
 
+uint8_t MspSender_IsActive = 0;
 
 //// MSP Data Handling ///////
 uint8_t NextPacketIsMspData = 0;  // if true the next packet will contain the msp data
@@ -40,7 +41,7 @@ uint8_t BindingSendCount = 0;
 uint16_t firmwareRev;
 
 uint8_t baseMac[6];
-
+uint8_t abc;
 void ProcessTLMpacket()
 {
   uint16_t inCRC = (((uint16_t)(SX1280.radioRXdataBuffer[0] & 0xFC)) << 6 ) | SX1280.radioRXdataBuffer[7];
@@ -169,13 +170,15 @@ void HandleTLM()
 
 void SX1280_SetBind()
 {
-    HAL_Delay(1);
+    EnterBindingMode();
 }
 
 
 
 uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
 {
+
+    busyTransmitting = 1;
     uint8_t *data;
     uint8_t maxLength;
     uint8_t packageIndex;
@@ -208,9 +211,9 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     uint8_t NonceFHSSresult = NonceTX % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
     uint8_t NonceFHSSresultWindow = (NonceFHSSresult == 1 || NonceFHSSresult == 2) ? 1 : 0; // restrict to the middle nonce ticks (not before or after freq chance)
     uint8_t WithinSyncSpamResidualWindow = (HAL_GetTick() - rfModeLastChangedMS < syncSpamAResidualTimeMS) ? 1 : 0;
-
     if ((syncSpamCounter || WithinSyncSpamResidualWindow) && NonceFHSSresultWindow)
     {
+        abc++;
         GenerateSyncPacketData();
     }
     else if ((!skipSync) && ((HAL_GetTick() > (SyncPacketLastSent + SyncInterval)) && (SX1280.currFreq == GetInitialFreq()) && NonceFHSSresultWindow)) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
@@ -219,7 +222,7 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     }
     else
     {
-        if (NextPacketIsMspData)
+        if (NextPacketIsMspData && MspSender_IsActive)
         {
           //MspSender.GetCurrentPayload(&packageIndex, &maxLength, &data);
             
@@ -235,27 +238,37 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
           SX1280.radioTXdataBuffer[3] = 0xD1;
           SX1280.radioTXdataBuffer[4] = 0xD8;
           SX1280.radioTXdataBuffer[5] = 0x7E;
-          SX1280.radioTXdataBuffer[6] = 0xE4;          
+          SX1280.radioTXdataBuffer[6] = 0xE4;     
+          SX1280.radioTXdataBuffer[5] = 0x7E;
+          SX1280.radioTXdataBuffer[6] = 0xE4;              
           // send channel data next so the channel messages also get sent during msp transmissions
           NextPacketIsMspData = 0;
           // counter can be increased even for normal msp messages since it's reset if a real bind message should be sent
           BindingSendCount++;
+              if (InBindingMode)
+  {
+    // exit bind mode if package after some repeats
+    if (BindingSendCount > 6) {
+      ExitBindingMode();
+    }
+  }
         }
         else
         {
             // always enable msp after a channel package since the slot is only used if MspSender has data to send
-          //  NextPacketIsMspData = 1;
+            NextPacketIsMspData = 1;
             GenerateChannelDataHybridSwitch8(SX1280.radioTXdataBuffer, crsfcontrol_data);
         }
    }
 
   ///// Next, Calculate the CRC and put it into the buffer /////
-  CRCInitializer = (UID[4] << 8) | UID[5];
+
   uint16_t crc = calcCrc14(SX1280.radioTXdataBuffer, 7, CRCInitializer);
   SX1280.radioTXdataBuffer[0] |= (crc >> 6) & 0xFC;
   SX1280.radioTXdataBuffer[7] = crc & 0xFF;
 
   SX1280_TXnb(SX1280.radioTXdataBuffer, 8);
+   
 }
 
 /*
@@ -315,7 +328,7 @@ void setup(uint8_t protocolIndex)
     UID[3] = 216;
     UID[4] = 126;
     UID[5] = 228;
-    
+      CRCInitializer = (UID[4] << 8) | UID[5];
     FHSSrandomiseFHSSsequence(UID); 
     
     SX1280_Reset();
@@ -330,7 +343,7 @@ void setup(uint8_t protocolIndex)
     
 
     SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
-    SetRFLinkRate(RATE_DEFAULT);
+    SetRFLinkRate(1);
     generateCrc14Table();
  // ExpressLRS_currAirRate_Modparams->TLMinterval = TLM_RATIO_1_64;
 }
@@ -444,6 +457,7 @@ void EnterBindingMode()
   SetRFLinkRate(RATE_DEFAULT);
   SX1280.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
   SX1280_SetFrequencyReg(SX1280.currFreq); 
+  MspSender_IsActive = 1;
   // Start transmitting again
 }
 
@@ -454,7 +468,12 @@ void ExitBindingMode()
     // Not in binding mode
     return;
   }
-
+    MasterUID[0] = 240;
+  MasterUID[1] = 8;
+  MasterUID[2] = 209;
+  MasterUID[3] = 216;
+  MasterUID[4] = 126;
+  MasterUID[5] = 228;
   // Reset UID to defined values
   UID[0] = MasterUID[0];
   UID[1] = MasterUID[1];
@@ -466,7 +485,9 @@ void ExitBindingMode()
   CRCInitializer = (UID[4] << 8) | UID[5];
 
   InBindingMode = 0;
-  //SetRFLinkRate(config.GetRate()); //return to original rate
+  SetRFLinkRate(1); //return to original rate
+  MspSender_IsActive = 0;
+  radiolinkDelayTime = 4;
 }
 
 void SendUIDOverMSP()
