@@ -5,6 +5,7 @@
 uint8_t UID[6];
 uint16_t crc14tab[ELRS_CRC_LEN] = {0};
 uint16_t elrsControlData[8] = {0};
+StubbornSender_t StubbornSender;
 
 static uint8_t currentSwitches[N_SWITCHES] = {0};
 static uint8_t sentSwitches[N_SWITCHES] = {0};
@@ -118,28 +119,20 @@ uint8_t TLMratioEnumToValue(expresslrs_tlm_ratio_e enumval)
     {
         case TLM_RATIO_NO_TLM:
             return 1;
-            break;
         case TLM_RATIO_1_2:
             return 2;
-            break;
         case TLM_RATIO_1_4:
             return 4;
-            break;
         case TLM_RATIO_1_8:
             return 8;
-            break;
         case TLM_RATIO_1_16:
             return 16;
-            break;
         case TLM_RATIO_1_32:
             return 32;
-            break;
         case TLM_RATIO_1_64:
             return 64;
-            break;
         case TLM_RATIO_1_128:
             return 128;
-            break;
         default:
             return 0;
     }
@@ -290,6 +283,79 @@ uint16_t CRSF_to_N(uint16_t val, uint16_t cnt)
     // The span is increased by one to prevent the max val from returning cnt
     return (val - CRSF_CHANNEL_VALUE_MIN) * cnt / (CRSF_CHANNEL_VALUE_SPAN + 1);
 }
+
+
+void StubbornSender_GetCurrentPayload(uint8_t *packageIndex, uint8_t *count, uint8_t **currentData)
+{
+    switch (StubbornSender.senderState)
+    {
+        case RESYNC:
+            *packageIndex = StubbornSender.maxPackageIndex;
+            *count = 0;
+            *currentData = 0;
+            break;
+        case SENDING:
+            *currentData = StubbornSender.data + StubbornSender.currentOffset;
+            *packageIndex = StubbornSender.currentPackage;
+            if (StubbornSender.bytesPerCall > 1)
+            {
+                if (StubbornSender.currentOffset + StubbornSender.bytesPerCall <= StubbornSender.length)
+                {
+                    *count = StubbornSender.bytesPerCall;
+                }
+                else
+                {
+                    *count = StubbornSender.length-StubbornSender.currentOffset;
+                }
+            }
+            else
+            {
+                *count = 1;
+            }
+            break;
+        default:
+            *count = 0;
+            *currentData = 0;
+            *packageIndex = 0;
+    }
+}
+
+void StubbornSender_SetDataToTransmit(uint8_t lengthToTransmit, uint8_t* dataToTransmit, uint8_t bytesPerCall)
+{
+    StubbornSender.maxPackageIndex = 4;
+    if (StubbornSender.senderState != SENDER_IDLE || lengthToTransmit / bytesPerCall >= StubbornSender.maxPackageIndex)
+    {
+        return;
+    }
+
+    StubbornSender.length = lengthToTransmit;
+    StubbornSender.data = dataToTransmit;
+    StubbornSender.currentOffset = 0;
+    StubbornSender.currentPackage = 1;
+    StubbornSender.waitCount = 0;
+    StubbornSender.bytesPerCall = bytesPerCall;
+    StubbornSender.senderState = SENDING;
+}
+
+
+void StubbornSender_ResetState()
+{
+    StubbornSender.data = 0;
+    StubbornSender.bytesPerCall = 1;
+    StubbornSender.currentOffset = 0;
+    StubbornSender.currentPackage = 0;
+    StubbornSender.length = 0;
+    StubbornSender.waitUntilTelemetryConfirm = 1;
+    StubbornSender.waitCount = 0;
+    StubbornSender.maxWaitCount = 1000;
+    StubbornSender.senderState = SENDER_IDLE;
+}
+
+uint8_t StubbornSender_IsActive()
+{
+    return StubbornSender.senderState != SENDER_IDLE;
+}
+
 void generateCrc14Table(void)
 {
     uint16_t crc;

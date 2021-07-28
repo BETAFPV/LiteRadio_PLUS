@@ -35,7 +35,7 @@ void Version_Init(uint16_t protocolIndex)
 void radiolinkTask(void* param)
 {
     EventBits_t radioEvent;
-		radiolinkDelayTime = Get_ProtocolDelayTime();
+    radiolinkDelayTime = Get_ProtocolDelayTime();
     switch(versionSelectFlg)
     {
 #ifdef LiteRadio_Plus_CC2500
@@ -81,7 +81,9 @@ void radiolinkTask(void* param)
         if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
         {
             RF_Bind();
+#if defined(Regulatory_Domain_ISM_2400) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
             radiolinkDelayTime = 2;
+#endif
         }       
         RF_Process(rfcontrolData);
 

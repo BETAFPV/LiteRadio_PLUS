@@ -45,6 +45,21 @@ typedef struct
     uint8_t TLM;
 }crsfData_t;
 
+typedef struct 
+{
+    uint8_t uplink_RSSI_1;
+    uint8_t uplink_RSSI_2;
+    uint8_t uplink_Link_quality;
+    int8_t uplink_SNR;
+    uint8_t active_antenna;
+    uint8_t rf_Mode;
+    uint8_t uplink_TX_Power;
+    uint8_t downlink_RSSI;
+    uint8_t downlink_Link_quality;
+    int8_t downlink_SNR;
+} crsfLinkStatistics_t;
+extern crsfLinkStatistics_t linkStatistics;
+
 extern crsfData_t crsfData;
 
 void CRSF_SetBind(void);

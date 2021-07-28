@@ -941,99 +941,119 @@
         <Ww>
           <count>66</count>
           <WinNumber>1</WinNumber>
-          <ItemText>crc,0x0A</ItemText>
+          <ItemText>crc14tab</ItemText>
         </Ww>
         <Ww>
           <count>67</count>
           <WinNumber>1</WinNumber>
-          <ItemText>crc</ItemText>
+          <ItemText>InBindingMode</ItemText>
         </Ww>
         <Ww>
           <count>68</count>
           <WinNumber>1</WinNumber>
-          <ItemText>crc14tab</ItemText>
+          <ItemText>FHSSsequence,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>69</count>
           <WinNumber>1</WinNumber>
-          <ItemText>crc</ItemText>
+          <ItemText>CRCInitializer,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>70</count>
           <WinNumber>1</WinNumber>
-          <ItemText>InBindingMode</ItemText>
+          <ItemText>controlDataBuff</ItemText>
         </Ww>
         <Ww>
           <count>71</count>
           <WinNumber>1</WinNumber>
-          <ItemText>FHSSsequence,0x0A</ItemText>
+          <ItemText>nextSwitchIndex</ItemText>
         </Ww>
         <Ww>
           <count>72</count>
           <WinNumber>1</WinNumber>
-          <ItemText>CRCInitializer,0x0A</ItemText>
+          <ItemText>abc</ItemText>
         </Ww>
         <Ww>
           <count>73</count>
           <WinNumber>1</WinNumber>
-          <ItemText>controlDataBuff</ItemText>
+          <ItemText>UID</ItemText>
         </Ww>
         <Ww>
           <count>74</count>
           <WinNumber>1</WinNumber>
-          <ItemText>crsfcontrol_data</ItemText>
+          <ItemText>StubbornSender.senderState</ItemText>
         </Ww>
         <Ww>
           <count>75</count>
           <WinNumber>1</WinNumber>
-          <ItemText>acontrolDataBuff,0x0A</ItemText>
+          <ItemText>InBindingMode</ItemText>
         </Ww>
         <Ww>
           <count>76</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rfcontrolData</ItemText>
+          <ItemText>maxLength</ItemText>
         </Ww>
         <Ww>
           <count>77</count>
           <WinNumber>1</WinNumber>
-          <ItemText>nextSwitchIndex</ItemText>
+          <ItemText>data</ItemText>
         </Ww>
         <Ww>
           <count>78</count>
           <WinNumber>1</WinNumber>
-          <ItemText>NonceFHSSresultWindow</ItemText>
+          <ItemText>SX1280.radioRXdataBuffer</ItemText>
         </Ww>
         <Ww>
           <count>79</count>
           <WinNumber>1</WinNumber>
-          <ItemText>WithinSyncSpamResidualWindow</ItemText>
+          <ItemText>8</ItemText>
         </Ww>
         <Ww>
           <count>80</count>
           <WinNumber>1</WinNumber>
-          <ItemText>HAL_GetTick()</ItemText>
+          <ItemText>8</ItemText>
         </Ww>
         <Ww>
           <count>81</count>
           <WinNumber>1</WinNumber>
-          <ItemText>NonceFHSSresultWindow</ItemText>
+          <ItemText>FIFOaddr</ItemText>
         </Ww>
         <Ww>
           <count>82</count>
           <WinNumber>1</WinNumber>
-          <ItemText>abc</ItemText>
+          <ItemText>halRRxBuffer</ItemText>
         </Ww>
         <Ww>
           <count>83</count>
           <WinNumber>1</WinNumber>
-          <ItemText>UID</ItemText>
+          <ItemText>linkStatistics,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>84</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ExpressLRS_currAirRate_Modparams-&gt;index</ItemText>
+        </Ww>
+        <Ww>
+          <count>85</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>ExpressLRS_currAirRate_Modparams-&gt;TLMinterval</ItemText>
+        </Ww>
+        <Ww>
+          <count>86</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>syncSpamCounter</ItemText>
+        </Ww>
+        <Ww>
+          <count>87</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>SX1280_RXnbISR</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x8007000</ItemText>
+          <ItemText>0x20000274</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>

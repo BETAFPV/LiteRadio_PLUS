@@ -27,7 +27,7 @@ void SX1280_HalReadRegisters(uint16_t address, uint8_t *buffer, uint16_t size)
     
     HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET);
     
-    //SX1280HalWaitOnBusy( );
+    //SX1280HalWaitOnBusy();
 }
 
 void SX1280_HalWriteRegister(uint16_t address, uint8_t *buffer, uint8_t size)
@@ -155,7 +155,7 @@ void SX1280_HalWriteBuffer(uint8_t offset, volatile uint8_t *buffer, uint8_t siz
 
   //  BusyDelay(12);
 }
-
+uint8_t halRRxBuffer[12];
 void SX1280_HalReadBuffer(uint8_t offset, volatile uint8_t *buffer, uint8_t size)
 {
     uint8_t halTxBuffer[size + 3];
@@ -169,11 +169,11 @@ void SX1280_HalReadBuffer(uint8_t offset, volatile uint8_t *buffer, uint8_t size
 
     HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET);
 
-    HAL_SPI_Transmit(&hspi2,halTxBuffer,(uint8_t)sizeof(halTxBuffer),1000);
+    HAL_SPI_TransmitReceive(&hspi2,halTxBuffer,halRRxBuffer,(uint8_t)sizeof(halTxBuffer),1000);
     
     HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET);
 
-    memcpy(localbuf, halTxBuffer + 3, size);
+    memcpy(localbuf, halRRxBuffer + 3, size);
 
     for (int i = 0; i < size; i++) // todo check if this is the right wany to handle volatiles
     {

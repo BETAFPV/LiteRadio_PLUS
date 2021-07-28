@@ -149,7 +149,6 @@ void SX1280_ConfigLoRaModParams(SX1280_RadioLoRaBandwidths_t bw, SX1280_RadioLoR
 {
     // Care must therefore be taken to ensure that modulation parameters are set using the command
     // SetModulationParam() only after defining the packet type SetPacketType() to be used
-
     uint8_t rfparams[3] = {0};
 
     rfparams[0] = (uint8_t)sf;
@@ -318,7 +317,8 @@ PowerLevels_e SX1280_SetPower(PowerLevels_e Power)
             SX1280_SetOutputPower(-15);
             break;
         case PWR_100mW:
-            SX1280_SetOutputPower(-9);
+            //SX1280_SetOutputPower(-9);
+            SX1280_SetOutputPower(6);
             break;
         case PWR_250mW:
             SX1280_SetOutputPower(-4);

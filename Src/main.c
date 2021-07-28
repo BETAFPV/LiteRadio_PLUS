@@ -117,7 +117,7 @@ int main(void)
 #ifdef LiteRadio_Plus_CC2500
     CC2500_GPIO_Disable();
 #endif  
-
+HAL_GPIO_WritePin(GPIOA, SX1280_TXRX_EN_Pin|EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);
   Gimbal_Init();  
 
   Status_Init();

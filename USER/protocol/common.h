@@ -30,6 +30,7 @@
 #define ELRS_MSP_BUFFER 15
 #define ELRS_MSP_REQ_TIMEOUT_MS 1000
 
+#define MSP_ELRS_BIND       0x09
 
 // expresslrs packet header types
 // 00 -> standard 4 channel data packet
@@ -57,6 +58,32 @@ extern uint8_t BindingUID[6];
 extern uint8_t UID[6];
 extern uint8_t MasterUID[6];
 extern uint16_t CRCInitializer;
+
+typedef enum {
+    SENDER_IDLE = 0,
+    SENDING,
+    SEND_NEXT,
+    WAIT_UNTIL_NEXT_CONFIRM,
+    RESYNC
+} stubborn_sender_state_s;
+
+typedef struct
+{
+
+    uint8_t *data;
+    uint8_t length;
+    uint8_t bytesPerCall;
+    uint8_t currentOffset;
+    uint8_t currentPackage;
+    uint8_t waitUntilTelemetryConfirm;
+    uint8_t resetState;
+    uint16_t waitCount;
+    uint16_t maxWaitCount;
+    uint8_t maxPackageIndex;
+    volatile stubborn_sender_state_s senderState;
+}StubbornSender_t;
+
+extern StubbornSender_t StubbornSender;
 
 typedef enum
 {
@@ -122,7 +149,7 @@ typedef struct expresslrs_rf_pref_params_s
 
 } expresslrs_rf_pref_params_s;
 
-#if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) || defined(Regulatory_Domain_AU_433) || defined(Regulatory_Domain_EU_433)
+#if  defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
 #define RATE_MAX 4
 #define RATE_DEFAULT 0
 typedef struct expresslrs_mod_settings_s
@@ -179,6 +206,12 @@ void CRSF_SetSentSwitch(uint8_t index, uint8_t value);
 void CRSF_UpdateSwitchValues(uint16_t* elrsControlData);
 uint8_t CRSF_to_BIT(uint16_t val);
 uint16_t CRSF_to_N(uint16_t val, uint16_t cnt);
+
+
+void StubbornSender_GetCurrentPayload(uint8_t *packageIndex, uint8_t *count, uint8_t **currentData);
+void StubbornSender_SetDataToTransmit(uint8_t lengthToTransmit, uint8_t* dataToTransmit, uint8_t bytesPerCall);
+void StubbornSender_ResetState(void);
+uint8_t StubbornSender_IsActive(void);
 
 void generateCrc14Table(void);
 uint16_t calcCrc14(uint8_t *data, uint8_t len, uint16_t crc);
