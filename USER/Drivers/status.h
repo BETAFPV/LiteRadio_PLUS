@@ -4,6 +4,13 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
+#if defined(LiteRadio_Plus_CC2500) 
+#define PROTOCOL_INDEXLIMIT 4
+#elif defined(LiteRadio_Plus_SX1280)
+#define PROTOCOL_INDEXLIMIT 1
+#elif defined(LiteRadio_Plus_SX1276)
+#define PROTOCOL_INDEXLIMIT 1
+#endif
 typedef enum
 {
     RC_INIT              = 0,

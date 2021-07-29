@@ -38,7 +38,7 @@ void radiolinkTask(void* param)
     radiolinkDelayTime = Get_ProtocolDelayTime();
     switch(versionSelectFlg)
     {
-#ifdef LiteRadio_Plus_CC2500
+#if defined(LiteRadio_Plus_CC2500)        
         case 0: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
                 RF_Process = ReadFRSKYD16;      
@@ -55,15 +55,34 @@ void radiolinkTask(void* param)
                 RF_Process = ReadSFHSS;
                 RF_Bind = SFHSS_SetBind;
                 break;
-#endif         
+  
         case 4: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
                 RF_Bind = CRSF_SetBind;               
                 break;
-        case 5: RF_Init = setup;
+                
+#elif defined(LiteRadio_Plus_SX1280)
+        case 0: RF_Init = CRSF_Init;
+                RF_Process = CRSF_Process;
+                RF_Bind = CRSF_SetBind;     
+                break;
+        case 1: RF_Init = setup;
                 RF_Process = SendRCdataToRF;
                 RF_Bind = SX1280_SetBind;               
                 break;
+                
+#elif defined(LiteRadio_Plus_SX1276)
+        case 0: RF_Init = CRSF_Init;
+                RF_Process = CRSF_Process;
+                RF_Bind = CRSF_SetBind;     
+                break;
+        case 1: RF_Init = setup;
+                RF_Process = SendRCdataToRF;
+                RF_Bind = SX1276_SetBind;               
+                break; 
+                
+#endif                       
+
         default:
                 break;
     }
@@ -71,6 +90,7 @@ void radiolinkTask(void* param)
 		
     while(1)
     {
+        
         vTaskDelay(radiolinkDelayTime);
         xQueueReceive(mixesValQueue,rfcontrolData,0);
         radioEvent= xEventGroupWaitBits( radioEventHandle,

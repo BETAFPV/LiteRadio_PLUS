@@ -41,15 +41,15 @@ void SX1280_TXnb(volatile uint8_t *data, uint8_t length)
         return;
     }
     SX1280_ClearIrqStatus(SX1280_IRQ_RADIO_ALL);
-    //hal.TXenable();                      // do first to allow PA stablise
-    SX1280.InterruptAssignment = SX1280_INTERRUPT_TX_DONE;
+    SX1280Hal_TXenable();                   // do first to allow PA stablise
+
     SX1280_HalWriteBuffer(0x00, data, length); //todo fix offset to equal fifo addr
     SX1280_SetMode(SX1280_MODE_TX);
 }
 
 void SX1280_RXnb()
 {
-    SX1280.InterruptAssignment = SX1280_INTERRUPT_RX_DONE;
+    SX1280Hal_RXenable();
     SX1280_ClearIrqStatus(SX1280_IRQ_RADIO_ALL);
     SX1280_SetMode(SX1280_MODE_RX);
 }
@@ -70,7 +70,7 @@ void SX1280_RXnbISR()
     uint8_t FIFOaddr = SX1280_GetRxBufferAddr();
     SX1280_HalReadBuffer(FIFOaddr, SX1280.radioRXdataBuffer, TXRXBuffSize);
     SX1280_GetLastPacketStats();
-    
+ 
     RXdoneISR();
 }
 

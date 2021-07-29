@@ -4,7 +4,7 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
-#define DEFAULT_VALUE  993
+#define DEFAULT_VALUE  CRSF_CHANNEL_VALUE_MID
 
 #define CRSF_CHANNEL_VALUE_MIN 172
 #define CRSF_CHANNEL_VALUE_MID 992

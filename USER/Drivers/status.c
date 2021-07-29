@@ -9,7 +9,6 @@
 #include "mixes.h"
 #include "buzzer.h"
 #include "crsf.h"
-uint8_t test_1,test_2,test_3;
 uint8_t configerRequest;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
@@ -20,8 +19,7 @@ static uint8_t powerStatus = RC_POWER_OFF;
 void Status_Init()
 {
     STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
-    protocolIndex = 5;
-    if(protocolIndex > 5)
+    if(protocolIndex > PROTOCOL_INDEXLIMIT)
     {
         protocolIndex = 0;
         STMFLASH_Write(CONFIGER_INFO_ADDR,&protocolIndex,1);
@@ -30,7 +28,7 @@ void Status_Init()
     if(HAL_GPIO_ReadPin(KEY_BIND_GPIO_Port,KEY_BIND_Pin) == GPIO_PIN_RESET)
     {
         protocolIndex++;
-        if(protocolIndex > 5)
+        if(protocolIndex > PROTOCOL_INDEXLIMIT)
         {
             protocolIndex = 0;
         }
@@ -45,6 +43,7 @@ void Status_Init()
     Version_Init(protocolIndex);
     switch(protocolIndex)
     {
+#if defined(LiteRadio_Plus_CC2500)         
         case 0:
         {
             protocolDelayTime = D16_INTERVAL;
@@ -75,12 +74,33 @@ void Status_Init()
             HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
             break;
         } 
-        case 5:
+#elif defined(LiteRadio_Plus_SX1280)
+        case 0: 
+        {
+            protocolDelayTime = CRSF_INTERVAL;
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
+            break;
+        } 
+        case 1:
         {
             protocolDelayTime = CRSF_INTERVAL;        
             HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);            
             break;
         } 
+#elif defined(LiteRadio_Plus_SX1276)   
+        case 0: 
+        {
+            protocolDelayTime = CRSF_INTERVAL;
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
+            break;
+        } 
+        case 1:
+        {
+            protocolDelayTime = CRSF_INTERVAL;        
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);            
+            break;
+        } 
+#endif        
         default:
         {
             break;

@@ -13,6 +13,10 @@ void SX1280_HalWriteBuffer(uint8_t offset, volatile uint8_t *buffer, uint8_t siz
 void SX1280_HalReadBuffer(uint8_t offset, volatile uint8_t *buffer, uint8_t size);
 void SX1280_HalWaitOnBusy(void);
 
+/*PAÊ¹ÄÜ*/
+void SX1280Hal_TXenable(void);
+void SX1280Hal_RXenable(void);
+
 /*Power*/
 void SX1280_SetOutputPower(int8_t power);
 
