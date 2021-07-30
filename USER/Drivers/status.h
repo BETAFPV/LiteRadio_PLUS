@@ -5,11 +5,14 @@
 #include "cmsis_os.h"
 
 #if defined(LiteRadio_Plus_CC2500) 
-#define PROTOCOL_INDEXLIMIT 4
+#define PROTOCOL_INDEX_LIMIT 4
+#define CRSF_PROTOCOL_INDEX 4
 #elif defined(LiteRadio_Plus_SX1280)
-#define PROTOCOL_INDEXLIMIT 1
+#define PROTOCOL_INDEX_LIMIT 1
+#define CRSF_PROTOCOL_INDEX 0
 #elif defined(LiteRadio_Plus_SX1276)
-#define PROTOCOL_INDEXLIMIT 1
+#define PROTOCOL_INDEX_LIMIT 1
+#define CRSF_PROTOCOL_INDEX 0
 #endif
 typedef enum
 {

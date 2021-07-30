@@ -294,6 +294,7 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
+#if defined(LiteRadio_Plus_SX1280)
     if (SX1280.InterruptAssignment == SX1280_INTERRUPT_RX_DONE)
     {
         SX1280_RXnbISR();
@@ -302,6 +303,11 @@ void EXTI15_10_IRQHandler(void)
     {
         SX1280_TXnbISR();
     }
+#elif defined(LiteRadio_Plus_SX1276)
+
+#endif
+
+    
   /* USER CODE END EXTI15_10_IRQn 1 */
 }
 

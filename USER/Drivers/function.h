@@ -11,6 +11,7 @@ union ChipID{
 
 void Get_ChipID(union ChipID *chipID);
 uint16_t GetUniqueID(void);
+void Get_CRSFUniqueID(uint8_t *masterUID);
 void GetSbusPackage(uint8_t* ChannelToSbus);
 uint8_t crc8(const uint8_t * ptr, uint32_t len);
 

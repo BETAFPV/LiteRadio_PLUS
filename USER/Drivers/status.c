@@ -19,7 +19,7 @@ static uint8_t powerStatus = RC_POWER_OFF;
 void Status_Init()
 {
     STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
-    if(protocolIndex > PROTOCOL_INDEXLIMIT)
+    if(protocolIndex > PROTOCOL_INDEX_LIMIT)
     {
         protocolIndex = 0;
         STMFLASH_Write(CONFIGER_INFO_ADDR,&protocolIndex,1);
@@ -28,7 +28,7 @@ void Status_Init()
     if(HAL_GPIO_ReadPin(KEY_BIND_GPIO_Port,KEY_BIND_Pin) == GPIO_PIN_RESET)
     {
         protocolIndex++;
-        if(protocolIndex > PROTOCOL_INDEXLIMIT)
+        if(protocolIndex > PROTOCOL_INDEX_LIMIT)
         {
             protocolIndex = 0;
         }
@@ -124,7 +124,7 @@ void Status_Update()
 {
     if(powerStatus == RC_POWER_ON)
     {
-       if(protocolIndex == 4)
+       if(protocolIndex == CRSF_PROTOCOL_INDEX)
        {
            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);
        }
@@ -141,7 +141,7 @@ void Status_Update()
     }
     if(powerStatus == RC_POWER_OFF)
     {		
-       if(protocolIndex == 4)
+       if(protocolIndex == CRSF_PROTOCOL_INDEX)
        {
            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);   
        }

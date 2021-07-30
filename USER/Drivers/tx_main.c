@@ -2,6 +2,7 @@
 #include "sx1280.h"
 #include "fhss.h"
 #include "radiolink.h"
+#include "function.h"
 #include "crsf.h"
 #define RX_CONNECTION_LOST_TIMEOUT 3000LU // After 3000ms of no TLM response consider that slave has lost connection
 
@@ -93,79 +94,79 @@ void ProcessTLMpacket()
 
 void GenerateSyncPacketData()
 {
-  const uint8_t SwitchEncMode = 0x01;
-  uint8_t Index;
-  uint8_t TLMrate;
-  if (syncSpamCounter)
-  {
-//    Index = (config.GetRate() & 0b11);
-//    TLMrate = (config.GetTlm() & 0b111);
-  }
-  else
-  {
-    Index = (ExpressLRS_currAirRate_Modparams->index & 0x03);
-    TLMrate = (ExpressLRS_currAirRate_Modparams->TLMinterval & 0x07);
-  }
+    const uint8_t SwitchEncMode = 0x01;
+    uint8_t Index;
+    uint8_t TLMrate;
+    if (syncSpamCounter)
+    {
+    //    Index = (config.GetRate() & 0b11);
+    //    TLMrate = (config.GetTlm() & 0b111);
+    }
+    else
+    {
+        Index = (ExpressLRS_currAirRate_Modparams->index & 0x03);
+        TLMrate = (ExpressLRS_currAirRate_Modparams->TLMinterval & 0x07);
+    }
 
-  SX1280.radioTXdataBuffer[0] = SYNC_PACKET & 0x03;
-  SX1280.radioTXdataBuffer[1] = FHSSgetCurrIndex();
-  SX1280.radioTXdataBuffer[2] = NonceTX;
-  SX1280.radioTXdataBuffer[3] = (Index << 6) + (TLMrate << 3) + (SwitchEncMode << 1);
-  SX1280.radioTXdataBuffer[4] = UID[3];
-  SX1280.radioTXdataBuffer[5] = UID[4];
-  SX1280.radioTXdataBuffer[6] = UID[5];
+    SX1280.radioTXdataBuffer[0] = SYNC_PACKET & 0x03;
+    SX1280.radioTXdataBuffer[1] = FHSSgetCurrIndex();
+    SX1280.radioTXdataBuffer[2] = NonceTX;
+    SX1280.radioTXdataBuffer[3] = (Index << 6) + (TLMrate << 3) + (SwitchEncMode << 1);
+    SX1280.radioTXdataBuffer[4] = UID[3];
+    SX1280.radioTXdataBuffer[5] = UID[4];
+    SX1280.radioTXdataBuffer[6] = UID[5];
   
-  SyncPacketLastSent = HAL_GetTick();
-  if (syncSpamCounter)
-    --syncSpamCounter;
+    SyncPacketLastSent = HAL_GetTick();
+    if (syncSpamCounter)
+        --syncSpamCounter;
 }
 
 void SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
 {
-  expresslrs_mod_settings_s *const ModParams = get_elrs_airRateConfig(index);
-  expresslrs_rf_pref_params_s *const RFperf = get_elrs_RFperfParams(index);
-  uint8_t invertIQ = UID[5] & 0x01;
-  if ((ModParams == ExpressLRS_currAirRate_Modparams)
-    && (RFperf == ExpressLRS_currAirRate_RFperfParams)
-    && (invertIQ == SX1280.IQinverted))
+    expresslrs_mod_settings_s *const ModParams = get_elrs_airRateConfig(index);
+    expresslrs_rf_pref_params_s *const RFperf = get_elrs_RFperfParams(index);
+    uint8_t invertIQ = UID[5] & 0x01;
+    if ((ModParams == ExpressLRS_currAirRate_Modparams)
+        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
+        && (invertIQ == SX1280.IQinverted))
     return;
 
-  SX1280_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
+    SX1280_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
 
-  ExpressLRS_currAirRate_Modparams = ModParams;
-  ExpressLRS_currAirRate_RFperfParams = RFperf;
+    ExpressLRS_currAirRate_Modparams = ModParams;
+    ExpressLRS_currAirRate_RFperfParams = RFperf;
 
-  connectionState = disconnected;
-  rfModeLastChangedMS = HAL_GetTick();
+    connectionState = disconnected;
+    rfModeLastChangedMS = HAL_GetTick();
 }
 
 void HandleFHSS()
 {
-  if (InBindingMode)
-  {
-    return;
-  }
+    if (InBindingMode)
+    {
+        return;
+    }
 
-  uint8_t modresult = (NonceTX) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
+    uint8_t modresult = (NonceTX) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
 
-  if (modresult == 0) // if it time to hop, do so.
-  {
-    SX1280_SetFrequencyReg(FHSSgetNextFreq());
-  }
+    if (modresult == 0) // if it time to hop, do so.
+    {
+        SX1280_SetFrequencyReg(FHSSgetNextFreq());
+    }
 }
 
 void HandleTLM()
 {
-  if (ExpressLRS_currAirRate_Modparams->TLMinterval > 0)
-  {
-    uint8_t modresult = (NonceTX) % TLMratioEnumToValue(ExpressLRS_currAirRate_Modparams->TLMinterval);
-    if (modresult != 0) // wait for tlm response because it's time
+    if (ExpressLRS_currAirRate_Modparams->TLMinterval > 0)
     {
-      return;
+        uint8_t modresult = (NonceTX) % TLMratioEnumToValue(ExpressLRS_currAirRate_Modparams->TLMinterval);
+        if (modresult != 0) // wait for tlm response because it's time
+        {
+            return;
+        }
+        SX1280_RXnb();
+        WaitRXresponse = 1;
     }
-    SX1280_RXnb();
-    WaitRXresponse = 1;
-  }
 }
 
 void SX1280_SetBind()
@@ -283,11 +284,11 @@ void timerCallbackNormal()
  */
 void timerCallbackIdle()
 {
-  NonceTX++;
-  if (NonceTX % ExpressLRS_currAirRate_Modparams->FHSShopInterval == 0)
-  {
-    FHSSptr++;
-  }
+    NonceTX++;
+    if (NonceTX % ExpressLRS_currAirRate_Modparams->FHSShopInterval == 0)
+    {
+        FHSSptr++;
+    }
 }
 
 
@@ -315,13 +316,7 @@ void TXdoneISR()
 
 void setup(uint8_t protocolIndex)
 {
-    MasterUID[0] = 12;
-    MasterUID[1] = 34;
-    MasterUID[2] = 56;
-    MasterUID[3] = 78;
-    MasterUID[4] = 90;
-    MasterUID[5] = 10;
-    
+    Get_CRSFUniqueID(MasterUID);
     UID[0] = MasterUID[0];
     UID[1] = MasterUID[1];
     UID[2] = MasterUID[2];
@@ -338,13 +333,13 @@ void setup(uint8_t protocolIndex)
         firmwareRev= SX1280_GetFirmwareVersion();
     }
 
-    #if !defined(Regulatory_Domain_ISM_2400)
-    //Radio.currSyncWord = UID[3];
-    #endif
+//    #if !defined(Regulatory_Domain_ISM_2400)
+//    //Radio.currSyncWord = UID[3];
+//    #endif
     SX1280_Init();
 
     SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
-    SetRFLinkRate(1);
+    SetRFLinkRate(3);
     generateCrc14Table();
  // ExpressLRS_currAirRate_Modparams->TLMinterval = TLM_RATIO_1_64;
 }
@@ -480,7 +475,7 @@ void ExitBindingMode()
     CRCInitializer = (UID[4] << 8) | UID[5];
 
     InBindingMode = 0;
-    SetRFLinkRate(1); //return to original rate
+    SetRFLinkRate(3); //return to original rate
     StubbornSender_ResetState();
     radiolinkDelayTime = 4;
 }

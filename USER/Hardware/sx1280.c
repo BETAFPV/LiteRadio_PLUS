@@ -244,7 +244,7 @@ void SX1280_ClearIrqStatus(uint16_t irqMask)
 uint8_t SX1280_GetRxBufferAddr()
 {
     uint8_t status[2] = {0};
-    SX1280Hal_ReadCommand(SX1280_RADIO_GET_RXBUFFERSTATUS, status, 2);
+    SX1280_HalReadCommand(SX1280_RADIO_GET_RXBUFFERSTATUS, status, 2);
     return status[1];
 }
 
@@ -252,7 +252,7 @@ void SX1280_GetLastPacketStats()
 {
     uint8_t status[2];
 
-    SX1280Hal_ReadCommand(SX1280_RADIO_GET_PACKETSTATUS, status, 2);
+    SX1280_HalReadCommand(SX1280_RADIO_GET_PACKETSTATUS, status, 2);
     SX1280.LastPacketRSSI = -(int8_t)(status[0] / 2);
     SX1280.LastPacketSNR = (int8_t)status[1] / 4;
 }

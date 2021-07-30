@@ -7,7 +7,7 @@ EventGroupHandle_t rgbEventHandle;
 static uint16_t onDelayCount = 0;
 static uint16_t stopDelayCount = 0;
 static uint8_t bindStatus = 0;
-static uint8_t color[3] = {0};//color[0]Ϊ��ɫ��color[1]Ϊ��ɫ��color[2]Ϊ��ɫ
+static uint8_t color[3] = {0};//color[0] is green;color[1] is red;color[2] is blue;
 uint8_t rgbBuff[25];
 uint8_t rgbDelayCount;
 static uint16_t rgbBrightness;
@@ -85,7 +85,7 @@ void RGB_Set(uint8_t colorIndex,uint8_t brightness)
 }
 
 
-/*����δ��ʼ����ʱ��Ҫʹ��HAL_Delay*/
+/*use HAL_Delay before FreeRTOS init*/
 void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
 {
     uint8_t i;

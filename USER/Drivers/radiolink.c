@@ -1,20 +1,26 @@
 #include "radiolink.h"
 #include "gimbal.h"
 #include "switches.h"
-#include "frsky_d8.h"
-#include "frsky_d16.h"
-#include "s_fhss.h"
 #include "crsf.h"
-#include "cc2500.h"
 #include "rgb.h"
 #include "mixes.h"
 #include "key.h"
 #include "tim.h"
 #include "delay.h"
 #include "status.h"
+#if defined(LiteRadio_Plus_CC2500) 
+#include "frsky_d8.h"
+#include "frsky_d16.h"
+#include "s_fhss.h"
+#include "cc2500.h"
+#elif defined(LiteRadio_Plus_SX1280)
 #include "sx1280.h"
 #include "sx1280hal.h"
 #include "common.h"
+#elif defined(LiteRadio_Plus_SX1276)
+
+#endif
+
 
 
 TaskHandle_t radiolinkTaskHandle;
@@ -59,8 +65,7 @@ void radiolinkTask(void* param)
         case 4: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
                 RF_Bind = CRSF_SetBind;               
-                break;
-                
+                break;       
 #elif defined(LiteRadio_Plus_SX1280)
         case 0: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
@@ -69,8 +74,7 @@ void radiolinkTask(void* param)
         case 1: RF_Init = setup;
                 RF_Process = SendRCdataToRF;
                 RF_Bind = SX1280_SetBind;               
-                break;
-                
+                break;       
 #elif defined(LiteRadio_Plus_SX1276)
         case 0: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
@@ -82,7 +86,6 @@ void radiolinkTask(void* param)
                 break; 
                 
 #endif                       
-
         default:
                 break;
     }

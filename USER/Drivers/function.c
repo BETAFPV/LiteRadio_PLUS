@@ -46,13 +46,6 @@ void Get_ChipID(union ChipID *chipID)
     chipID->ChipUniqueID[2] = (uint32_t)(READ_REG(*((uint32_t *)(UID_BASE + 8U))));
 } 
 
-/*************************
-*函数名字：map 
-*函数功能：数的区间映射
-*参    数：Oxy：需要映射的数  Omin：映射前区间的最小值 Omax：映射前区间的最大值 
-							  Nmin: 映射后区间的最小值 Nmax：映射后区间的最小值
-*返 回 值：Nxy:映射后的数
-**************************/
 uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax)
 {
 	uint16_t Nxy;
@@ -62,20 +55,32 @@ uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax)
    // Nxy = (uint16_t)temp;
 	return Nxy;
 }
-
+union ChipID chipID;
 uint16_t GetUniqueID(void)
 {
 	uint16_t ID = 0 ; 
-	union ChipID chipID;
+
 	Get_ChipID(&chipID);
 	ID = chipID.IDbyte[0] + chipID.IDbyte[2] + chipID.IDbyte[4] + chipID.IDbyte[6] + chipID.IDbyte[8] + chipID.IDbyte[10];
 	ID = (ID << 8) + chipID.IDbyte[1] + chipID.IDbyte[3] + chipID.IDbyte[5] + chipID.IDbyte[7] + chipID.IDbyte[9] + chipID.IDbyte[11];
 	return ID;
 }
 
+void Get_CRSFUniqueID(uint8_t *masterUID)
+{
+     
+	union ChipID chipID;
+	Get_ChipID(&chipID);
+	masterUID[0] = chipID.IDbyte[0];
+    masterUID[1] = chipID.IDbyte[1];
+    masterUID[2] = chipID.IDbyte[2];
+    masterUID[3] = chipID.IDbyte[3];
+    masterUID[4] = chipID.IDbyte[4];
+    masterUID[5] = chipID.IDbyte[5];
+//	ID = (ID << 8) + chipID.IDbyte[1] + chipID.IDbyte[3] + chipID.IDbyte[5] + chipID.IDbyte[7] + chipID.IDbyte[9] + chipID.IDbyte[11]
+}
 
-
-//AETR 左手油门
+/*AETR 宸︽墜娌归棬*/
 void GetSbusPackage(uint8_t* ChannelToSbus)
 {	
 	uint16_t switch_A_Temp;
