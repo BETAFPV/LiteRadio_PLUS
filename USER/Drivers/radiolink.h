@@ -7,7 +7,7 @@
 #define D16_INTERVAL   9
 #define D8_INTERVAL    9
 #define SFHSS_INTERVAL 2
-#define CRSF_INTERVAL  20
+#define CRSF_INTERVAL  4
 
 #define REQUEST_INFO_ID  0x11
 #define REQUESET_SAVE_ID 0x12

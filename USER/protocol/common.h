@@ -67,6 +67,17 @@ typedef enum {
     RESYNC
 } stubborn_sender_state_s;
 
+
+typedef struct {
+    uint32_t    version;
+    uint32_t    rate;
+    uint32_t    tlm;
+    uint32_t    power;
+    uint8_t modify;
+} tx_config_t;
+
+extern tx_config_t tx_config;
+
 typedef struct
 {
 
@@ -170,7 +181,7 @@ typedef struct expresslrs_mod_settings_s
 
 #if defined(Regulatory_Domain_ISM_2400)
 #define RATE_MAX 4
-#define RATE_DEFAULT 3
+#define RATE_DEFAULT 1
 typedef struct expresslrs_mod_settings_s
 {
     int8_t index;

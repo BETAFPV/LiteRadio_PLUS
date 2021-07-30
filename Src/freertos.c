@@ -154,13 +154,13 @@ void startTask(void *param)
 {
     for(;;)
     {
-        KeyEventHandle = xEventGroupCreate();   //创建事件
+        KeyEventHandle = xEventGroupCreate();   
         buzzerEventHandle = xEventGroupCreate();   
         rgbEventHandle = xEventGroupCreate();  
         radioEventHandle = xEventGroupCreate();
         gimbalEventHandle = xEventGroupCreate(); 
 			
-        taskENTER_CRITICAL();	/*进入临界*/
+        taskENTER_CRITICAL();	/*杩涘叆涓寸晫鍖?*/
 			
         xTaskCreate(statusTask, "STATUS", 80, NULL, 3, NULL);    
         xTaskCreate(radiolinkTask, "DATA_PROCESS", 256, NULL, 3, &radiolinkTaskHandle);		
@@ -173,8 +173,8 @@ void startTask(void *param)
         xTaskCreate(keyTask, "BUTTON_SCAN", 80, NULL, 3, NULL);
  
   
-        vTaskSuspend(joystickTaskHandle);//挂起joystick
-        vTaskSuspend(radiolinkTaskHandle);//挂起radiolink
+        vTaskSuspend(joystickTaskHandle);//鎸傝捣joystick
+        vTaskSuspend(radiolinkTaskHandle);//鎸傝捣radiolink
         
         vTaskDelete(startTaskHandle);
         taskEXIT_CRITICAL();

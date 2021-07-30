@@ -99,8 +99,8 @@ void GenerateSyncPacketData()
     uint8_t TLMrate;
     if (syncSpamCounter)
     {
-    //    Index = (config.GetRate() & 0b11);
-    //    TLMrate = (config.GetTlm() & 0b111);
+        Index = (tx_config.rate & 0x03);
+        TLMrate = (tx_config.tlm & 0x07);
     }
     else
     {
@@ -126,10 +126,10 @@ void SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
     expresslrs_mod_settings_s *const ModParams = get_elrs_airRateConfig(index);
     expresslrs_rf_pref_params_s *const RFperf = get_elrs_RFperfParams(index);
     uint8_t invertIQ = UID[5] & 0x01;
-    if ((ModParams == ExpressLRS_currAirRate_Modparams)
-        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
-        && (invertIQ == SX1280.IQinverted))
-    return;
+//    if ((ModParams == ExpressLRS_currAirRate_Modparams)
+//        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
+//        && (invertIQ == SX1280.IQinverted))
+//    return;
 
     SX1280_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
 
@@ -171,8 +171,15 @@ void HandleTLM()
 
 void SX1280_SetBind()
 {
-    EnterBindingMode();
+    //EnterBindingMode();
+    tx_config.rate = 0x03;
+    tx_config.tlm = 0x01;
+
+
+    syncSpamCounter = syncSpamAmount;
+    tx_config.modify = 1;
 }
+
 
 
 
@@ -202,7 +209,13 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
             }
         }
     }
-
+    if(tx_config.modify && (syncSpamCounter == 0) )
+    {
+        SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
+        SetRFLinkRate(3);
+        tx_config.modify = 0;
+            radiolinkDelayTime = 20;
+    }
     uint32_t SyncInterval;
 
     SyncInterval = (connectionState == connected) ? ExpressLRS_currAirRate_RFperfParams->SyncPktIntervalConnected : ExpressLRS_currAirRate_RFperfParams->SyncPktIntervalDisconnected;
@@ -339,7 +352,7 @@ void setup(uint8_t protocolIndex)
     SX1280_Init();
 
     SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
-    SetRFLinkRate(3);
+    SetRFLinkRate(RATE_DEFAULT);
     generateCrc14Table();
  // ExpressLRS_currAirRate_Modparams->TLMinterval = TLM_RATIO_1_64;
 }
@@ -450,7 +463,7 @@ void EnterBindingMode()
 
     // Start attempting to bind
     // Lock the RF rate and freq while binding
-    SetRFLinkRate(RATE_DEFAULT);
+    SetRFLinkRate(0);
     SX1280.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
     SX1280_SetFrequencyReg(SX1280.currFreq); 
     // Start transmitting again
@@ -475,7 +488,7 @@ void ExitBindingMode()
     CRCInitializer = (UID[4] << 8) | UID[5];
 
     InBindingMode = 0;
-    SetRFLinkRate(3); //return to original rate
+    SetRFLinkRate(RATE_DEFAULT); //return to original rate
     StubbornSender_ResetState();
     radiolinkDelayTime = 4;
 }

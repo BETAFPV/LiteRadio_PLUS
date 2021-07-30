@@ -104,9 +104,9 @@ void radiolinkTask(void* param)
         if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
         {
             RF_Bind();
-#if defined(Regulatory_Domain_ISM_2400) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
-            radiolinkDelayTime = 2;
-#endif
+//#if defined(Regulatory_Domain_ISM_2400) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
+//            radiolinkDelayTime = 2;
+//#endif
         }       
         RF_Process(rfcontrolData);
 

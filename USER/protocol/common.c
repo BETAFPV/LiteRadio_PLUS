@@ -6,6 +6,7 @@ uint8_t UID[6];
 uint16_t crc14tab[ELRS_CRC_LEN] = {0};
 uint16_t elrsControlData[8] = {0};
 StubbornSender_t StubbornSender;
+tx_config_t tx_config;
 
 static uint8_t currentSwitches[N_SWITCHES] = {0};
 static uint8_t sentSwitches[N_SWITCHES] = {0};
