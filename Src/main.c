@@ -113,6 +113,7 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM2_Init();
   MX_USART1_UART_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 #ifdef LiteRadio_Plus_CC2500
     CC2500_GPIO_Disable();
