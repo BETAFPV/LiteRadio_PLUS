@@ -3,6 +3,7 @@
 #include "sx1280hal.h"
 #include "fhss.h"
 #include "common.h"
+
 SX1280_t SX1280;
 POWERMGNT_t POWERMGNT;
 
@@ -28,6 +29,7 @@ void SX1280_Init()
     SX1280_SetFIFOaddr(0x00, 0x00);                                                                                                      //Step 4: Config FIFO addr
     SX1280_SetDioIrqParams(SX1280_IRQ_RADIO_ALL, SX1280_IRQ_TX_DONE | SX1280_IRQ_RX_DONE, SX1280_IRQ_RADIO_NONE, SX1280_IRQ_RADIO_NONE); //set IRQ to both RXdone/TXdone on DIO1
 }
+
 
 
 void SX1280_TXnb(volatile uint8_t *data, uint8_t length)
@@ -229,8 +231,6 @@ uint16_t SX1280_GetFirmwareVersion(void)
     return( ( ( SX1280_ReadRegister( REG_LR_FIRMWARE_VERSION_MSB ) ) << 8 ) | ( SX1280_ReadRegister( REG_LR_FIRMWARE_VERSION_MSB + 1 ) ) );
 }
 
-
-
 void SX1280_ClearIrqStatus(uint16_t irqMask)
 {
     uint8_t buf[2];
@@ -310,26 +310,16 @@ PowerLevels_e SX1280_SetPower(PowerLevels_e Power)
 #elif defined(TARGET_TX_BETAFPV_2400_V1)
     switch (Power)
     {
-        case PWR_10mW:
-            SX1280_SetOutputPower(-18);
-            break;
         case PWR_25mW:
-            SX1280_SetOutputPower(-15);
+            SX1280_SetOutputPower(-5);
             break;
-        case PWR_100mW:
-            //SX1280_SetOutputPower(-9);
-            SX1280_SetOutputPower(6);
+        case PWR_50mW:
+            SX1280_SetOutputPower(-2);
             break;
-        case PWR_250mW:
-            SX1280_SetOutputPower(-4);
-            break;
-        case PWR_500mW:
-            SX1280_SetOutputPower(3);
-            break;
-        case PWR_50mW:    
+        case PWR_100mW:    
         default:
-            Power = PWR_50mW;
-            SX1280_SetOutputPower(-13);
+            Power = PWR_100mW;
+            SX1280_SetOutputPower(0);
             break;
     }
 #endif

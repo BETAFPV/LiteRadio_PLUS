@@ -21,12 +21,10 @@ typedef enum
     PWR_COUNT = 8
 } PowerLevels_e;
 
-#if defined(TARGET_TX_BETAFPV_900_V1)
-#define MaxPower PWR_500mW
-#define DefaultPowerEnum PWR_100mW
 
-#elif defined(TARGET_TX_BETAFPV_2400_V1)
-#define MaxPower PWR_500mW
+
+#if defined(TARGET_TX_BETAFPV_2400_V1)
+#define MaxPower PWR_100mW
 #define DefaultPowerEnum PWR_100mW
 #endif
 
