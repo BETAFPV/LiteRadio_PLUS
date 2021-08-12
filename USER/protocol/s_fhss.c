@@ -146,7 +146,7 @@ static void __attribute__((unused)) SFHSS_rf_init()
 	Delay_us(500);
 	CC2500_WriteReg(CC2500_0C_FSCTRL0, 0x0A);
 	CC2500_SetTxRxMode(TX_EN);
-	CC2500_SetPower(CC2500_POWER_17);
+	CC2500_SetPower(RF_POWER);
 }
 
 void initSFHSS(uint8_t protocolIndex)

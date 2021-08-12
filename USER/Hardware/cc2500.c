@@ -2,7 +2,10 @@
 #include "gpio.h"
 #include "spi.h"
 #include "delay.h"
+#include "stmflash.h"
+#include "radiolink.h"
 
+uint8_t RF_POWER;
 static uint8_t cc2500_conf_D8[CC2500_CONFIG_CNTS][2]=
 {
 	{ CC2500_02_IOCFG0   , 0x06 },	
@@ -128,7 +131,24 @@ static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
 uint8_t CC2500_Init(uint8_t versionSelectFlg)
 {
     uint8_t (*cc2500_config)[2];
-    uint8_t RF_POWER = 0xff;
+    
+    uint16_t internalPower;
+    STMFLASH_Read(INTERNAL_CONFIGER_INFO_POWER_ADDR,&internalPower,1);
+	switch(internalPower)
+	{
+		case PWR_25mW: 
+            RF_POWER = CC2500_POWER_12;
+            break;
+		case PWR_50mW:
+            RF_POWER = CC2500_POWER_14;
+            break;
+		case PWR_100mW: 
+            RF_POWER = CC2500_POWER_17;
+			break;
+		default:
+			break;
+	}
+
     uint8_t CC2500RestError_flag = 0;
 
 	if(!CC2500_Reset())

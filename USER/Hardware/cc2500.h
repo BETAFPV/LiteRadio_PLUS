@@ -111,6 +111,13 @@ enum
 	CC2500_3F_RXFIFO           = 0x3F,
 };
 
+typedef enum
+{
+    PWR_25mW = 0,
+    PWR_50mW = 1,
+    PWR_100mW = 2,
+} PowerLevels_e;
+
 enum CC2500_POWER
 {
 	CC2500_POWER_0  = 0x00,	// -55dbm or less
@@ -139,6 +146,8 @@ enum TXRX_State {
 	RX_EN
 };
 
+
+extern uint8_t RF_POWER;
 
 uint8_t CC2500_Init(uint8_t versionSelectFlg);
 
