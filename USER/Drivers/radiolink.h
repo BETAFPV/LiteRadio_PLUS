@@ -4,10 +4,18 @@
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 
+#if defined(LiteRadio_Plus_CC2500) 
+#define VERSION_INDEX 0
+#elif defined(LiteRadio_Plus_SX1280)
+#define VERSION_INDEX 1
+#elif defined(LiteRadio_Plus_SX1276)
+#define VERSION_INDEX 2
+#endif
+
 #define D16_INTERVAL   9
 #define D8_INTERVAL    9
 #define SFHSS_INTERVAL 2
-#define CRSF_INTERVAL  4
+#define CRSF_INTERVAL  2
 
 #define REQUEST_INFO_ID  0x11
 
@@ -20,7 +28,9 @@
 
 #define RADIOLINK_BIND	        (0x01 << 0)	
 #define RADIOLINK_DATA	        (0x01 << 1)	
-
+#if defined(LiteRadio_Plus_SX1280)
+extern uint16_t channelData[16];
+#endif
 extern uint32_t radiolinkDelayTime ;
 extern TaskHandle_t radiolinkTaskHandle;
 extern EventGroupHandle_t radioEventHandle;

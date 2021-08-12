@@ -11,7 +11,7 @@ tx_config_t tx_config;
 static uint8_t currentSwitches[N_SWITCHES] = {0};
 static uint8_t sentSwitches[N_SWITCHES] = {0};
 static uint8_t nextSwitchIndex = 0; // for round-robin sequential switches
-#if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) || defined(Regulatory_Domain_AU_433) || defined(Regulatory_Domain_EU_433)
+#if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) 
 
 #include "SX127xDriver.h"
 extern SX127xDriver Radio;

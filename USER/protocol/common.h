@@ -70,10 +70,13 @@ typedef enum {
 
 typedef struct {
     uint32_t    version;
+    uint32_t    lastRate;
     uint32_t    rate;
+    uint32_t    lastTLM;
     uint32_t    tlm;
+    uint32_t    lastPower;
     uint32_t    power;
-    uint8_t modify;
+    uint8_t     modify;
 } tx_config_t;
 
 extern tx_config_t tx_config;
@@ -214,6 +217,8 @@ typedef struct expresslrs_mod_settings_s
 
 #endif
 
+#if  defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) || defined(Regulatory_Domain_ISM_2400)
+
 expresslrs_mod_settings_s *get_elrs_airRateConfig(int8_t index);
 expresslrs_rf_pref_params_s *get_elrs_RFperfParams(int8_t index);
 
@@ -242,5 +247,7 @@ uint8_t StubbornSender_IsActive(void);
 
 void generateCrc14Table(void);
 uint16_t calcCrc14(uint8_t *data, uint8_t len, uint16_t crc);
+
+#endif
 
 #endif

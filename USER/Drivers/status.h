@@ -9,10 +9,11 @@
 #define CRSF_PROTOCOL_INDEX 4
 #elif defined(LiteRadio_Plus_SX1280)
 #define PROTOCOL_INDEX_LIMIT 1
-#define CRSF_PROTOCOL_INDEX 0
+#define CRSF_PROTOCOL_INDEX 1
+#define SX1280_PROTOCOL_INDEX 0
 #elif defined(LiteRadio_Plus_SX1276)
 #define PROTOCOL_INDEX_LIMIT 1
-#define CRSF_PROTOCOL_INDEX 0
+#define CRSF_PROTOCOL_INDEX 1
 #endif
 typedef enum
 {

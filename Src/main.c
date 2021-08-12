@@ -119,6 +119,7 @@ int main(void)
     CC2500_GPIO_Disable();
 #endif  
 
+
   Gimbal_Init();  
 
   Status_Init();

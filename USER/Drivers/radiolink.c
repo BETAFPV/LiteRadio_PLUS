@@ -17,18 +17,18 @@
 #include "sx1280.h"
 #include "sx1280hal.h"
 #include "common.h"
+#include "stmflash.h"
+uint16_t channelData[16];
 #elif defined(LiteRadio_Plus_SX1276)
 
 #endif
-
-
 
 TaskHandle_t radiolinkTaskHandle;
 EventGroupHandle_t radioEventHandle;
 static uint16_t rfcontrolData[8];
 static uint8_t versionSelectFlg;
 uint32_t radiolinkDelayTime ;
-
+uint64_t radiolinkTick;
 void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* controlData);
@@ -67,24 +67,25 @@ void radiolinkTask(void* param)
                 RF_Bind = CRSF_SetBind;               
                 break;       
 #elif defined(LiteRadio_Plus_SX1280)
-        case 0: RF_Init = CRSF_Init;
-                RF_Process = CRSF_Process;
-                RF_Bind = CRSF_SetBind;     
-                break;
-        case 1: RF_Init = setup;
-                RF_Process = SendRCdataToRF;
+        case 0: RF_Init = SX1280_init;
+                RF_Process = SX1280_Process;
                 RF_Bind = SX1280_SetBind;               
                 break;       
-#elif defined(LiteRadio_Plus_SX1276)
-        case 0: RF_Init = CRSF_Init;
+        case 1: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
                 RF_Bind = CRSF_SetBind;     
                 break;
-        case 1: RF_Init = setup;
+
+#elif defined(LiteRadio_Plus_SX1276)
+        case 0: RF_Init = setup;
                 RF_Process = SendRCdataToRF;
                 RF_Bind = SX1276_SetBind;               
                 break; 
-                
+        case 1: RF_Init = CRSF_Init;
+                RF_Process = CRSF_Process;
+                RF_Bind = CRSF_SetBind;     
+                break;
+
 #endif                       
         default:
                 break;
@@ -104,12 +105,9 @@ void radiolinkTask(void* param)
         if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
         {
             RF_Bind();
-//#if defined(Regulatory_Domain_ISM_2400) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
-//            radiolinkDelayTime = 2;
-//#endif
         }       
         RF_Process(rfcontrolData);
-
+        radiolinkTick = HAL_GetTick();
     }
 }
 

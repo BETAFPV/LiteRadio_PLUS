@@ -29,6 +29,7 @@
 #include "radiolink.h"
 #include "status.h"
 #include "crsf.h"
+#include "common.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -314,6 +315,7 @@ void SaveMixValueToFlash(void)
             }
             break;  
         }
+#endif   
         case EXTERNAL_CONFIGER_INFO_ID:
         {
             if(writeWord[1] == 0x01)

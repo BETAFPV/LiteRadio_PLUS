@@ -9,7 +9,10 @@
 #include "mixes.h"
 #include "buzzer.h"
 #include "crsf.h"
-uint8_t configerRequest;
+#include "tim.h"
+#include "common.h"
+uint8_t requestType1;
+uint8_t requestType2;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
 static uint8_t RCstatus = RC_SHUTDOWN;
@@ -78,26 +81,27 @@ void Status_Init()
         case 0: 
         {
             protocolDelayTime = CRSF_INTERVAL;
-            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);     
+            setup();     
             break;
         } 
         case 1:
         {
-            protocolDelayTime = CRSF_INTERVAL;        
-            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);            
+            protocolDelayTime = CRSF_INTERVAL;
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);             
             break;
         } 
 #elif defined(LiteRadio_Plus_SX1276)   
         case 0: 
         {
             protocolDelayTime = CRSF_INTERVAL;
-            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
+            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
             break;
         } 
         case 1:
         {
-            protocolDelayTime = CRSF_INTERVAL;        
-            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);            
+            protocolDelayTime = CRSF_INTERVAL;
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);
             break;
         } 
 #endif        
@@ -132,11 +136,13 @@ void Status_Update()
         if(lastRCstatus == RC_SHUTDOWN)
         {
             vTaskResume(radiolinkTaskHandle);
+            HAL_TIM_Base_Start_IT(&htim1);
         }
         if(lastRCstatus == RC_CHRG_AND_JOYSTICK)
         {
             vTaskSuspend(joystickTaskHandle); 
             vTaskResume(radiolinkTaskHandle);
+            HAL_TIM_Base_Start_IT(&htim1);
         }
     }
     if(powerStatus == RC_POWER_OFF)
@@ -152,6 +158,7 @@ void Status_Update()
         }
         if(lastRCstatus == RC_RADIOLINK)
         {
+            HAL_TIM_Base_Stop_IT(&htim1);
             vTaskSuspend(radiolinkTaskHandle);
             vTaskResume(joystickTaskHandle); 
         }
