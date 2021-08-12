@@ -4,6 +4,8 @@
 #include "radiolink.h"
 #include "function.h"
 #include "crsf.h"
+#include "tim.h"
+#include "stmflash.h"
 #define RX_CONNECTION_LOST_TIMEOUT 3000LU // After 3000ms of no TLM response consider that slave has lost connection
 
 volatile uint8_t NonceTX;
@@ -169,17 +171,17 @@ void HandleTLM()
     }
 }
 
-void SX1280_SetBind()
+void SX1280_RateModify(uint8_t index)
 {
-    //EnterBindingMode();
-    tx_config.rate = 0x03;
-    tx_config.tlm = 0x01;
-
-
+    tx_config.rate = index;
     syncSpamCounter = syncSpamAmount;
     tx_config.modify = 1;
 }
 
+void SX1280_SetBind()
+{
+    EnterBindingMode();
+}
 
 
 
@@ -209,13 +211,7 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
             }
         }
     }
-    if(tx_config.modify && (syncSpamCounter == 0) )
-    {
-        SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
-        SetRFLinkRate(3);
-        tx_config.modify = 0;
-            radiolinkDelayTime = 20;
-    }
+
     uint32_t SyncInterval;
 
     SyncInterval = (connectionState == connected) ? ExpressLRS_currAirRate_RFperfParams->SyncPktIntervalConnected : ExpressLRS_currAirRate_RFperfParams->SyncPktIntervalDisconnected;
@@ -326,9 +322,14 @@ void TXdoneISR()
     HandleTLM();
 }
 
-
-void setup(uint8_t protocolIndex)
+void SX1280_init(uint8_t protocolIndex)
 {
+    HAL_Delay(1);
+}
+
+void setup(void)
+{
+
     Get_CRSFUniqueID(MasterUID);
     UID[0] = MasterUID[0];
     UID[1] = MasterUID[1];
@@ -355,7 +356,85 @@ void setup(uint8_t protocolIndex)
     SetRFLinkRate(RATE_DEFAULT);
     generateCrc14Table();
  // ExpressLRS_currAirRate_Modparams->TLMinterval = TLM_RATIO_1_64;
+    tx_config.rate = 1;
+    tx_config.lastRate = 1;
+    TIM1->ARR = 3999;
+    uint16_t txConfigInit[3]; 
+    STMFLASH_Read(INTERNAL_ELRS_CONFIGER_INFO_ADDR,txConfigInit,3);
+    tx_config.power = (uint32_t)txConfigInit[0];
+    tx_config.rate = (uint32_t)txConfigInit[1];
+    tx_config.tlm = (uint32_t)txConfigInit[2];
 }
+
+uint16_t SX1280_Process(uint16_t* controlDataBuff)
+{
+    channelData[0] = controlDataBuff[0];
+    channelData[1] = controlDataBuff[1];
+    channelData[2] = controlDataBuff[2];
+    channelData[3] = controlDataBuff[3];
+    channelData[4] = controlDataBuff[4];
+    channelData[5] = controlDataBuff[5];
+    channelData[6] = controlDataBuff[6];
+    channelData[7] = controlDataBuff[7];
+    if(tx_config.modify && (syncSpamCounter == 0) )
+    {
+        switch(tx_config.rate)
+        {
+            case FREQ_2400_RATE_500HZ:
+                break;
+            case FREQ_2400_RATE_250HZ:
+                SetRFLinkRate(FREQ_2400_RATE_250HZ);
+                TIM1->ARR = 4000;
+                break;
+            case FREQ_2400_RATE_150HZ: 
+                SetRFLinkRate(FREQ_2400_RATE_150HZ);
+                TIM1->ARR = 6666;
+                break;                    
+            case FREQ_2400_RATE_50HZ:
+                SetRFLinkRate(FREQ_2400_RATE_50HZ);
+                TIM1->ARR = 20000;
+                break;
+            default:
+                break;
+        }
+        tx_config.modify = 0;
+    }
+
+    if(tx_config.rate != tx_config.lastRate)
+    {
+        tx_config.lastRate = tx_config.rate;
+        SX1280_RateModify(tx_config.rate);
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR,(uint16_t *)&tx_config.rate,1);
+    }
+    if(tx_config.tlm != tx_config.lastTLM)
+    {
+        tx_config.lastTLM = tx_config.tlm;
+        ExpressLRS_currAirRate_Modparams->TLMinterval = tx_config.tlm;
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR,(uint16_t *)&tx_config.tlm,1);
+    }
+    if(tx_config.power != tx_config.lastPower)
+    {
+        tx_config.lastPower = tx_config.power;
+        switch (tx_config.power)
+        {
+            case 0:
+                SX1280_SetPower((PowerLevels_e)PWR_25mW);
+                break;       
+            case 1:
+                SX1280_SetPower((PowerLevels_e)PWR_50mW);
+                break;            
+            case 2:
+                SX1280_SetPower((PowerLevels_e)PWR_100mW);
+                break;            
+            default:
+                break;
+        }
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR,(uint16_t *)&tx_config.power,1);
+    }   
+    
+
+}
+
 
 void loop()
 {
@@ -467,6 +546,7 @@ void EnterBindingMode()
     SX1280.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
     SX1280_SetFrequencyReg(SX1280.currFreq); 
     // Start transmitting again
+    TIM1->ARR = 2000;
 }
 
 void ExitBindingMode()
@@ -488,9 +568,26 @@ void ExitBindingMode()
     CRCInitializer = (UID[4] << 8) | UID[5];
 
     InBindingMode = 0;
-    SetRFLinkRate(RATE_DEFAULT); //return to original rate
     StubbornSender_ResetState();
-    radiolinkDelayTime = 4;
+    switch(tx_config.rate)
+    {
+        case FREQ_2400_RATE_500HZ:
+            break;
+        case FREQ_2400_RATE_250HZ:
+            SetRFLinkRate(FREQ_2400_RATE_250HZ);
+            TIM1->ARR = 4000;
+            break;
+        case FREQ_2400_RATE_150HZ: 
+            SetRFLinkRate(FREQ_2400_RATE_150HZ);
+            TIM1->ARR = 6666;
+            break;                    
+        case FREQ_2400_RATE_50HZ:
+            SetRFLinkRate(FREQ_2400_RATE_50HZ);
+            TIM1->ARR = 20000;
+            break;
+        default:
+            break;
+    }
 }
 
 void SendUIDOverMSP()

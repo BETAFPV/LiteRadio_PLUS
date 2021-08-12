@@ -4,11 +4,16 @@
 #include "buzzer.h"
 #include "mixes.h"
 #include "status.h"
+#include "common.h"
+
 uint8_t crsfPacket[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
+uint8_t sbusPacket[25] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
+                             0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04};
 uint8_t outBuffer[LinkStatisticsFrameLength + 4] = {0};
 static uint16_t channelDataBuff[16] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
-crsfData_t crsfData;
+crsfData_t internalCRSFdata;
+crsfData_t externalCRSFdata;
 uint16_t controlDataBuff[8] = {0};
 uint8_t crsfLinkCount= 0;
 uint8_t dataToCRSF[8];
@@ -25,17 +30,99 @@ void CRSF_Init(uint8_t protocolIndex)
 
 uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
 {   
-    if(crsfData.setDataFlag)
+    if(externalCRSFdata.configSetFlag)
     {
-        Send_CRSFParameterPackage(crsfData.setDataType,crsfData.setDataParameter);
-        crsfData.setDataFlag = 0;
+        if(externalCRSFdata.crsfParameter.rate != externalCRSFdata.lastCRSFparameter.rate)
+        {
+            switch (externalCRSFdata.regulatoryDomainIndex)
+            {
+                case FREQ_FCC_915:
+                case FREQ_EU_868:
+                {
+                    switch (externalCRSFdata.crsfParameter.rate)
+                    {
+                        case FREQ_900_RATE_200HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_200HZ;
+                            break;
+                        case FREQ_900_RATE_100HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_100HZ;
+                            break;
+                        case FREQ_900_RATE_50HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
+                            break;
+                        case FREQ_900_RATE_25HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_25HZ;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                }
+                case FREQ_ISM_2400:
+                {
+                    switch (externalCRSFdata.crsfParameter.rate)
+                    {
+                        case FREQ_2400_RATE_500HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_500HZ;
+                            break;
+                        case FREQ_2400_RATE_250HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_250HZ;
+                            break;
+                        case FREQ_2400_RATE_150HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_150HZ;
+                            break;
+                        case FREQ_2400_RATE_50HZ:
+                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                }
+                default:
+                    break;
+                            
+            }
+            Send_CRSFParameterPackage(0x01,externalCRSFdata.crsfParameter.rate);
+            externalCRSFdata.lastCRSFparameter.rate = externalCRSFdata.crsfParameter.rate;
+        }
+        if(externalCRSFdata.crsfParameter.TLM != externalCRSFdata.lastCRSFparameter.TLM)
+        {
+            Send_CRSFParameterPackage(0x02,externalCRSFdata.crsfParameter.TLM);
+            externalCRSFdata.lastCRSFparameter.TLM = externalCRSFdata.crsfParameter.TLM;
+        }
+        if(externalCRSFdata.crsfParameter.power != externalCRSFdata.lastCRSFparameter.power)
+        {
+            Send_CRSFParameterPackage(0x03,externalCRSFdata.crsfParameter.power);
+            externalCRSFdata.lastCRSFparameter.power = externalCRSFdata.crsfParameter.power;
+        }
+        if(externalCRSFdata.inBindingMode)
+        {
+            Send_CRSFParameterPackage(0xFF,1);
+            externalCRSFdata.inBindingMode = 0x00;
+        }        
+        if(externalCRSFdata.webUpdateMode)
+        {
+//            Send_CRSFParameterPackage(0xFE,1);
+            externalCRSFdata.webUpdateMode = 0x00;
+        }                
+        
+        //Send_CRSFParameterPackage(externalCRSFdata.setDataType,externalCRSFdata.setDataParameter);
+        externalCRSFdata.configSetFlag = 0;
+        
     }
+//    else if()
+//    {
+//        GetSbusPackage(sbusPacket,crsfcontrol_data);
+
+//        HAL_UART_Transmit_DMA(&huart1,sbusPacket,25);
+//    }
     else
     {
         Get_CRSFPackage(crsfPacket,crsfcontrol_data);
         HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
     }
-    if(crsfData.RSSI<80 && crsfLinkCount>10)
+    if(externalCRSFdata.RSSI<80 && crsfLinkCount>10)
     {
         xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
     }
@@ -58,7 +145,7 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
 //                uint8_t crc = crc8(&CRSF_RXPacket[2], LinkStatisticsFrameLength + 1);
 //                if(crc == CRSF_RXPacket[LinkStatisticsFrameLength + 3])
 //                {
-                    crsfData.RSSI = crsfRXPacket[5];
+                    externalCRSFdata.RSSI = crsfRXPacket[5];
 //                }
                 crsfLinkCount =255;              
             }
@@ -67,18 +154,16 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
         {
             if(crsfRXPacket[2] == CRSF_FRAMETYPE_PARAMETER_WRITE)
             {
-                crsfData.rate = crsfRXPacket[7];
-                crsfData.TLM = crsfRXPacket[8];
-                crsfData.power = crsfRXPacket[9];
-                crsfData.regulatoryDomainIndex = crsfRXPacket[10];
-                if(requestCount > 50)
+                externalCRSFdata.lastCRSFparameter.rate = crsfRXPacket[7];
+                externalCRSFdata.lastCRSFparameter.TLM = crsfRXPacket[8];
+                externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[9];
+                externalCRSFdata.regulatoryDomainIndex = crsfRXPacket[10];
+                externalCRSFdata.crsfParameter = externalCRSFdata.lastCRSFparameter;
+                if(externalCRSFdata.configUpdateFlag)
                 {
-                    configerRequest = 0x10;
-                    requestCount = 0;
-                }
-                else
-                {
-                    requestCount++;
+                    requestType1 = 0x02;
+                    requestType2 = 0x02;
+                    externalCRSFdata.configUpdateFlag = 0x00;
                 }
             }
         }

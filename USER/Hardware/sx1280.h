@@ -8,6 +8,13 @@
 
 #define TXRXBuffSize 8 
 
+
+#define INTERNAL_ELRS_CONFIGER_INFO_ADDR           0x08007068
+#define INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR     0x08007068
+#define INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR      0x0800706A
+#define INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR       0x0800706C
+
+
 typedef enum
 {
     PWR_10mW = 0,
@@ -58,9 +65,10 @@ typedef struct
 }SX1280_t;
 
 extern SX1280_t SX1280;
-
-void setup(uint8_t protocolIndex);
+void SX1280_init(uint8_t protocolIndex);
+void setup(void);
 void loop(void);
+uint16_t SX1280_Process(uint16_t* crsfcontrol_data);
 void ProcessTLMpacket(void);
 void RXdoneISR(void);
 void TXdoneISR(void);
@@ -83,14 +91,16 @@ void SX1280_GetLastPacketStats(void);
 uint8_t SX1280_ReadRegister(uint16_t address);
 void SX1280_WriteRegister(uint16_t address, uint8_t value);
 
+void SetRFLinkRate(uint8_t index); // Set speed of RF link (hz)
 void SX1280_Config(SX1280_RadioLoRaBandwidths_t bw, SX1280_RadioLoRaSpreadingFactors_t sf, SX1280_RadioLoRaCodingRates_t cr, uint32_t freq, uint8_t PreambleLength, uint8_t InvertIQ);
 
 void SX1280_TXnb(volatile uint8_t *data, uint8_t length);
 void SX1280_RXnb(void);
-void SX1280_SetBind(void);
-uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data);
 void SX1280_TXnbISR(void);
 void SX1280_RXnbISR(void);
+
+void SX1280_SetBind(void);
+uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data);
 /*power*/
 PowerLevels_e SX1280_SetPower(PowerLevels_e Power);
 

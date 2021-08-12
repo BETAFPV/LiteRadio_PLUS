@@ -29,7 +29,8 @@ typedef enum
     RF_BIND              ,
 }RFstatus_e;
 
-extern uint8_t configerRequest;
+extern uint8_t requestType1;
+extern uint8_t requestType2;
 uint32_t Get_ProtocolDelayTime(void);
 void Status_Init(void);
 void Status_Update(void);

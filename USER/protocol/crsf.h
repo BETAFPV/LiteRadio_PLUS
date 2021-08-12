@@ -23,6 +23,13 @@
 
 #define LinkStatisticsFrameLength 10 
 
+#define FREQ_AU_915  1
+#define FREQ_FCC_915 2
+#define FREQ_EU_868 3
+#define FREQ_AU_433 4
+#define FREQ_EU_433 5
+#define FREQ_ISM_2400 6
+
 typedef enum
 {
     CONFIG_CRSF_OFF = 0,
@@ -31,18 +38,27 @@ typedef enum
 
 typedef struct
 {
+    uint8_t power;
+    uint8_t rate;
+    uint8_t TLM;  
+}
+crsfParameter_t;
+
+typedef struct
+{
     uint8_t setDataFlag;
     uint8_t setDataType;
     uint8_t setDataParameter;
+    uint8_t configUpdateFlag;
+    uint8_t configSetFlag;
     uint8_t lastConfigStatus;
     uint8_t configStatus;
     uint8_t inBindingMode;
     uint8_t webUpdateMode;
     uint8_t RSSI;
-    uint8_t power;
     uint8_t regulatoryDomainIndex;
-    uint8_t rate;
-    uint8_t TLM;
+    crsfParameter_t crsfParameter;
+    crsfParameter_t lastCRSFparameter;
 }crsfData_t;
 
 typedef struct 
@@ -60,7 +76,8 @@ typedef struct
 } crsfLinkStatistics_t;
 extern crsfLinkStatistics_t linkStatistics;
 
-extern crsfData_t crsfData;
+extern crsfData_t internalCRSFdata;
+extern crsfData_t externalCRSFdata;
 
 void CRSF_SetBind(void);
 void CRSF_Init(uint8_t protocolIndex);

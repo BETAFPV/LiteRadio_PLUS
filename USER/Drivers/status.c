@@ -276,27 +276,30 @@ void statusTask(void* param)
                     xEventGroupSetBits( rgbEventHandle, CHRG_AND_JOYSTICK_RGB);                
                 }
 
-                if(configerRequest == 0x20)
-                {
-                    crsfData.configStatus = CONFIG_CRSF_OFF;
-                    configerRequest = 0x01;
-                }
-                else if(configerRequest == 0x21)
-                {
-                    crsfData.configStatus = CONFIG_CRSF_ON;
-                    configerRequest = 0x01;
-                }
-
-                if(crsfData.lastConfigStatus == CONFIG_CRSF_OFF && crsfData.configStatus == CONFIG_CRSF_ON)
+                
+                if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_OFF && internalCRSFdata.configStatus == CONFIG_CRSF_ON)
                 {
                     vTaskResume(radiolinkTaskHandle);
-                    crsfData.lastConfigStatus = CONFIG_CRSF_ON;
-                    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);    
+                    HAL_TIM_Base_Start_IT(&htim1);
+                    internalCRSFdata.lastConfigStatus = CONFIG_CRSF_ON;  
                 }
-                else if(crsfData.lastConfigStatus == CONFIG_CRSF_ON && crsfData.configStatus == CONFIG_CRSF_OFF)
+                else if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && internalCRSFdata.configStatus == CONFIG_CRSF_OFF)
                 {
                     vTaskSuspend(radiolinkTaskHandle);
-                    crsfData.lastConfigStatus = CONFIG_CRSF_OFF;
+                    HAL_TIM_Base_Stop_IT(&htim1);
+                    internalCRSFdata.lastConfigStatus = CONFIG_CRSF_OFF;
+                }
+
+                if(externalCRSFdata.lastConfigStatus == CONFIG_CRSF_OFF && externalCRSFdata.configStatus == CONFIG_CRSF_ON)
+                {
+                    vTaskResume(radiolinkTaskHandle);
+                    externalCRSFdata.lastConfigStatus = CONFIG_CRSF_ON;
+                    HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);    
+                }
+                else if(externalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && externalCRSFdata.configStatus == CONFIG_CRSF_OFF)
+                {
+                    vTaskSuspend(radiolinkTaskHandle);
+                    externalCRSFdata.lastConfigStatus = CONFIG_CRSF_OFF;
                     HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET); 
                 }
                 break;

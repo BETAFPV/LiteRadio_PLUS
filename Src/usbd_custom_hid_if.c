@@ -251,7 +251,7 @@ static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
     for(i=0;i<USB_Received_Count;i++) 
     {
         USB_Recive_Buffer[i]=hhid->Report_buf[i]; 
-    } 
+    }
     SaveMixValueToFlash();
     return (USBD_OK);
     
@@ -276,7 +276,7 @@ static int8_t USBD_CUSTOM_HID_SendReport_FS(uint8_t *report, uint16_t len)
 /* USER CODE BEGIN PRIVATE_FUNCTIONS_IMPLEMENTATION */
 void SaveMixValueToFlash(void)
 {
-    uint16_t writeWord[8];
+    uint16_t writeWord[10];
     for(int i=0;i<8;i++)
     {
         writeWord[i] = (uint16_t)USB_Recive_Buffer[i];
@@ -286,44 +286,69 @@ void SaveMixValueToFlash(void)
         case CHANNEILS_INPUT_ID:
         {    
             STMFLASH_Write(CACHE_MIX_CHANNEL_INFO_ADDR+USB_Recive_Buffer[1]*8,&writeWord[2],4);
-            configerRequest = 0x01;
+            mixUpdateFlag = 0x01;
             break;
         }
+        case LITE_CONFIGER_INFO_ID:
+        {
+            uint16_t channelBuff[32];
+            STMFLASH_Read(CACHE_MIX_CHANNEL_INFO_ADDR,channelBuff,32);
+            STMFLASH_Write(MIX_CHANNEL_INFO_ADDR,channelBuff,32);  
+            
+            STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],3); 
+            HAL_NVIC_SystemReset();
+            break;
+        }
+        
+#if defined(LiteRadio_Plus_SX1280)    
         case INTERNAL_CONFIGER_INFO_ID:
         {
-            if(writeWord[1]>3)
+            if(writeWord[1] == 0x02)
             {
-                STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],2); 
+                internalCRSFdata.crsfParameter.power = writeWord[2];
+                internalCRSFdata.crsfParameter.rate = writeWord[3];
+                internalCRSFdata.crsfParameter.TLM = writeWord[4];
+                tx_config.power = internalCRSFdata.crsfParameter.power;
+                tx_config.rate = internalCRSFdata.crsfParameter.rate;
+                tx_config.tlm = internalCRSFdata.crsfParameter.TLM;
             }
-            else
-            {
-                STMFLASH_Write(CONFIGER_INFO_ADDR,&writeWord[1],3); 
-            }
-            HAL_NVIC_SystemReset();         
-            configerRequest = 0x01;
-            break;
+            break;  
         }
         case EXTERNAL_CONFIGER_INFO_ID:
         {
+            if(writeWord[1] == 0x01)
+            {
+                externalCRSFdata.configStatus = CONFIG_CRSF_ON;
+                externalCRSFdata.configUpdateFlag = 0x01;
+            }
+            else if(writeWord[1] == 0x00)
+            {
+                externalCRSFdata.configStatus = CONFIG_CRSF_OFF;
+            }
+            else if(writeWord[1] == 0x02)
+            {               
+                externalCRSFdata.configSetFlag = 0x01;
+                if(writeWord[6] == 0x01)
+                {
+                    externalCRSFdata.inBindingMode = 0x01;
+                }
+                else if(writeWord[7] == 0x01)
+                {
+                    externalCRSFdata.webUpdateMode = 0x01;
+                }
+                else
+                {
+                    externalCRSFdata.crsfParameter.power = writeWord[2];
+                    externalCRSFdata.crsfParameter.rate = writeWord[3];
+                    externalCRSFdata.crsfParameter.TLM = writeWord[4];
+                }
+            }
             break;
         }
         case REQUEST_INFO_ID:
         {
-            configerRequest = USB_Recive_Buffer[1];
-            break;
-        }
-        case REQUESET_SAVE_ID:
-        {
-            uint16_t channelBuff[32];
-            STMFLASH_Read(CACHE_MIX_CHANNEL_INFO_ADDR,channelBuff,32);
-            STMFLASH_Write(MIX_CHANNEL_INFO_ADDR,channelBuff,32);
-            break;
-        }
-        case REQUESET_CRSF_ID:
-        {
-            crsfData.setDataType = USB_Recive_Buffer[1];
-            crsfData.setDataParameter = USB_Recive_Buffer[2];
-            crsfData.setDataFlag = 1;
+            requestType1 = USB_Recive_Buffer[1];
+            requestType2 = USB_Recive_Buffer[2];
             break;
         }
         default:

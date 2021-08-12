@@ -12,11 +12,19 @@ static uint32_t mixesDelayTime;
 UBaseType_t uxTaskGetStackHighWaterMarkdebug;
 TaskHandle_t mixesTaskHandle;
 QueueHandle_t mixesValQueue = NULL;
-static mixData_t mixData[8];
+mixData_t mixData[8];
 uint16_t mixesBuff[8];
-size_t debug;
+uint8_t mixUpdateFlag;
 
 void Mixes_Init()
+{   
+    for(int i=0;i<8;i++)
+    {
+        Mixes_ChannelInit(i);
+    }
+}
+
+void Mixes_Update()
 {   
     for(int i=0;i<8;i++)
     {
@@ -24,13 +32,26 @@ void Mixes_Init()
     }
 }
 
+void Mixes_ChannelInit(uint8_t channel)
+{
+    STMFLASH_Read(MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);     
+//    mixesBuff[0] = channel;
+//    mixesBuff[1] = 0;
+//    mixesBuff[2] = 100;
+//    mixesBuff[3] = 100;
+    mixData[channel].gimbalChannel = (uint8_t)mixesBuff[0];
+    mixData[channel].reverse= (uint8_t)mixesBuff[1];
+    mixData[channel].weight = (uint8_t)mixesBuff[2];
+    mixData[channel].offset = (uint8_t)mixesBuff[3];
+}
+
 void Mixes_ChannelUpdate(uint8_t channel)
 {
     STMFLASH_Read(CACHE_MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);     
-    mixesBuff[0] = channel;
-    mixesBuff[1] = 0;
-    mixesBuff[2] = 100;
-    mixesBuff[3] = 100;
+//    mixesBuff[0] = channel;
+//    mixesBuff[1] = 0;
+//    mixesBuff[2] = 100;
+//    mixesBuff[3] = 100;
     mixData[channel].gimbalChannel = (uint8_t)mixesBuff[0];
     mixData[channel].reverse= (uint8_t)mixesBuff[1];
     mixData[channel].weight = (uint8_t)mixesBuff[2];
@@ -201,10 +222,10 @@ void mixesTask(void* param)
     {
         vTaskDelay(mixesDelayTime);  
         
-        if(configerRequest == 0x01)
+        if(mixUpdateFlag == 0x01)
         {         
-            Mixes_Init();
-            configerRequest = 0x00;
+            Mixes_Update();
+            mixUpdateFlag = 0x00;
         }
         
         xQueueReceive(gimbalValQueue,gimbalVaBuff,0);
@@ -296,12 +317,14 @@ void mixesTask(void* param)
         reportData[6] = mixData[6].output;        
         reportData[7] = mixData[7].output;                      
         xQueueSend(mixesValQueue,reportData,0);
-        if(crsfData.lastConfigStatus == CONFIG_CRSF_ON && crsfData.configStatus == CONFIG_CRSF_ON)
+        if(externalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && externalCRSFdata.configStatus == CONFIG_CRSF_ON)
         {
             xQueueSend(mixesValQueue,reportData,0);    
         }
-        debug = xPortGetFreeHeapSize();
-     //   uxTaskGetStackHighWaterMarkdebug = uxTaskGetStackHighWaterMark(NULL);
+        if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && internalCRSFdata.configStatus == CONFIG_CRSF_ON)
+        {
+            xQueueSend(mixesValQueue,reportData,0);    
+        }
     }
 }
 

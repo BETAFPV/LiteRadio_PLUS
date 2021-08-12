@@ -15,8 +15,9 @@
 
 #define CHANNEILS_INFO_ID 0x01
 
-#define INTERNAL_CONFIGER_INFO_ID 0x05
-#define EXTERNAL_CONFIGER_INFO_ID 0X06
+#define LITE_CONFIGER_INFO_ID     0x05
+#define INTERNAL_CONFIGER_INFO_ID 0x06
+#define EXTERNAL_CONFIGER_INFO_ID 0X07
 
 #define CHANNEILS_INPUT_ID 0x01
 #define CHANNEILS_REVERSE_ID 0x02
@@ -56,15 +57,17 @@ typedef struct
     uint8_t weight; // 范围0~100
     uint8_t offset; //范围为0~200
     uint16_t output;
-    
 }mixData_t;
 
+extern mixData_t mixData[8];
+extern uint8_t mixUpdateFlag;
 
 void mixesTask(void* param);
 extern TaskHandle_t mixesTaskHandle;
 extern QueueHandle_t mixesValQueue;
 void Mixes_Init(void);
-
+void Mixes_Update(void);
+void Mixes_ChannelInit(uint8_t channel);
 void Mixes_ChannelUpdate(uint8_t channel);
 uint16_t Mixes_Switchreverse(uint8_t reverse, uint16_t gimbalValCurr);
 uint16_t Mixes_Gimbalreverse(uint8_t reverse, uint16_t gimbalValCurr,uint16_t* outputcode);
