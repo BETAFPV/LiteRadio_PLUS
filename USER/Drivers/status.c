@@ -136,21 +136,31 @@ void Status_Update()
         if(lastRCstatus == RC_SHUTDOWN)
         {
             vTaskResume(radiolinkTaskHandle);
-            HAL_TIM_Base_Start_IT(&htim1);
+#if defined(LiteRadio_Plus_SX1280)            
+            if(protocolIndex != CRSF_PROTOCOL_INDEX)
+            {
+                HAL_TIM_Base_Start_IT(&htim1);
+            }
+#endif
         }
         if(lastRCstatus == RC_CHRG_AND_JOYSTICK)
         {
             vTaskSuspend(joystickTaskHandle); 
             vTaskResume(radiolinkTaskHandle);
-            HAL_TIM_Base_Start_IT(&htim1);
+#if defined(LiteRadio_Plus_SX1280)            
+            if(protocolIndex != CRSF_PROTOCOL_INDEX)
+            {
+                HAL_TIM_Base_Start_IT(&htim1);
+            }
+#endif
         }
     }
     if(powerStatus == RC_POWER_OFF)
     {		
-       if(protocolIndex == CRSF_PROTOCOL_INDEX)
-       {
-           HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);   
-       }
+        if(protocolIndex == CRSF_PROTOCOL_INDEX)
+        {
+            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);   
+        }
         RCstatus = RC_CHRG_AND_JOYSTICK;
         if(lastRCstatus == RC_SHUTDOWN)
         {
@@ -158,7 +168,12 @@ void Status_Update()
         }
         if(lastRCstatus == RC_RADIOLINK)
         {
-            HAL_TIM_Base_Stop_IT(&htim1);
+#if defined(LiteRadio_Plus_SX1280)            
+            if(protocolIndex != CRSF_PROTOCOL_INDEX)
+            {
+                HAL_TIM_Base_Stop_IT(&htim1);
+            }
+#endif            
             vTaskSuspend(radiolinkTaskHandle);
             vTaskResume(joystickTaskHandle); 
         }

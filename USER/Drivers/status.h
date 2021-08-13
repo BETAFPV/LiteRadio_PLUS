@@ -15,6 +15,7 @@
 #define PROTOCOL_INDEX_LIMIT 1
 #define CRSF_PROTOCOL_INDEX 1
 #endif
+
 typedef enum
 {
     RC_INIT              = 0,
