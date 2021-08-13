@@ -270,6 +270,8 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     SX1280.radioTXdataBuffer[7] = crc & 0xFF;
 
     SX1280_TXnb(SX1280.radioTXdataBuffer, 8);
+    
+    return 0;
 }
 
 /*
@@ -426,7 +428,7 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
     if(tx_config.tlm != tx_config.lastTLM)
     {
         tx_config.lastTLM = tx_config.tlm;
-        ExpressLRS_currAirRate_Modparams->TLMinterval = tx_config.tlm;
+        ExpressLRS_currAirRate_Modparams->TLMinterval = (expresslrs_tlm_ratio_e)tx_config.tlm;
         STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR,(uint16_t *)&tx_config.tlm,1);
     }
     if(tx_config.power != tx_config.lastPower)
@@ -449,7 +451,7 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
         STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR,(uint16_t *)&tx_config.power,1);
     }   
     
-
+    return 0;
 }
 
 
@@ -481,54 +483,6 @@ void loop()
         }
     }
 }
-
-//void OnRFModePacket(mspPacket_t *packet)
-//{
-//  // Parse the RF mode
-//  uint8_t rfMode = packet->readByte();
-//  CHECK_PACKET_PARSING();
-
-//  switch (rfMode)
-//  {
-//  case RATE_200HZ:
-//  case RATE_100HZ:
-//  case RATE_50HZ:
-//    SetRFLinkRate(enumRatetoIndex((expresslrs_RFrates_e)rfMode));
-//    break;
-//  default:
-//    // Unsupported rate requested
-//    break;
-//  }
-//}
-
-//void OnTxPowerPacket(mspPacket_t *packet)
-//{
-//  // Parse the TX power
-//  uint8_t txPower = packet->readByte();
-//  CHECK_PACKET_PARSING();
-//  //Serial.println("TX setpower");
-
-//  if (txPower < PWR_COUNT)
-//    SX1280_SetPower((PowerLevels_e)txPower);
-//}
-
-//void OnTLMRatePacket(mspPacket_t *packet)
-//{
-//  // Parse the TLM rate
-//  // uint8_t tlmRate = packet->readByte();
-//  CHECK_PACKET_PARSING();
-
-//  // TODO: Implement dynamic TLM rates
-//  // switch (tlmRate) {
-//  // case TLM_RATIO_NO_TLM:
-//  //   break;
-//  // case TLM_RATIO_1_128:
-//  //   break;
-//  // default:
-//  //   // Unsupported rate requested
-//  //   break;
-//  // }
-//}
 
 
 void EnterBindingMode()

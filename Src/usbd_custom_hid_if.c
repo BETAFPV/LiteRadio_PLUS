@@ -30,6 +30,7 @@
 #include "status.h"
 #include "crsf.h"
 #include "common.h"
+#include "joystick.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/

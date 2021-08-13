@@ -18,6 +18,10 @@ uint16_t controlDataBuff[8] = {0};
 uint8_t crsfLinkCount= 0;
 uint8_t dataToCRSF[8];
 uint16_t requestCount;
+
+static uint64_t connectTickNow;
+static uint64_t connectTickLast;
+
 void CRSF_SetBind()
 {
     HAL_Delay(1);
@@ -103,18 +107,14 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         }        
         if(externalCRSFdata.webUpdateMode)
         {
-//            Send_CRSFParameterPackage(0xFE,1);
+            //Send_CRSFParameterPackage(0xFE,1);
             externalCRSFdata.webUpdateMode = 0x00;
         }                
-        
-        //Send_CRSFParameterPackage(externalCRSFdata.setDataType,externalCRSFdata.setDataParameter);
         externalCRSFdata.configSetFlag = 0;
-        
     }
 //    else if()
 //    {
 //        GetSbusPackage(sbusPacket,crsfcontrol_data);
-
 //        HAL_UART_Transmit_DMA(&huart1,sbusPacket,25);
 //    }
     else
@@ -122,7 +122,7 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         Get_CRSFPackage(crsfPacket,crsfcontrol_data);
         HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
     }
-    if(externalCRSFdata.RSSI<80 && crsfLinkCount>10)
+    if(externalCRSFdata.RSSI<RSSI_WARNING_VALUE && crsfLinkCount>10)
     {
         xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
     }

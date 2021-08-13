@@ -4,6 +4,8 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
+#define RSSI_WARNING_VALUE 80
+
 #define DEFAULT_VALUE  CRSF_CHANNEL_VALUE_MID
 
 #define CRSF_CHANNEL_VALUE_MIN 172

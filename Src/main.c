@@ -116,14 +116,13 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 #ifdef LiteRadio_Plus_CC2500
-    CC2500_GPIO_Disable();
+  CC2500_GPIO_Disable();
 #endif  
-
 
   Gimbal_Init();  
 
   Status_Init();
-  
+
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
