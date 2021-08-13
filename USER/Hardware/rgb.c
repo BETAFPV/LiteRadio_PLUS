@@ -45,6 +45,21 @@ void Color_Set(uint8_t colorIndex,uint8_t brightness)
             color[2] = 0;
             break;            
         }
+        case WHITE:
+        {
+            color[1] = brightness;
+            color[0] = brightness;
+            color[2] = brightness;
+            break;            
+        }
+        case PURPLE:
+        {
+            color[1] = 128;
+            color[0] = 0;
+            color[2] = 128;
+            break;            
+        }
+        
         default:
         {
             break;

@@ -38,6 +38,8 @@ typedef enum
     BLUE,
     YELLOW,
     BLACK,
+    WHITE,
+    PURPLE,
 }color_e;
 
 extern EventGroupHandle_t rgbEventHandle;
