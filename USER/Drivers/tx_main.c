@@ -540,7 +540,7 @@ void EnterBindingMode()
     }
 
     // Disable the TX timer and wait for any TX to complete
-    // hwTimer.stop();
+    HAL_TIM_Base_Stop_IT(&htim1);
     while (busyTransmitting);
 
     // Queue up sending the Master UID as MSP packets
@@ -564,6 +564,7 @@ void EnterBindingMode()
     SX1280_SetFrequencyReg(SX1280.currFreq); 
     // Start transmitting again
     TIM1->ARR = 2000;
+    HAL_TIM_Base_Start_IT(&htim1);
 }
 
 void ExitBindingMode()
@@ -586,6 +587,7 @@ void ExitBindingMode()
 
     InBindingMode = 0;
     StubbornSender_ResetState();
+
     switch(tx_config.rate)
     {
         case FREQ_2400_RATE_500HZ:
@@ -605,6 +607,7 @@ void ExitBindingMode()
         default:
             break;
     }
+
 }
 
 void SendUIDOverMSP()
