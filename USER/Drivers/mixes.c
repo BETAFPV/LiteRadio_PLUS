@@ -34,11 +34,18 @@ void Mixes_Update()
 
 void Mixes_ChannelInit(uint8_t channel)
 {
-    STMFLASH_Read(MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);     
-//    mixesBuff[0] = channel;
-//    mixesBuff[1] = 0;
-//    mixesBuff[2] = 100;
-//    mixesBuff[3] = 100;
+    STMFLASH_Read(MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);   
+    /*混控设置自检*/
+    if((mixesBuff[0] > 8) || (mixesBuff[1] > 1) || (mixesBuff[2] > 100) || (mixesBuff[3] > 200))
+    {
+        mixesBuff[0] = channel;
+        mixesBuff[1] = 0;
+        mixesBuff[2] = 100;
+        mixesBuff[3] = 100;
+        STMFLASH_Write(MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);  
+        STMFLASH_Write(CACHE_MIX_CHANNEL_INFO_ADDR+channel*8,mixesBuff,4);  
+    }
+
     mixData[channel].gimbalChannel = (uint8_t)mixesBuff[0];
     mixData[channel].reverse= (uint8_t)mixesBuff[1];
     mixData[channel].weight = (uint8_t)mixesBuff[2];
@@ -216,6 +223,12 @@ void mixesTask(void* param)
     uint16_t controlmode = 0;
     mixesDelayTime = Get_ProtocolDelayTime();
     STMFLASH_Read(CONFIGER_INFO_MODE_ADDR,&controlmode,1);
+    /*模式自检*/
+    if(1 < controlmode)
+    {
+        controlmode = 0;
+        STMFLASH_Write(CONFIGER_INFO_MODE_ADDR,&controlmode,1);
+    }
     mixesValQueue = xQueueCreate(20,sizeof(reportData));
     Mixes_Init();
     while(1)

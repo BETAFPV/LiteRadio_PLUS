@@ -361,6 +361,23 @@ void setup(void)
     TIM1->ARR = 3999;
     uint16_t txConfigInit[3]; 
     STMFLASH_Read(INTERNAL_ELRS_CONFIGER_INFO_ADDR,txConfigInit,3);
+    
+    /*内置高频头参数自检*/
+    if(2 < txConfigInit[0])
+    {
+        txConfigInit[0] = 2;
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR,&txConfigInit[0],1);
+    }
+    if(7 < txConfigInit[1])
+    {
+        txConfigInit[1] = 2;
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR,&txConfigInit[1],1);
+    }
+    if(7 < txConfigInit[2])
+    {
+        txConfigInit[2] = 0;
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR,&txConfigInit[2],1);
+    }
     tx_config.power = (uint32_t)txConfigInit[0];
     tx_config.rate = (uint32_t)txConfigInit[1];
     tx_config.tlm = (uint32_t)txConfigInit[2];
