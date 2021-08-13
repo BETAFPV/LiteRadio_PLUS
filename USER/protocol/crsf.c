@@ -159,6 +159,7 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
                 externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[9];
                 externalCRSFdata.regulatoryDomainIndex = crsfRXPacket[10];
                 externalCRSFdata.crsfParameter = externalCRSFdata.lastCRSFparameter;
+                connectTickLast = HAL_GetTick();
                 if(externalCRSFdata.configUpdateFlag)
                 {
                     requestType1 = 0x02;
@@ -174,6 +175,15 @@ void Get_LinkStatis(uint8_t* crsfRXPacket)
         {
             crsfLinkCount --;
         }
+    }
+    connectTickNow = HAL_GetTick();
+    if(connectTickNow - connectTickLast >= 1000)
+    {
+        externalCRSFdata.connectionState = 0x00;
+    }
+    else
+    {
+        externalCRSFdata.connectionState = 0x01;
     }
 }
 

@@ -46,6 +46,7 @@ crsfParameter_t;
 
 typedef struct
 {
+    uint8_t connectionState;
     uint8_t setDataFlag;
     uint8_t setDataType;
     uint8_t setDataParameter;

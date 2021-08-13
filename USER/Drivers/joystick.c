@@ -24,7 +24,6 @@ void joystickTask(void *param)
     while(1)
     {
         vTaskDelay(joystickDelayTime);
-     //   uxTaskGetStackHighWaterMarkdebug_1 = uxTaskGetStackHighWaterMark(NULL);
         xQueueReceive(mixesValQueue,mixValBuff,0);
      
         reportData[0] = map(mixValBuff[0],1000,2000,0,2047);
@@ -153,7 +152,7 @@ void joystickTask(void *param)
         }
         checkSum = 0;        
 
-        
+
 
         USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &reportData, 8*sizeof(uint16_t));
     }

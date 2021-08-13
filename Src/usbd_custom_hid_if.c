@@ -351,6 +351,11 @@ void SaveMixValueToFlash(void)
         {
             requestType1 = USB_Recive_Buffer[1];
             requestType2 = USB_Recive_Buffer[2];
+            /*当请求停止时*/
+            if(requestType1 == 0x00 && requestType2 == 0x01)
+            {
+                sendSpam = 0;
+            }
             break;
         }
         default:
