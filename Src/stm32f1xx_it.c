@@ -334,6 +334,7 @@ void EXTI15_10_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 {
+    if(htim ==&htim2)
     HAL_TIM_OC_Stop_DMA(&htim2,TIM_CHANNEL_4);
 }
 

@@ -4,8 +4,8 @@
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
-#define TIMING_ZERO 3
-#define TIMING_ONE 6
+#define TIMING_ZERO 30
+#define TIMING_ONE 60
 
 #define BREATH_DOWN 0
 #define BREATH_UP 1

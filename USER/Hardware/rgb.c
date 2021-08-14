@@ -8,7 +8,7 @@ static uint16_t onDelayCount = 0;
 static uint16_t stopDelayCount = 0;
 static uint8_t bindStatus = 0;
 static uint8_t color[3] = {0};//color[0] is green;color[1] is red;color[2] is blue;
-uint8_t rgbBuff[25];
+uint16_t rgbBuff[25];
 uint8_t rgbDelayCount;
 static uint16_t rgbBrightness;
 static uint8_t rgbBreathStatus;
@@ -71,31 +71,26 @@ void RGB_Set(uint8_t colorIndex,uint8_t brightness)
 {
     uint8_t i;
     Color_Set(colorIndex,brightness);
-    uint16_t memaddr = 0;
     /*  green data */
     for(i = 0; i < 8; i++)
     {
-        rgbBuff[memaddr] = 2;
         rgbBuff[i] = (color[0]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[0]= color[0]<<1;
-        memaddr++;
     }
     /*  red data */
     for(i = 8; i < 16; i++)
     {   
         rgbBuff[i] = (color[1]&0x80)?TIMING_ONE:TIMING_ZERO;    
         color[1]= color[1]<<1;
-        memaddr++;
     }
 
     /*  blue data */
     for(i = 16; i < 24; i++)
     {
-        rgbBuff[memaddr] = 2;
         rgbBuff[i] = (color[2]&0x80)?TIMING_ONE:TIMING_ZERO;
         color[2]= color[2]<<1;
-        memaddr++;
     }
+    
     HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_4,(uint32_t*)rgbBuff,25);
 }
 
@@ -250,7 +245,11 @@ void rgbTask(void* param)
                 }
                 else
                 {
-                   RGB_Set(BLUE,BRIGHTNESS_MAX); 
+#ifdef Debug_Status
+                    RGB_Breath(WHITE); 
+#else
+                    RGB_Set(BLUE,BRIGHTNESS_MAX);
+#endif                    
                 }
             }
         }
