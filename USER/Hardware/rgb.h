@@ -21,6 +21,10 @@
 #define POWER_ON_RGB	          (0x01 << 5)	
 #define POWER_OFF_RGB	          (0x01 << 6)	
 
+#define RGB_START_INTERVAL       150
+#define RGB_STOP_INTERVAL        150
+#define RGB_STOP_DELAY_INTERVAL  500
+
 typedef enum
 {
     RGB_INIT = 0,

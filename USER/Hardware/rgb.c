@@ -4,8 +4,6 @@
 #include "gimbal.h"
 EventGroupHandle_t rgbEventHandle;
 
-static uint16_t onDelayCount = 0;
-static uint16_t stopDelayCount = 0;
 static uint8_t bindStatus = 0;
 static uint8_t color[3] = {0};//color[0] is green;color[1] is red;color[2] is blue;
 uint16_t rgbBuff[25];
@@ -13,6 +11,15 @@ uint8_t rgbDelayCount;
 static uint16_t rgbBrightness;
 static uint8_t rgbBreathStatus;
 static uint8_t highThrottleFlag;
+static uint8_t rgbCountCurr = 0;
+static uint64_t rgbNowTick;
+static uint64_t rgbStartTick;
+static uint64_t rgbStopTick;
+static uint64_t rgbStopDelayTick;
+static uint8_t rgbStartStatus = 0;
+static uint8_t rgbStopStatus = 0;
+static uint8_t rgbStopDelayStatus = 0;
+
 void Color_Set(uint8_t colorIndex,uint8_t brightness)
 {
     switch (colorIndex)
@@ -123,29 +130,61 @@ void RGB_BindTwinkle()
 
 void RGB_SetupTwinkle()
 {    
-    if(onDelayCount == 0)
+    uint8_t rgbNum = 2;
+    rgbNowTick = HAL_GetTick();    
+    if(rgbStartStatus||rgbStopStatus||rgbStopDelayStatus)
     {
-        RGB_Set(RED,BRIGHTNESS_MAX);    
-    }
-    if(onDelayCount < 500)
-    {
-        onDelayCount++;
+        if(rgbStartStatus)
+        {
+            if(rgbNowTick - rgbStartTick > RGB_START_INTERVAL)
+            {
+                rgbStartStatus = 0;
+                rgbStopStatus = 1;
+                RGB_Set(BLACK,BRIGHTNESS_MAX);
+                rgbStopTick = HAL_GetTick(); 
+            }
+        }
+        if(rgbStopStatus)
+        {
+            if(rgbNowTick - rgbStopTick > RGB_STOP_INTERVAL)
+            {
+                rgbStopStatus = 0;
+                if(rgbCountCurr <( rgbNum -1))
+                {
+                    rgbStartStatus = 1;
+                    RGB_Set(RED,BRIGHTNESS_MAX);  
+                    rgbStartTick = HAL_GetTick();                       
+                    rgbCountCurr++;
+                }
+                else
+                {
+                    rgbCountCurr = 0;
+                    rgbStopDelayStatus = 1;
+                    rgbStopDelayTick = HAL_GetTick();
+                }
+            }    
+        }
+        if(rgbStopDelayStatus)
+        {
+            if(rgbNowTick - rgbStopDelayTick > RGB_STOP_DELAY_INTERVAL)
+            {   
+                rgbStopDelayStatus = 0;
+                rgbStartStatus = 1;
+                RGB_Set(RED,BRIGHTNESS_MAX);    
+                rgbStartTick = HAL_GetTick();              
+            }                
+        
+        }
     }
     else
     {
-        RGB_Set(BLACK,BRIGHTNESS_MAX);
-        if(stopDelayCount < 100)
-        {
-            stopDelayCount++;
-        }
-        else
-        {
-            stopDelayCount = 0;
-            onDelayCount = 0;
-            osDelay(500);
-        }        
-    }
-   
+        rgbStartStatus = 1;
+        rgbStartTick = HAL_GetTick();
+        RGB_Set(RED,BRIGHTNESS_MAX); 
+        rgbCountCurr = 0;
+    }    
+    
+    
 }
 
 void RGB_Breath_Up(uint8_t colorIndex)
@@ -161,7 +200,7 @@ void RGB_Breath_Up(uint8_t colorIndex)
 void RGB_Breath_Down(uint8_t colorIndex)
 {
     rgbBrightness = BRIGHTNESS_MAX;
-    while(rgbBrightness>BRIGHTNESS_MIN)
+    while(rgbBrightness > BRIGHTNESS_MIN)
     {
         rgbBrightness--;
         RGB_Set(colorIndex,rgbBrightness);
@@ -172,7 +211,7 @@ void RGB_Breath(uint8_t colorIndex)
 {
     if(rgbBreathStatus == BREATH_DOWN)
     {
-        if(rgbBrightness>BRIGHTNESS_MIN)
+        if(rgbBrightness > BRIGHTNESS_MIN)
         {
             rgbBrightness--;
         }
@@ -184,7 +223,7 @@ void RGB_Breath(uint8_t colorIndex)
     }
     if(rgbBreathStatus == BREATH_UP)
     {
-        if(rgbBrightness<BRIGHTNESS_MAX)
+        if(rgbBrightness < BRIGHTNESS_MAX)
         {
             rgbBrightness++;
         }
