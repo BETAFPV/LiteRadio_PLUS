@@ -3,7 +3,14 @@
 static uint8_t buzzerCountCurr = 0;
 static uint16_t onDelayCount = 0;
 static uint16_t stopDelayCount = 0;
+static uint64_t buzzerNowTick;
+static uint64_t buzzerStartTick;
+static uint64_t buzzerStopTick;
+static uint64_t buzzerStopDelayTick;
 EventGroupHandle_t buzzerEventHandle = NULL;
+static uint8_t buzzerStartStatus = 0;
+static uint8_t buzzerStopStatus = 0;
+static uint8_t buzzerStopDelayStatus = 0;
 
 void Buzzer_BeeStay(uint8_t tone,uint32_t stayTime)
 {
@@ -42,43 +49,62 @@ void Buzzer_BeeNumInit(uint8_t buzzerCountInit)
 }
 void Buzzer_BeeNum(uint8_t tone,uint8_t buzzerNum)
 {
-
-    if(buzzerCountCurr < buzzerNum )
+    buzzerNowTick = HAL_GetTick();    
+    if(buzzerStartStatus||buzzerStopStatus||buzzerStopDelayStatus)
     {
-        Buzzer_Start();
-        Buzzer_On(tone);
-
-        if(onDelayCount < 20)
+        if(buzzerStartStatus)
         {
-            onDelayCount++;
-        }
-        else
-        {
-            Buzzer_Stop();
-            if(stopDelayCount < 20)
+            if(buzzerNowTick - buzzerStartTick > BUZZER_START_INTERVAL)
             {
-                stopDelayCount++;
-            }
-            else
-            {
-                stopDelayCount = 0;
-                onDelayCount = 0;
-                buzzerCountCurr++;
+                buzzerStartStatus = 0;
+                buzzerStopStatus = 1;
+                Buzzer_Stop();
+                buzzerStopTick = HAL_GetTick(); 
             }
         }
+        if(buzzerStopStatus)
+        {
+            if(buzzerNowTick - buzzerStopTick > BUZZER_STOP_INTERVAL)
+            {
+                buzzerStopStatus = 0;
+                Buzzer_Stop();
+                
+                if(buzzerCountCurr <( buzzerNum -1))
+                {
+                    buzzerStartStatus = 1;
+                    Buzzer_Start();
+                    Buzzer_On(tone);
+                    buzzerStartTick = HAL_GetTick();                       
+                    buzzerCountCurr++;
+                }
+                else
+                {
+                    buzzerCountCurr = 0;
+                    buzzerStopDelayStatus = 1;
+                    buzzerStopDelayTick = HAL_GetTick();
+                }
+            }    
+        }
+        if(buzzerStopDelayStatus)
+        {
+            if(buzzerNowTick - buzzerStopDelayTick > BUZZER_STOP_DELAY_INTERVAL)
+            {   
+                buzzerStopDelayStatus = 0;
+                buzzerStartStatus = 1;
+                Buzzer_Start();
+                Buzzer_On(tone);
+                buzzerStartTick = HAL_GetTick();              
+            }                
         
+        }
     }
     else
     {
-        if(onDelayCount < 150)
-        {
-            onDelayCount++;
-        }
-        else
-        {
-            onDelayCount = 0;
-            buzzerCountCurr = 0;
-        }
+        buzzerStartStatus = 1;
+        buzzerStartTick = HAL_GetTick();
+        Buzzer_Start();
+        Buzzer_On(tone);
+        buzzerCountCurr = 0;
     }
 }
      
@@ -212,6 +238,9 @@ void buzzerTask(void* param)
             {
                 Buzzer_Stop();
                 osDelay(300);
+                buzzerStartStatus = 0;
+                buzzerStopStatus = 0;
+                buzzerStopDelayStatus = 0;
                 Buzzer_BeeStay(Do,800);
                 buzzerStatus = BUZZER_NORMAL;        
                 break;

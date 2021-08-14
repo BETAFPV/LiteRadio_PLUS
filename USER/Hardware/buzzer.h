@@ -17,10 +17,14 @@ extern EventGroupHandle_t buzzerEventHandle;
 #define POWER_OFF_RING	                (0x01 << 6)	
 #define RISS_WARNING_RING	            (0x01 << 7)	
 
+
+#define BUZZER_START_INTERVAL       150
+#define BUZZER_STOP_INTERVAL        150
+#define BUZZER_STOP_DELAY_INTERVAL  500
+
 typedef enum
 {
     BUZZER_NORMAL = 0,
-    power_longpress_ring = 1,
     SETUP_RING_TWO,
     SETUP_RING_THREE,
     SETUP_RING_BEE,
