@@ -8,13 +8,12 @@ extern EventGroupHandle_t buzzerEventHandle;
 
 #define BUZZER_PWM_CH TIM_CHANNEL_1         //蜂鸣器PWM通道
 
-#define BIND_SHORT_PRESS_RING	        (0x01 << 0)	
-#define BIND_LONG_PRESS_RING	        (0x01 << 1)	
-#define SETUP_MID_RING	                (0x01 << 2)	
-#define SETUP_MINMAX_RING	            (0x01 << 3)
-#define SETUP_END_RING                  (0x01 << 4)
-#define POWER_ON_RING	                (0x01 << 5)	
-#define POWER_OFF_RING	                (0x01 << 6)	
+#define SETUP_MID_RING	                (0x01 << 1)		
+#define SETUP_MINMAX_RING	            (0x01 << 2)
+#define SETUP_END_RING                  (0x01 << 3)
+#define POWER_ON_RING	                (0x01 << 4)	
+#define POWER_OFF_RING	                (0x01 << 5)	
+#define LOW_ELECTRICITY_RING            (0x01 << 6)
 #define RISS_WARNING_RING	            (0x01 << 7)	
 
 
