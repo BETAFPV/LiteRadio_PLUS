@@ -115,6 +115,18 @@ void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
     }
 }
 
+void RGB_LowElectricityTwinkle()
+{
+    RGB_Set(RED,BRIGHTNESS_MAX);
+    osDelay(200);
+    RGB_Set(BLACK,BRIGHTNESS_MAX);
+    osDelay(200);
+    RGB_Set(RED,BRIGHTNESS_MAX);
+    osDelay(200);
+    RGB_Set(BLACK,BRIGHTNESS_MAX);
+    osDelay(200);
+}
+
 void RGB_BindTwinkle()
 {
     uint8_t i;
@@ -247,7 +259,7 @@ void rgbTask(void* param)
     {   
         vTaskDelay(1);       
         rgbEvent = xEventGroupWaitBits( rgbEventHandle,
-                                        POWER_ON_RGB|POWER_OFF_RGB|BIND_RGB|SETUP_RGB|DATA_RGB|SHUTDOWN_RGB|CHRG_AND_JOYSTICK_RGB,
+                                        POWER_ON_RGB|POWER_OFF_RGB|BIND_RGB|LOW_ELECTRICITY_RGB|SETUP_RGB|DATA_RGB|SHUTDOWN_RGB|CHRG_AND_JOYSTICK_RGB,
                                         pdTRUE,
                                         pdFALSE,
                                         0);
@@ -262,13 +274,20 @@ void rgbTask(void* param)
             RGB_Breath_Down(BLUE);
             rgbEvent &= ~DATA_RGB;
         }
-                
+
+        /*LOW ELECTRICITY RGB*/
+        if((rgbEvent & LOW_ELECTRICITY_RGB) == LOW_ELECTRICITY_RGB)
+        {
+            RGB_LowElectricityTwinkle();
+        }   
+        
         /*SETUP RGB*/
         if((rgbEvent & BIND_RGB) == BIND_RGB)
         {
             bindStatus = 1;
             RGB_BindTwinkle();
         }        
+
         if((rgbEvent & SETUP_RGB) == SETUP_RGB)
         {
             RGB_SetupTwinkle();

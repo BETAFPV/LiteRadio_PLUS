@@ -19,6 +19,15 @@ static uint8_t RCstatus = RC_SHUTDOWN;
 static uint8_t lastRCstatus = RC_SHUTDOWN;
 static uint8_t RFstatus = RF_DATA;
 static uint8_t powerStatus = RC_POWER_OFF;
+static uint64_t lowElectricityNowTick = 0;
+static uint64_t lowElectricityLastTick = 0;
+
+static uint16_t electricityADCvalue;
+static uint16_t calADCvalue;
+uint16_t upElectricityLimit = 3200;
+uint16_t downElectricityLimit = 3000;
+uint8_t batteryWarningStatus = 1;
+
 void Status_Init()
 {
     STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
@@ -190,6 +199,32 @@ void statusTask(void* param)
     while(1)
     {
         vTaskDelay(1);
+        calADCvalue = Get_AdcValue(3);
+        if(  calADCvalue > 1500)
+        {
+            electricityADCvalue = Get_AdcValue(4);
+            electricityADCvalue -= (calADCvalue - 1500)*110/1500;
+        }
+        else
+        {
+            electricityADCvalue = Get_AdcValue(4);
+            electricityADCvalue += (1500 - calADCvalue)*110/1500;
+        }
+        
+        
+        batteryWarningStatus = Cal_ElectricRelay(electricityADCvalue,batteryWarningStatus,downElectricityLimit,upElectricityLimit);
+        
+        if(batteryWarningStatus == DOWN_VALUE_STATUS)
+        {
+            lowElectricityNowTick = HAL_GetTick();
+            if((lowElectricityNowTick - lowElectricityLastTick) > 15000)
+            {
+                xEventGroupSetBits(buzzerEventHandle,LOW_ELECTRICITY_RING);
+                xEventGroupSetBits( rgbEventHandle, LOW_ELECTRICITY_RGB);
+                lowElectricityLastTick = lowElectricityNowTick;
+            }
+        }
+           
         if(lastRCstatus == RC_INIT)
         {
             osDelay(3000);
