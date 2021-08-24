@@ -173,7 +173,7 @@ void buzzerTask(void* param)
     {   
         vTaskDelay(5);        
         buzzerEvent= xEventGroupWaitBits( buzzerEventHandle,
-		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING|RISS_WARNING_RING,
+		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING|LOW_ELECTRICITY_RING|RISS_WARNING_RING,
 		                              pdTRUE,
 	                                  pdFALSE,
 		                              0);
@@ -204,6 +204,19 @@ void buzzerTask(void* param)
         {
             buzzerStatus = SETUP_RING_BEE;
 
+        }
+        if((buzzerEvent & LOW_ELECTRICITY_RING) == LOW_ELECTRICITY_RING && buzzerStatus == BUZZER_NORMAL)
+        {        
+            Buzzer_Start();
+            Buzzer_On(Si);
+            osDelay(200);
+            Buzzer_Stop();
+            osDelay(200);     
+            Buzzer_Start();
+            Buzzer_On(Si);
+            osDelay(200);
+            Buzzer_Stop();
+            osDelay(200);
         }
         
         if((buzzerEvent & RISS_WARNING_RING) == RISS_WARNING_RING)
