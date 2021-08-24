@@ -1,8 +1,6 @@
 #include "buzzer.h"
 #include "rgb.h"
 static uint8_t buzzerCountCurr = 0;
-static uint16_t onDelayCount = 0;
-static uint16_t stopDelayCount = 0;
 static uint64_t buzzerNowTick;
 static uint64_t buzzerStartTick;
 static uint64_t buzzerStopTick;
@@ -67,8 +65,6 @@ void Buzzer_BeeNum(uint8_t tone,uint8_t buzzerNum)
             if(buzzerNowTick - buzzerStopTick > BUZZER_STOP_INTERVAL)
             {
                 buzzerStopStatus = 0;
-                Buzzer_Stop();
-                
                 if(buzzerCountCurr <( buzzerNum -1))
                 {
                     buzzerStartStatus = 1;
@@ -230,6 +226,7 @@ void buzzerTask(void* param)
             Buzzer_On(Do);
             osDelay(200);
             Buzzer_Stop();
+            osDelay(200);
         }        
         switch(buzzerStatus)
         {
@@ -250,11 +247,11 @@ void buzzerTask(void* param)
             case SETUP_RING_BEE:
             {
                 Buzzer_Stop();
-                osDelay(300);
+                osDelay(200);
                 buzzerStartStatus = 0;
                 buzzerStopStatus = 0;
                 buzzerStopDelayStatus = 0;
-                Buzzer_BeeStay(Do,800);
+                Buzzer_BeeStay(Do,600);
                 buzzerStatus = BUZZER_NORMAL;        
                 break;
             }
