@@ -7,7 +7,7 @@
 #include "buzzer.h"
 #include "radiolink.h"
 #include "status.h"
-
+#include "mixes.h"
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibrationMode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
 static uint8_t calibrationStatus = 0;
@@ -99,10 +99,16 @@ uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 
 uint8_t Check_HighThrottle(void)
 {
-    uint16_t Throttle_Value = 0;
-    Throttle_Value = Get_GimbalValue(THROTTLE);
-
-    if(Throttle_Value < HIGH_THROTTLE_THRESHOLD) 
+    uint16_t throttleValue = 0;
+    if(controlMode == 0)
+    {
+        throttleValue = Get_GimbalValue(THROTTLE);
+    }
+    else
+    {
+        throttleValue = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR);
+    }
+    if(throttleValue < HIGH_THROTTLE_THRESHOLD) 
     {        
         return 0;
     }
