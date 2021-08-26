@@ -2,6 +2,7 @@
 #include "math.h"
 #include "tim.h"
 #include "gimbal.h"
+#include "status.h"
 EventGroupHandle_t rgbEventHandle;
 
 static uint8_t bindStatus = 0;
@@ -303,11 +304,7 @@ void rgbTask(void* param)
                 }
                 else
                 {
-#ifdef Debug_Status
-                    RGB_Breath(WHITE); 
-#else
-                    RGB_Set(BLUE,BRIGHTNESS_MAX);
-#endif                    
+                    RGB_Set(BLUE,BRIGHTNESS_MAX);                 
                 }
             }
         }

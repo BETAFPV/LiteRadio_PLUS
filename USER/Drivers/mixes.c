@@ -15,7 +15,8 @@ QueueHandle_t mixesValQueue = NULL;
 mixData_t mixData[8];
 uint16_t mixesBuff[8];
 uint8_t mixUpdateFlag;
-
+uint16_t controlMode;
+    
 void Mixes_Init()
 {   
     for(int i=0;i<8;i++)
@@ -213,19 +214,19 @@ void mixesTask(void* param)
         500,500,500,500,500,500,500,500,500,500,
         500,500,500,500,500,500,500,500,500,500,
     };
-    uint16_t reportData[8];
+    uint16_t mixesBuff[8];
     uint16_t gimbalVaBuff[4];
     uint16_t switchesValBuff[4];
-    uint16_t controlmode = 0;
+
     mixesDelayTime = Get_ProtocolDelayTime();
-    STMFLASH_Read(CONFIGER_INFO_MODE_ADDR,&controlmode,1);
+    STMFLASH_Read(CONFIGER_INFO_MODE_ADDR,&controlMode,1);
     /*模式自检*/
-    if(1 < controlmode)
+    if(1 < controlMode)
     {
-        controlmode = 0;
-        STMFLASH_Write(CONFIGER_INFO_MODE_ADDR,&controlmode,1);
+        controlMode = 0;
+        STMFLASH_Write(CONFIGER_INFO_MODE_ADDR,&controlMode,1);
     }
-    mixesValQueue = xQueueCreate(20,sizeof(reportData));
+    mixesValQueue = xQueueCreate(20,sizeof(mixesBuff));
     Mixes_Init();
     while(1)
     {
@@ -241,25 +242,25 @@ void mixesTask(void* param)
         xQueueReceive(switchesValQueue,switchesValBuff,0);
         
         /*日本手模式1，美国手模式0*/
-        if(controlmode == 1)
+        if(controlMode == 1)
         {
-            reportData[AILERON] = gimbalVaBuff[AILERON];
-            reportData[ELEVATOR] = gimbalVaBuff[THROTTLE];
-            reportData[THROTTLE] = gimbalVaBuff[ELEVATOR];
-            reportData[RUDDER] = gimbalVaBuff[RUDDER];        
+            mixesBuff[AILERON] = gimbalVaBuff[AILERON];
+            mixesBuff[ELEVATOR] = gimbalVaBuff[THROTTLE];
+            mixesBuff[THROTTLE] = gimbalVaBuff[ELEVATOR];
+            mixesBuff[RUDDER] = gimbalVaBuff[RUDDER];        
         }
         else
         {
-            reportData[AILERON] = gimbalVaBuff[AILERON];
-            reportData[ELEVATOR] = gimbalVaBuff[ELEVATOR];  
-            reportData[THROTTLE] = gimbalVaBuff[THROTTLE];
-            reportData[RUDDER] = gimbalVaBuff[RUDDER];            
+            mixesBuff[AILERON] = gimbalVaBuff[AILERON];
+            mixesBuff[ELEVATOR] = gimbalVaBuff[ELEVATOR];  
+            mixesBuff[THROTTLE] = gimbalVaBuff[THROTTLE];
+            mixesBuff[RUDDER] = gimbalVaBuff[RUDDER];            
         }
         
-        reportData[4] = switchesValBuff[0];
-        reportData[5] = switchesValBuff[1];
-        reportData[6] = switchesValBuff[2];
-        reportData[7] = switchesValBuff[3];   
+        mixesBuff[4] = switchesValBuff[0];
+        mixesBuff[5] = switchesValBuff[1];
+        mixesBuff[6] = switchesValBuff[2];
+        mixesBuff[7] = switchesValBuff[3];   
         for(mixIndex = 0;mixIndex < 8;mixIndex++)
         {
             
@@ -269,22 +270,22 @@ void mixesTask(void* param)
                 {
                     case MIX_AILERON:
                     {
-                        mixData[mixIndex].output = reportData[AILERON];
+                        mixData[mixIndex].output = mixesBuff[AILERON];
                         break;
                     }
                     case MIX_ELEVATOR:
                     {
-                        mixData[mixIndex].output = reportData[ELEVATOR];
+                        mixData[mixIndex].output = mixesBuff[ELEVATOR];
                         break;
                     }
                     case MIX_THROTTLE:
                     {
-                        mixData[mixIndex].output = reportData[THROTTLE];
+                        mixData[mixIndex].output = mixesBuff[THROTTLE];
                         break;
                     } 
                     case MIX_RUDDER:
                     {
-                        mixData[mixIndex].output = reportData[RUDDER];
+                        mixData[mixIndex].output = mixesBuff[RUDDER];
                         break;
                     }
                     default:
@@ -312,27 +313,27 @@ void mixesTask(void* param)
             }
             if(mixData[mixIndex].gimbalChannel >= 4)
             {
-                mixData[mixIndex].output =  reportData[mixData[mixIndex].gimbalChannel];
+                mixData[mixIndex].output =  mixesBuff[mixData[mixIndex].gimbalChannel];
                 mixData[mixIndex].output = Mixes_Switchreverse(mixData[mixIndex].reverse, mixData[mixIndex].output);
             }
         }
         
-        reportData[0] = mixData[0].output;
-        reportData[1] = mixData[1].output;
-        reportData[2] = mixData[2].output;
-        reportData[3] = mixData[3].output;
-        reportData[4] = mixData[4].output;
-        reportData[5] = mixData[5].output;
-        reportData[6] = mixData[6].output;        
-        reportData[7] = mixData[7].output;                      
-        xQueueSend(mixesValQueue,reportData,0);
+        mixesBuff[0] = mixData[0].output;
+        mixesBuff[1] = mixData[1].output;
+        mixesBuff[2] = mixData[2].output;
+        mixesBuff[3] = mixData[3].output;
+        mixesBuff[4] = mixData[4].output;
+        mixesBuff[5] = mixData[5].output;
+        mixesBuff[6] = mixData[6].output;        
+        mixesBuff[7] = mixData[7].output;                      
+        xQueueSend(mixesValQueue,mixesBuff,0);
         if(externalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && externalCRSFdata.configStatus == CONFIG_CRSF_ON)
         {
-            xQueueSend(mixesValQueue,reportData,0);    
+            xQueueSend(mixesValQueue,mixesBuff,0);    
         }
         if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && internalCRSFdata.configStatus == CONFIG_CRSF_ON)
         {
-            xQueueSend(mixesValQueue,reportData,0);    
+            xQueueSend(mixesValQueue,mixesBuff,0);    
         }
     }
 }

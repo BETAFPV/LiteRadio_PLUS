@@ -244,7 +244,9 @@ void gimbalTask(void* param)
 {
     EventBits_t gimbalEvent;
     static uint16_t gimbalBuff[4] = {0};
-		gimbalDelayTime = Get_ProtocolDelayTime();
+    
+	gimbalDelayTime = Get_ProtocolDelayTime();
+    
     gimbalValQueue = xQueueCreate(20,sizeof(gimbalBuff));
     while(1)
     {

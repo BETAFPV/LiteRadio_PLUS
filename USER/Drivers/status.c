@@ -10,18 +10,25 @@
 #include "buzzer.h"
 #include "crsf.h"
 #include "tim.h"
-#include "common.h"
+#include "adc.h"
+#include "gimbal.h"
+#include "function.h"
+#include "common.h" 
+
 uint8_t requestType1;
 uint8_t requestType2;
 uint8_t configFlag;
+
+static uint64_t statusNowTick;
+static uint64_t statusLastTick;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
 static uint8_t RCstatus = RC_SHUTDOWN;
 static uint8_t lastRCstatus = RC_SHUTDOWN;
 static uint8_t RFstatus = RF_DATA;
 static uint8_t powerStatus = RC_POWER_OFF;
-static uint64_t lowElectricityNowTick = 0;
-static uint64_t lowElectricityLastTick = 0;
+static uint64_t lowElectricityNowTick;
+static uint64_t lowElectricityLastTick;
 
 static uint16_t electricityADCvalue;
 static uint16_t calADCvalue;
@@ -87,7 +94,7 @@ void Status_Init()
             HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);                  
             break;
         } 
-#elif defined(LiteRadio_Plus_SX1280)
+#elif defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)   
         case 0: 
         {
             protocolDelayTime = CRSF_INTERVAL;
@@ -99,19 +106,6 @@ void Status_Init()
         {
             protocolDelayTime = CRSF_INTERVAL;
             HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);             
-            break;
-        } 
-#elif defined(LiteRadio_Plus_SX1276)   
-        case 0: 
-        {
-            protocolDelayTime = CRSF_INTERVAL;
-            HAL_GPIO_WritePin(GPIOB,INTERNAL_RF_EN_Pin,GPIO_PIN_SET);
-            break;
-        } 
-        case 1:
-        {
-            protocolDelayTime = CRSF_INTERVAL;
-            HAL_GPIO_WritePin(EXTERNAL_RF_EN_GPIO_Port, EXTERNAL_RF_EN_Pin, GPIO_PIN_SET);
             break;
         } 
 #endif        

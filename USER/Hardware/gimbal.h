@@ -71,6 +71,4 @@ uint8_t Check_HighThrottle(void);
 void GimbalCalibrateProcess(void);
 uint8_t get_calibrationMode(void);
 
-void get_reportData(uint16_t *data);
-
 #endif

@@ -59,6 +59,7 @@ typedef struct
     uint16_t output;
 }mixData_t;
 
+extern uint16_t controlMode;
 extern mixData_t mixData[8];
 extern uint8_t mixUpdateFlag;
 
