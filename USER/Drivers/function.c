@@ -1,6 +1,8 @@
 #include "function.h"
-
+#include "mixes.h"
 #define SBUS_VALUE  993
+
+uint16_t channelDataBuff[4];
 
 const unsigned char crc8tab[256] = {
   0x00, 0xD5, 0x7F, 0xAA, 0xFE, 0x2B, 0x81, 0x54,
@@ -38,13 +40,6 @@ const unsigned char crc8tab[256] = {
 };
 
 
-uint16_t channelDataBuff[4];
-void Get_ChipID(union ChipID *chipID)
-{
-    chipID->ChipUniqueID[0] = (uint32_t)(READ_REG(*((uint32_t *)UID_BASE)));
-    chipID->ChipUniqueID[1] = (uint32_t)(READ_REG(*((uint32_t *)(UID_BASE + 4U))));
-    chipID->ChipUniqueID[2] = (uint32_t)(READ_REG(*((uint32_t *)(UID_BASE + 8U))));
-} 
 
 uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax)
 {
@@ -55,7 +50,36 @@ uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax)
    // Nxy = (uint16_t)temp;
 	return Nxy;
 }
-union ChipID chipID;
+
+/*继电器特性*/
+uint8_t Cal_ElectricRelay(uint16_t currentValue,uint8_t currentStatus,uint16_t downValueLimit,uint16_t upValueLimit)
+{
+    if(currentStatus)
+    {
+        if(currentValue > downValueLimit)
+        {
+            return UP_VALUE_STATUS;
+        }
+        else
+        {
+            return DOWN_VALUE_STATUS;
+        }
+    }
+    else
+    {
+        if(currentValue < upValueLimit)
+        {
+            return DOWN_VALUE_STATUS;
+        }
+        else
+        {
+            return UP_VALUE_STATUS;
+        }        
+    
+    }
+    
+}
+
 void Get_ChipID(union ChipID *chipID)
 {
     chipID->ChipUniqueID[0] = (uint32_t)(READ_REG(*((uint32_t *)UID_BASE)));
@@ -85,51 +109,49 @@ void Get_CRSFUniqueID(uint8_t *masterUID)
     masterUID[5] = chipID.IDbyte[0];
 }
 
-/*AETR 左手油门*/
-void GetSbusPackage(uint8_t* ChannelToSbus)
+/*SBUS串口输出*/
+void GetSbusPackage(uint8_t* channelToSBUS,uint16_t* controlDataBuff)
 {	
 	uint16_t switch_A_Temp;
 	uint16_t switch_B_Temp;
 	uint16_t switch_C_Temp;
-	uint16_t switch_D_Temp;
-      
+	uint16_t switch_D_Temp;    
 
-
-	channelDataBuff[0] = map(Get_GimbalValue(ELEVATOR),1,1024,178,1811);
-	channelDataBuff[1] = map(Get_GimbalValue(THROTTLE),1,1024,178,1811);
-	channelDataBuff[2] = map(Get_GimbalValue(RUDDER)  ,1,1024,178,1811);
-	channelDataBuff[3] = map(Get_GimbalValue(AILERON) ,1,1024,178,1811);
+	channelDataBuff[MIX_ELEVATOR] = map(controlDataBuff[MIX_ELEVATOR],1000,2000,178,1811);
+	channelDataBuff[MIX_AILERON] = map(controlDataBuff[MIX_AILERON],1000,2000,178,1811);
+	channelDataBuff[MIX_THROTTLE] = map(controlDataBuff[MIX_THROTTLE],1000,2000,178,1811);
+	channelDataBuff[MIX_RUDDER] = map(controlDataBuff[MIX_RUDDER] ,1000,2000,178,1811);
     
-	switch_A_Temp = map(Get_SwitchValue(SWA),993,2000,163,1811);
-	switch_B_Temp = map(Get_SwitchValue(SWB),993,2000,163,1811);
-	switch_C_Temp = map(Get_SwitchValue(SWC),993,2000,163,1811);
-	switch_D_Temp = map(Get_SwitchValue(SWD),993,2000,163,1811);
+	switch_A_Temp = controlDataBuff[4];
+	switch_B_Temp = controlDataBuff[5];
+	switch_C_Temp = controlDataBuff[6];
+	switch_D_Temp = controlDataBuff[7];
 	
-	ChannelToSbus[0] = 0x0F;  
-	ChannelToSbus[1] = (uint8_t) (channelDataBuff[AILERON]   & 0x07FF);
-    ChannelToSbus[2] = (uint8_t) ((channelDataBuff[AILERON]  & 0x07FF)>>8  | (channelDataBuff[ELEVATOR] & 0x07FF)<<3);
-    ChannelToSbus[3] = (uint8_t) ((channelDataBuff[ELEVATOR] & 0x07FF)>>5  | (channelDataBuff[THROTTLE] & 0x07FF)<<6);
-    ChannelToSbus[4] = (uint8_t) ((channelDataBuff[THROTTLE] & 0x07FF)>>2);
-    ChannelToSbus[5] = (uint8_t) ((channelDataBuff[THROTTLE] & 0x07FF)>>10 | (channelDataBuff[RUDDER]   & 0x07FF)<<1);
-    ChannelToSbus[6] = (uint8_t) ((channelDataBuff[RUDDER]   & 0x07FF)>>7  | (switch_A_Temp & 0x07FF)<<4);
-    ChannelToSbus[7] = (uint8_t) ((switch_A_Temp & 0x07FF)>>4 | (switch_B_Temp & 0x07FF)<<7);
-    ChannelToSbus[8] = (uint8_t) ((switch_B_Temp & 0x07FF)>>1);
-    ChannelToSbus[9] = (uint8_t) ((switch_B_Temp & 0x07FF)>>9 | (switch_C_Temp & 0x07FF)<<2);
-    ChannelToSbus[10]= (uint8_t) ((switch_C_Temp & 0x07FF)>>6 | (switch_D_Temp & 0x07FF)<<5);
-    ChannelToSbus[11]= (uint8_t) ((switch_D_Temp& 0x07FF)>>3);
-	ChannelToSbus[12] = (SBUS_VALUE  >> 0 ) & 0xff;
-    ChannelToSbus[13] = (SBUS_VALUE << 3 | SBUS_VALUE  >> 8  ) & 0xff;
-    ChannelToSbus[14] = (SBUS_VALUE << 8 | SBUS_VALUE >> 5  ) & 0xff;
-    ChannelToSbus[15] = (SBUS_VALUE >> 2 ) & 0xff;
-    ChannelToSbus[16] = (SBUS_VALUE << 1 | SBUS_VALUE >> 10 ) & 0xff;
-    ChannelToSbus[17] = (SBUS_VALUE << 4 | SBUS_VALUE >> 7  ) & 0xff;
-    ChannelToSbus[18] = (SBUS_VALUE << 7 | SBUS_VALUE >> 4 ) & 0xff;
-    ChannelToSbus[19] = (SBUS_VALUE >> 1 ) & 0xff;
-    ChannelToSbus[20] = (SBUS_VALUE << 2 | SBUS_VALUE >> 9 ) & 0xff;
-    ChannelToSbus[21] = (SBUS_VALUE << 5 | SBUS_VALUE >> 6 ) & 0xff;
-    ChannelToSbus[22] = (SBUS_VALUE >> 3 ) & 0xff;
-	ChannelToSbus[23] = 0x00;
-	ChannelToSbus[24] = 0x00;
+	channelToSBUS[0] = 0x0F;  
+	channelToSBUS[1] = (uint8_t) (channelDataBuff[MIX_AILERON]   & 0x07FF);
+    channelToSBUS[2] = (uint8_t) ((channelDataBuff[MIX_AILERON]  & 0x07FF)>>8  | (channelDataBuff[MIX_ELEVATOR] & 0x07FF)<<3);
+    channelToSBUS[3] = (uint8_t) ((channelDataBuff[MIX_ELEVATOR] & 0x07FF)>>5  | (channelDataBuff[MIX_THROTTLE] & 0x07FF)<<6);
+    channelToSBUS[4] = (uint8_t) ((channelDataBuff[MIX_THROTTLE] & 0x07FF)>>2);
+    channelToSBUS[5] = (uint8_t) ((channelDataBuff[MIX_THROTTLE] & 0x07FF)>>10 | (channelDataBuff[MIX_RUDDER]   & 0x07FF)<<1);
+    channelToSBUS[6] = (uint8_t) ((channelDataBuff[MIX_RUDDER]   & 0x07FF)>>7  | (switch_A_Temp & 0x07FF)<<4);
+    channelToSBUS[7] = (uint8_t) ((switch_A_Temp & 0x07FF)>>4 | (switch_B_Temp & 0x07FF)<<7);
+    channelToSBUS[8] = (uint8_t) ((switch_B_Temp & 0x07FF)>>1);
+    channelToSBUS[9] = (uint8_t) ((switch_B_Temp & 0x07FF)>>9 | (switch_C_Temp & 0x07FF)<<2);
+    channelToSBUS[10]= (uint8_t) ((switch_C_Temp & 0x07FF)>>6 | (switch_D_Temp & 0x07FF)<<5);
+    channelToSBUS[11]= (uint8_t) ((switch_D_Temp& 0x07FF)>>3);
+	channelToSBUS[12] = (SBUS_VALUE  >> 0 ) & 0xff;
+    channelToSBUS[13] = (SBUS_VALUE << 3 | SBUS_VALUE  >> 8  ) & 0xff;
+    channelToSBUS[14] = (SBUS_VALUE << 8 | SBUS_VALUE >> 5  ) & 0xff;
+    channelToSBUS[15] = (SBUS_VALUE >> 2 ) & 0xff;
+    channelToSBUS[16] = (SBUS_VALUE << 1 | SBUS_VALUE >> 10 ) & 0xff;
+    channelToSBUS[17] = (SBUS_VALUE << 4 | SBUS_VALUE >> 7  ) & 0xff;
+    channelToSBUS[18] = (SBUS_VALUE << 7 | SBUS_VALUE >> 4 ) & 0xff;
+    channelToSBUS[19] = (SBUS_VALUE >> 1 ) & 0xff;
+    channelToSBUS[20] = (SBUS_VALUE << 2 | SBUS_VALUE >> 9 ) & 0xff;
+    channelToSBUS[21] = (SBUS_VALUE << 5 | SBUS_VALUE >> 6 ) & 0xff;
+    channelToSBUS[22] = (SBUS_VALUE >> 3 ) & 0xff;
+	channelToSBUS[23] = 0x00;
+	channelToSBUS[24] = 0x00;
 }
 
 uint8_t crc8(const uint8_t * ptr, uint32_t len)

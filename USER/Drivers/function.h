@@ -9,15 +9,22 @@ union ChipID{
 	uint8_t IDbyte[12];
 };
 
+typedef enum
+{
+    DOWN_VALUE_STATUS = 0,
+    UP_VALUE_STATUS = 1,
+} electricRelay_e; 
+
 void Get_ChipID(union ChipID *chipID);
 uint16_t GetUniqueID(void);
 void Get_CRSFUniqueID(uint8_t *masterUID);
-void GetSbusPackage(uint8_t* ChannelToSbus);
+void GetSbusPackage(uint8_t* channelToSBUS,uint16_t* controlDataBuff);
 uint8_t crc8(const uint8_t * ptr, uint32_t len);
 
+uint8_t Cal_ElectricRelay(uint16_t currentValue,uint8_t currentStatus,uint16_t downValueLimit,uint16_t upValueLimit);
 uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax);
+
 #ifdef LiteRadio_Plus_CC2500
-//定义各通道名称(最大支持8通道)
 typedef enum
 { 
 	AUX1  		= 4 , 
