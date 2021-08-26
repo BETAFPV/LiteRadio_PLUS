@@ -220,7 +220,7 @@ void statusTask(void* param)
         if(batteryWarningStatus == DOWN_VALUE_STATUS)
         {
             lowElectricityNowTick = HAL_GetTick();
-            if((lowElectricityNowTick - lowElectricityLastTick) > 15000)
+            if((lowElectricityNowTick - lowElectricityLastTick) > 20000)
             {
                 xEventGroupSetBits(buzzerEventHandle,LOW_ELECTRICITY_RING);
                 xEventGroupSetBits( rgbEventHandle, LOW_ELECTRICITY_RGB);
