@@ -29,6 +29,7 @@ typedef enum
 
 extern uint8_t requestType1;
 extern uint8_t requestType2;
+extern uint8_t configFlag;
 uint32_t Get_ProtocolDelayTime(void);
 void Status_Init(void);
 void Status_Update(void);

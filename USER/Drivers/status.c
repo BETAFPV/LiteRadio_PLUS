@@ -13,6 +13,7 @@
 #include "common.h"
 uint8_t requestType1;
 uint8_t requestType2;
+uint8_t configFlag;
 static uint16_t protocolIndex;
 static uint32_t protocolDelayTime;
 static uint8_t RCstatus = RC_SHUTDOWN;
@@ -235,6 +236,15 @@ void statusTask(void* param)
         else if(lastRCstatus == RC_SHUTDOWN)
         {
             Status_Update();
+        }
+        if(configFlag)
+        {
+            statusNowTick = HAL_GetTick();
+            if((statusNowTick - statusLastTick) > 1000)
+            {
+               configFlag = 0; 
+            }
+            statusLastTick = statusNowTick;    
         }
         keyEvent= xEventGroupWaitBits( KeyEventHandle,
 		                               POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
