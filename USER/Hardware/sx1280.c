@@ -319,7 +319,7 @@ PowerLevels_e SX1280_SetPower(PowerLevels_e Power)
         case PWR_100mW:    
         default:
             Power = PWR_100mW;
-            SX1280_SetOutputPower(0);
+            SX1280_SetOutputPower(2);
             break;
     }
 #endif
