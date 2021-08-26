@@ -56,10 +56,17 @@ uint16_t map(double Oxy, double Omin, double Omax, double Nmin, double Nmax)
 	return Nxy;
 }
 union ChipID chipID;
+void Get_ChipID(union ChipID *chipID)
+{
+    chipID->ChipUniqueID[0] = (uint32_t)(READ_REG(*((uint32_t *)UID_BASE)));
+    chipID->ChipUniqueID[1] = (uint32_t)(READ_REG(*((uint32_t *)(UID_BASE + 4U))));
+    chipID->ChipUniqueID[2] = (uint32_t)(READ_REG(*((uint32_t *)(UID_BASE + 8U))));
+} 
+
 uint16_t GetUniqueID(void)
 {
 	uint16_t ID = 0 ; 
-
+    union ChipID chipID;
 	Get_ChipID(&chipID);
 	ID = chipID.IDbyte[0] + chipID.IDbyte[2] + chipID.IDbyte[4] + chipID.IDbyte[6] + chipID.IDbyte[8] + chipID.IDbyte[10];
 	ID = (ID << 8) + chipID.IDbyte[1] + chipID.IDbyte[3] + chipID.IDbyte[5] + chipID.IDbyte[7] + chipID.IDbyte[9] + chipID.IDbyte[11];
@@ -68,16 +75,14 @@ uint16_t GetUniqueID(void)
 
 void Get_CRSFUniqueID(uint8_t *masterUID)
 {
-     
 	union ChipID chipID;
 	Get_ChipID(&chipID);
-	masterUID[0] = chipID.IDbyte[0];
-    masterUID[1] = chipID.IDbyte[1];
-    masterUID[2] = chipID.IDbyte[2];
-    masterUID[3] = chipID.IDbyte[3];
-    masterUID[4] = chipID.IDbyte[4];
-    masterUID[5] = chipID.IDbyte[5];
-//	ID = (ID << 8) + chipID.IDbyte[1] + chipID.IDbyte[3] + chipID.IDbyte[5] + chipID.IDbyte[7] + chipID.IDbyte[9] + chipID.IDbyte[11]
+	masterUID[0] = chipID.IDbyte[5];
+    masterUID[1] = chipID.IDbyte[4];
+    masterUID[2] = chipID.IDbyte[3];
+    masterUID[3] = chipID.IDbyte[2];
+    masterUID[4] = chipID.IDbyte[1];
+    masterUID[5] = chipID.IDbyte[0];
 }
 
 /*AETR 左手油门*/
