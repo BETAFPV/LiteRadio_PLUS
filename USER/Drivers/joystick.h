@@ -12,7 +12,16 @@
 
 #define AXIS_NUM								((THROTTLE_ENABLED) + (JOYSTICK_AXIS_NUM) \
 																+ (SECONDARY_AXIS_NUM) + (RUDDER_ENABLED))
-                                                                
+
+     
+typedef enum
+{
+    REQUEST_COMMOND          = 0x00,
+    REQUEST_CHANNEL_INFO     = 0x01,   
+    REQUEST_CONIFG_INFO      = 0x02,
+}requestProtocol_e;
+
+
 extern uint8_t sendSpam;                                                                
                                                                 
 void joystickTask(void *param);

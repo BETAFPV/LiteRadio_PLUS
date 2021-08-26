@@ -12,7 +12,7 @@
 
 static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
-
+/*累加和校验算法*/
 static uint16_t checkSum;
 uint8_t sendSpam;
 
@@ -37,7 +37,7 @@ void joystickTask(void *param)
         hidReportData[6] = map(mixValBuff[6],1000,2000,0,2047);
         hidReportData[7] = map(mixValBuff[7],1000,2000,0,2047);
 
-        if (requestType1 == 0x01)
+        if (requestType1 == REQUEST_CHANNEL_INFO)
         {
             hidReportData[0] = CHANNEILS_INFO_ID|((requestType2- 0x01) << 8);
             hidReportData[1] = mixData[requestType2- 0x01].gimbalChannel|(mixData[requestType2- 0x01].reverse << 8);
@@ -48,7 +48,7 @@ void joystickTask(void *param)
             }
             hidReportData[7] = checkSum; 
         }
-        else if (requestType1 == 0x02)
+        else if (requestType1 == REQUEST_CONIFG_INFO)
         {
             if(requestType2 == 0x00)/*lite_info*/
             {
@@ -75,7 +75,7 @@ void joystickTask(void *param)
 #endif
                 for(int i=0;i<7;i++)
                 {
-                    checkSum += hidReportData[i]&0x00FF;
+                    checkSum += hidReportData[i] & 0x00FF;
                 }
                 hidReportData[7] = checkSum;
 
@@ -153,8 +153,6 @@ void joystickTask(void *param)
             }
         }
         checkSum = 0;        
-
-
 
         USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
     }
