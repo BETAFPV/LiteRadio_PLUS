@@ -56,6 +56,21 @@ void Buzzer_LowElectricity()
     osDelay(200);
 }
 
+void Buzzer_RSSIwarning()
+{
+    Buzzer_Start();
+    Buzzer_On(Do);
+    osDelay(200);
+    Buzzer_Stop();
+    osDelay(200);     
+    Buzzer_Start();
+    Buzzer_On(Do);
+    osDelay(200);
+    Buzzer_Stop();
+    osDelay(200);
+}
+
+
 void Buzzer_BeeNumInit(uint8_t buzzerCountInit)
 {
     buzzerCountCurr = buzzerCountInit;
@@ -223,16 +238,7 @@ void buzzerTask(void* param)
         
         if((buzzerEvent & RISS_WARNING_RING) == RISS_WARNING_RING)
         {
-            Buzzer_Start();
-            Buzzer_On(Do);
-            osDelay(200);
-            Buzzer_Stop();
-            osDelay(200);     
-            Buzzer_Start();
-            Buzzer_On(Do);
-            osDelay(200);
-            Buzzer_Stop();
-            osDelay(200);
+            Buzzer_RSSIwarning();
         }        
         switch(buzzerStatus)
         {
