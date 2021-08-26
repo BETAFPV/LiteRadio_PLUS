@@ -1,13 +1,13 @@
 #include "delay.h"
 #include "tim.h"
 
-void Delay_us(uint32_t nus)
+void Delay_US(uint32_t nus)
 {
-    uint64_t now = getSysTimeUs();
-    while ((getSysTimeUs() - now) < nus);
+    uint64_t now = Get_SysTimeUs();
+    while ((Get_SysTimeUs() - now) < nus);
 }
 
-uint64_t getSysTimeUs(void)
+uint64_t Get_SysTimeUs(void)
 {
     uint64_t ms;
     uint64_t value;

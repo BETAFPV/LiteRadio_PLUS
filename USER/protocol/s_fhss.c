@@ -143,7 +143,7 @@ static void __attribute__((unused)) SFHSS_rf_init()
 		CC2500_WriteReg(i, SFHSS_init_values[i]);
 	}
 	//prev_option = option;
-	Delay_us(500);
+	Delay_US(500);
 	CC2500_WriteReg(CC2500_0C_FSCTRL0, 0x0A);
 	CC2500_SetTxRxMode(TX_EN);
 	CC2500_SetPower(RF_POWER);

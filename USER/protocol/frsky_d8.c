@@ -76,7 +76,7 @@ static void __attribute__((unused)) FRSKYD8_tune_chan_fast(void)
 	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
 	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);
 	CC2500_WriteReg(CC2500_0F_FREQ0 , Fre_Carrier_L);
-	Delay_us(2);
+	Delay_US(2);
 	CC2500_Strobe(CC2500_SIDLE);
 	CC2500_WriteReg(CC2500_0D_FREQ2 , Fre_Carrier_H);
 	CC2500_WriteReg(CC2500_0E_FREQ1 , Fre_Carrier_M);

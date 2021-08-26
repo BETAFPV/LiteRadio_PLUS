@@ -77,7 +77,7 @@ static void __attribute__((unused)) FRSKYD16_TuneChannel(uint8_t Channel)
 	CC2500_WriteReg(CC2500_25_FSCAL1, FRSKYD16_calData[Channel]);		//设置发送通道
 	CC2500_WriteReg(CC2500_0A_CHANNR, FRSKYD16_HOPChannel[Channel]);	//设置发送通道
 	//CC2500_Strobe(CC2500_SCAL);						//校准频率合成器并关闭
-	Delay_us(20);
+	Delay_US(20);
 }
 
 /*-------------------------------------------------------------
@@ -406,7 +406,7 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 				CC2500_SetPower(CC2500_POWER_17);
 				CC2500_Strobe(CC2500_SFRX);
 				Frsky_D16_build_Bind_packet();
-				Delay_us(19);
+				Delay_US(19);
 				CC2500_Strobe(CC2500_SIDLE);
 				CC2500_WriteData(SendPacket, SendPacket[0] + 1);
 			}  

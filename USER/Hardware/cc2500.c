@@ -173,14 +173,14 @@ uint8_t CC2500_Init(uint8_t versionSelectFlg)
 		{
 			
 			CC2500_WriteReg(cc2500_config[i][0],cc2500_config[i][1]);  //FCC
-			Delay_us(20);
+			Delay_US(20);
 		}
 		//CC2500_Strobe(CC2500_SIDLE);
-		Delay_us(10);
+		Delay_US(10);
 		CC2500_SetTxRxMode(TX_EN);
 		CC2500_SetPower(RF_POWER);
 		CC2500_Strobe(CC2500_SIDLE);
-		Delay_us(10);
+		Delay_US(10);
 	}
 	return CC2500RestError_flag;
 }
