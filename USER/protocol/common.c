@@ -13,8 +13,7 @@ static uint8_t sentSwitches[N_SWITCHES] = {0};
 static uint8_t nextSwitchIndex = 0; // for round-robin sequential switches
 #if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) 
 
-#include "SX127xDriver.h"
-extern SX127xDriver Radio;
+#include "sx1276.h"
 
 expresslrs_mod_settings_s ExpressLRS_AirRateConfig[RATE_MAX] = {
     {0, RATE_200HZ, SX127x_BW_500_00_KHZ, SX127x_SF_6, SX127x_CR_4_7, 5000, TLM_RATIO_1_64, 4, 8},

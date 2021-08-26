@@ -43,7 +43,11 @@
 #include "status.h"
 #include "delay.h"
 #include "radiolink.h"
+#if defined(LiteRadio_Plus_SX1280)
 #include "sx1280.h"
+#elif defined(LiteRadio_Plus_SX1276)
+
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

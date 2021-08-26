@@ -145,7 +145,7 @@ void Status_Update()
         if(lastRCstatus == RC_SHUTDOWN)
         {
             vTaskResume(radiolinkTaskHandle);
-#if defined(LiteRadio_Plus_SX1280)            
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)              
             if(protocolIndex != CRSF_PROTOCOL_INDEX)
             {
                 HAL_TIM_Base_Start_IT(&htim1);
@@ -156,7 +156,7 @@ void Status_Update()
         {
             vTaskSuspend(joystickTaskHandle); 
             vTaskResume(radiolinkTaskHandle);
-#if defined(LiteRadio_Plus_SX1280)            
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)              
             if(protocolIndex != CRSF_PROTOCOL_INDEX)
             {
                 HAL_TIM_Base_Start_IT(&htim1);
@@ -177,7 +177,7 @@ void Status_Update()
         }
         if(lastRCstatus == RC_RADIOLINK)
         {
-#if defined(LiteRadio_Plus_SX1280)            
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)              
             if(protocolIndex != CRSF_PROTOCOL_INDEX)
             {
                 HAL_TIM_Base_Stop_IT(&htim1);
@@ -189,6 +189,8 @@ void Status_Update()
     }
     lastRCstatus = RCstatus;
 }
+
+
 
 void statusTask(void* param)
 {

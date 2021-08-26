@@ -20,7 +20,9 @@
 #include "stmflash.h"
 uint16_t channelData[16];
 #elif defined(LiteRadio_Plus_SX1276)
-
+#include "sx1276.h"
+#include "common.h"
+uint16_t channelData[16];
 #endif
 
 TaskHandle_t radiolinkTaskHandle;
@@ -67,26 +69,20 @@ void radiolinkTask(void* param)
                 RF_Bind = CRSF_SetBind;               
                 break;       
 #elif defined(LiteRadio_Plus_SX1280)
-        case 0: RF_Init = SX1280_init;
+        case 0: RF_Init = ExpressLRS_Init;
                 RF_Process = SX1280_Process;
-                RF_Bind = SX1280_SetBind;               
-                break;       
-        case 1: RF_Init = CRSF_Init;
-                RF_Process = CRSF_Process;
-                RF_Bind = CRSF_SetBind;     
-                break;
-
-#elif defined(LiteRadio_Plus_SX1276)
-        case 0: RF_Init = setup;
-                RF_Process = SendRCdataToRF;
-                RF_Bind = SX1276_SetBind;               
+                RF_Bind = EnterBindingMode;               
+                break;    
+#elif defined(LiteRadio_Plus_SX1276)                
+        case 0: RF_Init = ExpressLRS_Init;
+                RF_Process = SX1276_Process;
+                RF_Bind = EnterBindingMode;               
                 break; 
+#endif                            
         case 1: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
                 RF_Bind = CRSF_SetBind;     
                 break;
-
-#endif                       
         default:
                 break;
     }
@@ -94,7 +90,6 @@ void radiolinkTask(void* param)
 		
     while(1)
     {
-        
         vTaskDelay(radiolinkDelayTime);
         xQueueReceive(mixesValQueue,rfcontrolData,0);
         radioEvent= xEventGroupWaitBits( radioEventHandle,

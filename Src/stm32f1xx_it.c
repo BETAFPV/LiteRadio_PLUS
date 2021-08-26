@@ -28,8 +28,13 @@
 #include "adc.h"
 #include "tim.h"
 #include "crsf.h"
-#include "sx1280.h"
 #include "radiolink.h"
+
+#if defined(LiteRadio_Plus_SX1280)
+#include "sx1280.h"
+#elif defined(LiteRadio_Plus_SX1276)
+#include "sx1276.h"
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -254,11 +259,9 @@ void TIM1_UP_IRQHandler(void)
   /* USER CODE END TIM1_UP_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
-    
-#if defined(LiteRadio_Plus_SX1280)
-    SendRCdataToRF(channelData);
-#endif
-    
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+  SendRCdataToRF(channelData);
+#endif        
   /* USER CODE END TIM1_UP_IRQn 1 */
 }
 
@@ -324,7 +327,14 @@ void EXTI15_10_IRQHandler(void)
         SX1280_TXnbISR();
     }
 #elif defined(LiteRadio_Plus_SX1276)
-
+    if (SX1276.InterruptAssignment == SX127x_INTERRUPT_RX_DONE)
+    {
+        SX1276_RXnbISR();
+    }
+    else if (SX1276.InterruptAssignment == SX127x_INTERRUPT_TX_DONE)
+    {
+        SX1276_TXnbISR();
+    }
 #endif
 
     

@@ -7,12 +7,18 @@
 #include "fhss.h"
 
 #if defined(Regulatory_Domain_AU_915) || defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915) || defined(Regulatory_Domain_AU_433) || defined(Regulatory_Domain_EU_433)
-#include "SX127xDriver.h"
+#include "sx1276.h"
 #endif
 
 #if defined(Regulatory_Domain_ISM_2400)
 #include "sx1280.h"
 #endif
+
+
+#define INTERNAL_ELRS_CONFIGER_INFO_ADDR           0x08007068
+#define INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR     0x08007068
+#define INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR      0x0800706A
+#define INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR       0x0800706C
 
 #define ELRS_CRC_LEN 256
 #define ELRS_CRC_POLY 0x07 // 0x83
@@ -98,6 +104,8 @@ typedef struct
 }StubbornSender_t;
 
 extern StubbornSender_t StubbornSender;
+
+
 
 typedef enum
 {
@@ -194,7 +202,7 @@ typedef struct expresslrs_mod_settings_s
     uint8_t FHSShopInterval;            // every X packets we hop to a new frequency. Max value of 16 since only 4 bits have been assigned in the sync package.
     uint8_t PreambleLen;
 
-} expresslrs_mod_settings_t;
+} expresslrs_mod_settings_s;
 
 #endif
 
@@ -239,6 +247,8 @@ void CRSF_UpdateSwitchValues(uint16_t* elrsControlData);
 uint8_t CRSF_to_BIT(uint16_t val);
 uint16_t CRSF_to_N(uint16_t val, uint16_t cnt);
 
+
+void ExpressLRS_Init(uint8_t protocolIndex);
 
 void StubbornSender_GetCurrentPayload(uint8_t *packageIndex, uint8_t *count, uint8_t **currentData);
 void StubbornSender_SetDataToTransmit(uint8_t lengthToTransmit, uint8_t* dataToTransmit, uint8_t bytesPerCall);

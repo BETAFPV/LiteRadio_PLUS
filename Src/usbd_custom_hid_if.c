@@ -29,8 +29,11 @@
 #include "radiolink.h"
 #include "status.h"
 #include "crsf.h"
-#include "common.h"
 #include "joystick.h"
+
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+#include "common.h"
+#endif    
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/

@@ -5,15 +5,21 @@
 #include "cmsis_os.h"
 #include "sx1280hal.h"
 #include "sx1280reg.h"
+#include "common.h"
 
 #define TXRXBuffSize 8 
 
+#if defined(TARGET_TX_BETAFPV_2400_V1)
+#define MaxPower PWR_100mW
+#define DefaultPowerEnum PWR_100mW
+#endif
 
-#define INTERNAL_ELRS_CONFIGER_INFO_ADDR           0x08007068
-#define INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR     0x08007068
-#define INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR      0x0800706A
-#define INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR       0x0800706C
-
+typedef enum
+{
+    SX1280_INTERRUPT_NONE,
+    SX1280_INTERRUPT_RX_DONE,
+    SX1280_INTERRUPT_TX_DONE
+}SX1280_InterruptAssignment_e;
 
 typedef enum
 {
@@ -27,20 +33,6 @@ typedef enum
     PWR_2000mW = 7,
     PWR_COUNT = 8
 } PowerLevels_e;
-
-
-
-#if defined(TARGET_TX_BETAFPV_2400_V1)
-#define MaxPower PWR_100mW
-#define DefaultPowerEnum PWR_100mW
-#endif
-
-typedef enum
-{
-    SX1280_INTERRUPT_NONE,
-    SX1280_INTERRUPT_RX_DONE,
-    SX1280_INTERRUPT_TX_DONE
-}SX1280_InterruptAssignment_e;
 
 typedef struct
 {
@@ -66,10 +58,11 @@ typedef struct
 
 extern SX1280_t SX1280;
 void SX1280_init(uint8_t protocolIndex);
+void ProcessTLMpacket(void);
 void setup(void);
 void loop(void);
 uint16_t SX1280_Process(uint16_t* crsfcontrol_data);
-void ProcessTLMpacket(void);
+
 void RXdoneISR(void);
 void TXdoneISR(void);
 void EnterBindingMode(void);
@@ -99,7 +92,6 @@ void SX1280_RXnb(void);
 void SX1280_TXnbISR(void);
 void SX1280_RXnbISR(void);
 
-void SX1280_SetBind(void);
 uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data);
 /*power*/
 PowerLevels_e SX1280_SetPower(PowerLevels_e Power);

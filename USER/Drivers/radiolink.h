@@ -28,7 +28,7 @@
 
 #define RADIOLINK_BIND	        (0x01 << 0)	
 #define RADIOLINK_DATA	        (0x01 << 1)	
-#if defined(LiteRadio_Plus_SX1280)
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
 extern uint16_t channelData[16];
 #endif
 extern uint32_t radiolinkDelayTime ;

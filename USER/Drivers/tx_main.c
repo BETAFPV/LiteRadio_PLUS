@@ -1,11 +1,28 @@
 #include "common.h"
-#include "sx1280.h"
-#include "fhss.h"
 #include "radiolink.h"
 #include "function.h"
 #include "crsf.h"
 #include "tim.h"
 #include "stmflash.h"
+
+#if defined(Regulatory_Domain_ISM_2400)  
+#include "sx1280.h"
+#include "fhss.h"
+#define Radio SX1280
+#define Radio_Config SX1280_Config
+#define RXnb SX1280_RXnb
+#define TXnb SX1280_TXnb
+#define SetFrequencyReg SX1280_SetFrequencyReg
+#elif defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
+#include "sx1276.h"
+#include "fhss.h"
+#define Radio SX1276
+#define Radio_Config SX1276_Config
+#define RXnb SX1276_RXnb
+#define TXnb SX1276_TXnb
+#define SetFrequencyReg SX1276_SetFrequencyReg
+#endif
+
 #define RX_CONNECTION_LOST_TIMEOUT 3000LU // After 3000ms of no TLM response consider that slave has lost connection
 
 volatile uint8_t NonceTX;
@@ -47,13 +64,13 @@ uint8_t baseMac[6];
 uint16_t inCRC;
 void ProcessTLMpacket()
 {
-    inCRC = (((uint16_t)(SX1280.radioRXdataBuffer[0] & 0xFC)) << 6 ) | SX1280.radioRXdataBuffer[7];
+    inCRC = (((uint16_t)(Radio.radioRXdataBuffer[0] & 0xFC)) << 6 ) | Radio.radioRXdataBuffer[7];
 
-    SX1280.radioRXdataBuffer[0] &= 0x03;
-    uint16_t calculatedCRC = calcCrc14(SX1280.radioRXdataBuffer, 7, CRCInitializer);
+    Radio.radioRXdataBuffer[0] &= 0x03;
+    uint16_t calculatedCRC = calcCrc14(Radio.radioRXdataBuffer, 7, CRCInitializer);
 
-    uint8_t type = SX1280.radioRXdataBuffer[0] & TLM_PACKET;
-    uint8_t TLMheader = SX1280.radioRXdataBuffer[1];
+    uint8_t type = Radio.radioRXdataBuffer[0] & TLM_PACKET;
+    uint8_t TLMheader = Radio.radioRXdataBuffer[1];
 
     if ((inCRC != calculatedCRC))
     {
@@ -79,13 +96,13 @@ void ProcessTLMpacket()
     {
         case ELRS_TELEMETRY_TYPE_LINK:
             // RSSI received is signed, proper polarity (negative value = -dBm)
-            linkStatistics.uplink_RSSI_1 = SX1280.radioRXdataBuffer[2];
-            linkStatistics.uplink_RSSI_2 = SX1280.radioRXdataBuffer[3];
-            linkStatistics.uplink_SNR = SX1280.radioRXdataBuffer[4];
-            linkStatistics.uplink_Link_quality = SX1280.radioRXdataBuffer[5];
+            linkStatistics.uplink_RSSI_1 = Radio.radioRXdataBuffer[2];
+            linkStatistics.uplink_RSSI_2 = Radio.radioRXdataBuffer[3];
+            linkStatistics.uplink_SNR = Radio.radioRXdataBuffer[4];
+            linkStatistics.uplink_Link_quality = Radio.radioRXdataBuffer[5];
           //  linkStatistics.uplink_TX_Power = POWERMGNT.powerToCrsfPower(POWERMGNT.currPower());
-            linkStatistics.downlink_SNR = SX1280.LastPacketSNR;
-            linkStatistics.downlink_RSSI = SX1280.LastPacketRSSI;
+            linkStatistics.downlink_SNR = Radio.LastPacketSNR;
+            linkStatistics.downlink_RSSI = Radio.LastPacketRSSI;
             //linkStatistics.downlink_Link_quality = LPD_DownlinkLQ.update(LQCalc.getLQ()) + 1; // +1 fixes rounding issues with filter and makes it consistent with RX LQ Calculation
           //  linkStatistics.rf_Mode = (uint8_t)RATE_4HZ - (uint8_t)ExpressLRS_currAirRate_Modparams->enum_rate;
             //MspSender.ConfirmCurrentPayload(Radio.RXdataBuffer[6] == 1);
@@ -110,13 +127,13 @@ void GenerateSyncPacketData()
         TLMrate = (ExpressLRS_currAirRate_Modparams->TLMinterval & 0x07);
     }
 
-    SX1280.radioTXdataBuffer[0] = SYNC_PACKET & 0x03;
-    SX1280.radioTXdataBuffer[1] = FHSSgetCurrIndex();
-    SX1280.radioTXdataBuffer[2] = NonceTX;
-    SX1280.radioTXdataBuffer[3] = (Index << 6) + (TLMrate << 3) + (SwitchEncMode << 1);
-    SX1280.radioTXdataBuffer[4] = UID[3];
-    SX1280.radioTXdataBuffer[5] = UID[4];
-    SX1280.radioTXdataBuffer[6] = UID[5];
+    Radio.radioTXdataBuffer[0] = SYNC_PACKET & 0x03;
+    Radio.radioTXdataBuffer[1] = FHSSgetCurrIndex();
+    Radio.radioTXdataBuffer[2] = NonceTX;
+    Radio.radioTXdataBuffer[3] = (Index << 6) + (TLMrate << 3) + (SwitchEncMode << 1);
+    Radio.radioTXdataBuffer[4] = UID[3];
+    Radio.radioTXdataBuffer[5] = UID[4];
+    Radio.radioTXdataBuffer[6] = UID[5];
   
     SyncPacketLastSent = HAL_GetTick();
     if (syncSpamCounter)
@@ -130,10 +147,10 @@ void SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
     uint8_t invertIQ = UID[5] & 0x01;
 //    if ((ModParams == ExpressLRS_currAirRate_Modparams)
 //        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
-//        && (invertIQ == SX1280.IQinverted))
+//        && (invertIQ == Radio.IQinverted))
 //    return;
 
-    SX1280_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
+    Radio_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
 
     ExpressLRS_currAirRate_Modparams = ModParams;
     ExpressLRS_currAirRate_RFperfParams = RFperf;
@@ -153,7 +170,7 @@ void HandleFHSS()
 
     if (modresult == 0) // if it time to hop, do so.
     {
-        SX1280_SetFrequencyReg(FHSSgetNextFreq());
+        SetFrequencyReg(FHSSgetNextFreq());
     }
 }
 
@@ -166,23 +183,17 @@ void HandleTLM()
         {
             return;
         }
-        SX1280_RXnb();
+        RXnb();
         WaitRXresponse = 1;
     }
 }
 
-void SX1280_RateModify(uint8_t index)
+void Rate_Modify(uint8_t index)
 {
     tx_config.rate = index;
     syncSpamCounter = syncSpamAmount;
     tx_config.modify = 1;
 }
-
-void SX1280_SetBind()
-{
-    EnterBindingMode();
-}
-
 
 
 uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
@@ -225,7 +236,7 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     {
         GenerateSyncPacketData();
     }
-    else if((!skipSync) && ((HAL_GetTick() > (SyncPacketLastSent + SyncInterval)) && (SX1280.currFreq == GetInitialFreq()) && NonceFHSSresultWindow)) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
+    else if((!skipSync) && ((HAL_GetTick() > (SyncPacketLastSent + SyncInterval)) && (Radio.currFreq == GetInitialFreq()) && NonceFHSSresultWindow)) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
     {
         GenerateSyncPacketData();
     }
@@ -235,13 +246,13 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
         {
             StubbornSender_GetCurrentPayload(&packageIndex, &maxLength, &data);
             
-            SX1280.radioTXdataBuffer[0] = MSP_DATA_PACKET & 0x03;
-            SX1280.radioTXdataBuffer[1] = packageIndex; 
-            SX1280.radioTXdataBuffer[2] = maxLength > 0 ? *data : 0;
-            SX1280.radioTXdataBuffer[3] = maxLength >= 1 ? *(data + 1) : 0;
-            SX1280.radioTXdataBuffer[4] = maxLength >= 2 ? *(data + 2) : 0;
-            SX1280.radioTXdataBuffer[5] = maxLength >= 3 ? *(data + 3) : 0;
-            SX1280.radioTXdataBuffer[6] = maxLength >= 4 ? *(data + 4) : 0;           
+            Radio.radioTXdataBuffer[0] = MSP_DATA_PACKET & 0x03;
+            Radio.radioTXdataBuffer[1] = packageIndex; 
+            Radio.radioTXdataBuffer[2] = maxLength > 0 ? *data : 0;
+            Radio.radioTXdataBuffer[3] = maxLength >= 1 ? *(data + 1) : 0;
+            Radio.radioTXdataBuffer[4] = maxLength >= 2 ? *(data + 2) : 0;
+            Radio.radioTXdataBuffer[5] = maxLength >= 3 ? *(data + 3) : 0;
+            Radio.radioTXdataBuffer[6] = maxLength >= 4 ? *(data + 4) : 0;           
             // send channel data next so the channel messages also get sent during msp transmissions
             NextPacketIsMspData = 0;
             // counter can be increased even for normal msp messages since it's reset if a real bind message should be sent
@@ -259,17 +270,17 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
         {
             // always enable msp after a channel package since the slot is only used if MspSender has data to send
             NextPacketIsMspData = 1;
-            GenerateChannelDataHybridSwitch8(SX1280.radioTXdataBuffer, crsfcontrol_data);
+            GenerateChannelDataHybridSwitch8(Radio.radioTXdataBuffer, crsfcontrol_data);
         }
     }
 
     ///// Next, Calculate the CRC and put it into the buffer /////
 
-    uint16_t crc = calcCrc14(SX1280.radioTXdataBuffer, 7, CRCInitializer);
-    SX1280.radioTXdataBuffer[0] |= (crc >> 6) & 0xFC;
-    SX1280.radioTXdataBuffer[7] = crc & 0xFF;
+    uint16_t crc = calcCrc14(Radio.radioTXdataBuffer, 7, CRCInitializer);
+    Radio.radioTXdataBuffer[0] |= (crc >> 6) & 0xFC;
+    Radio.radioTXdataBuffer[7] = crc & 0xFF;
 
-    SX1280_TXnb(SX1280.radioTXdataBuffer, 8);
+    TXnb(Radio.radioTXdataBuffer, 8);
     
     return 0;
 }
@@ -324,14 +335,14 @@ void TXdoneISR()
     HandleTLM();
 }
 
-void SX1280_init(uint8_t protocolIndex)
+void ExpressLRS_Init(uint8_t protocolIndex)
 {
     HAL_Delay(1);
 }
 
+
 void setup(void)
 {
-
     Get_CRSFUniqueID(MasterUID);
     UID[0] = MasterUID[0];
     UID[1] = MasterUID[1];
@@ -342,25 +353,42 @@ void setup(void)
     
     CRCInitializer = (UID[4] << 8) | UID[5];
     FHSSrandomiseFHSSsequence(UID); 
+#if !defined(Regulatory_Domain_ISM_2400)
+    Radio.currSyncWord = UID[3];
+#endif    
     
+#if defined(Regulatory_Domain_ISM_2400)       
     SX1280_Reset();
     while(firmwareRev == 0|| (firmwareRev == 65535))
     {
         firmwareRev= SX1280_GetFirmwareVersion();
     }
 
-//    #if !defined(Regulatory_Domain_ISM_2400)
-//    //Radio.currSyncWord = UID[3];
-//    #endif
     SX1280_Init();
-
     SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
     SetRFLinkRate(RATE_DEFAULT);
     generateCrc14Table();
- // ExpressLRS_currAirRate_Modparams->TLMinterval = TLM_RATIO_1_64;
     tx_config.rate = 1;
     tx_config.lastRate = 1;
     TIM1->ARR = 3999;
+#elif defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
+    SX1276_Init();
+    SX1276_Reset();
+    if (SX1276_DetectChip())
+    {
+        SX1276_ConfigLoraDefaults();
+    }
+    else
+    {
+        while(1);
+    }
+    SX1276_SetOutputPower((PowerLevels_e)DefaultPowerEnum);
+    SetRFLinkRate(RATE_DEFAULT);
+    generateCrc14Table();
+    tx_config.rate = 1;
+    tx_config.lastRate = 1;
+    TIM1->ARR = 5000;
+#endif    
     uint16_t txConfigInit[3]; 
     STMFLASH_Read(INTERNAL_ELRS_CONFIGER_INFO_ADDR,txConfigInit,3);
     
@@ -369,6 +397,7 @@ void setup(void)
     {
         txConfigInit[0] = 2;
         STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR,&txConfigInit[0],1);
+        
     }
     if(7 < txConfigInit[1])
     {
@@ -381,9 +410,14 @@ void setup(void)
         STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR,&txConfigInit[2],1);
     }
     tx_config.power = (uint32_t)txConfigInit[0];
+    tx_config.lastPower = tx_config.power;
     tx_config.rate = (uint32_t)txConfigInit[1];
+    tx_config.lastRate = tx_config.rate;
     tx_config.tlm = (uint32_t)txConfigInit[2];
+    tx_config.lastTLM = tx_config.tlm;
 }
+
+#if defined(Regulatory_Domain_ISM_2400)  
 
 uint16_t SX1280_Process(uint16_t* controlDataBuff)
 {
@@ -418,11 +452,11 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
         }
         tx_config.modify = 0;
     }
-
+    /*内部高频头设置参数更新*/
     if(tx_config.rate != tx_config.lastRate)
     {
         tx_config.lastRate = tx_config.rate;
-        SX1280_RateModify(tx_config.rate);
+        Rate_Modify(tx_config.rate);
         STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR,(uint16_t *)&tx_config.rate,1);
     }
     if(tx_config.tlm != tx_config.lastTLM)
@@ -453,36 +487,104 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
     
     return 0;
 }
+#elif defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
 
-
-void loop()
+uint16_t SX1276_Process(uint16_t* controlDataBuff)
 {
-    uint32_t now = HAL_GetTick();
-    
-    //HandleUpdateParameter();
-    //CheckConfigChangePending();
-
-    if (now > (RX_CONNECTION_LOST_TIMEOUT + LastTLMpacketRecvMillis))
-    {
-        connectionState = disconnected;
-    }
-    else
-    {
-        connectionState = connected;
-    }
-
-
-
-    // only send msp data when binding is not active
-    if (InBindingMode)
-    {
-        // exit bind mode if package after some repeats
-        if (BindingSendCount > 6) 
+    channelData[0] = controlDataBuff[0];
+    channelData[1] = controlDataBuff[1];
+    channelData[2] = controlDataBuff[2];
+    channelData[3] = controlDataBuff[3];
+    channelData[4] = controlDataBuff[4];
+    channelData[5] = controlDataBuff[5];
+    channelData[6] = controlDataBuff[6];
+    channelData[7] = controlDataBuff[7];
+    if(tx_config.modify && (syncSpamCounter == 0) )
+    {    
+        switch(tx_config.rate)
         {
-            ExitBindingMode();
+            case FREQ_900_RATE_200HZ:
+                SetRFLinkRate(FREQ_900_RATE_200HZ);
+                TIM1->ARR = 5000;
+                break;
+            case FREQ_900_RATE_100HZ:
+                SetRFLinkRate(FREQ_900_RATE_100HZ);
+                TIM1->ARR = 10000;
+                break;
+            case FREQ_900_RATE_50HZ: 
+                SetRFLinkRate(FREQ_900_RATE_50HZ);
+                TIM1->ARR = 20000;
+                break;                    
+            case FREQ_900_RATE_25HZ:
+                SetRFLinkRate(FREQ_900_RATE_25HZ);
+                TIM1->ARR = 40000;
+                break;
+            default:
+                break;
         }
+        tx_config.modify = 0;
     }
+
+    if(tx_config.rate != tx_config.lastRate)
+    {
+        tx_config.lastRate = tx_config.rate;
+        Rate_Modify(tx_config.rate);
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_Rate_ADDR,(uint16_t *)&tx_config.rate,1);
+    }
+    if(tx_config.tlm != tx_config.lastTLM)
+    {
+        tx_config.lastTLM = tx_config.tlm;
+        ExpressLRS_currAirRate_Modparams->TLMinterval = (expresslrs_tlm_ratio_e)tx_config.tlm;
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR,(uint16_t *)&tx_config.tlm,1);
+    }
+    if(tx_config.power != tx_config.lastPower)
+    {
+        tx_config.lastPower = tx_config.power;
+        switch (tx_config.power)
+        {
+            case 0:
+                SX1276_SetOutputPower((PowerLevels_e)PWR_25mW);
+                break;       
+            case 1:
+                SX1276_SetOutputPower((PowerLevels_e)PWR_50mW);
+                break;            
+            case 2:
+                SX1276_SetOutputPower((PowerLevels_e)PWR_100mW);
+                break;            
+            default:
+                break;
+        }
+        STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR,(uint16_t *)&tx_config.power,1);
+    }   
+    
+    return 0;
 }
+
+#endif
+
+//void loop()
+//{
+//    uint32_t now = HAL_GetTick();
+//    
+//    if (now > (RX_CONNECTION_LOST_TIMEOUT + LastTLMpacketRecvMillis))
+//    {
+//        connectionState = disconnected;
+//    }
+//    else
+//    {
+//        connectionState = connected;
+//    }
+
+//    // only send msp data when binding is not active
+//    if (InBindingMode)
+//    {
+//        // exit bind mode if package after some repeats
+//        if (BindingSendCount > 6) 
+//        {
+//            ExitBindingMode();
+//        }
+//    }
+//}
 
 
 void EnterBindingMode()
@@ -514,8 +616,8 @@ void EnterBindingMode()
     // Start attempting to bind
     // Lock the RF rate and freq while binding
     SetRFLinkRate(0);
-    SX1280.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
-    SX1280_SetFrequencyReg(SX1280.currFreq); 
+    Radio.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
+    SetFrequencyReg(Radio.currFreq); 
     // Start transmitting again
     TIM1->ARR = 2000;
     HAL_TIM_Base_Start_IT(&htim1);
@@ -576,5 +678,3 @@ void SendUIDOverMSP()
     StubbornSender_SetDataToTransmit(5, BindingPackage, ELRS_MSP_BYTES_PER_CALL);
     InBindingMode = 1;
 }
-
-
