@@ -48,6 +48,7 @@ void Buzzer_On(uint8_t tone);
 void Buzzer_BeeStay(uint8_t tone,uint32_t buzzer_time);
 void Buzzer_BeeUp(void);
 void Buzzer_BeeDown(void);
+void Buzzer_LowElectricity(void);
 void Buzzer_BeeNumInit(uint8_t buzzerNumInit);
 void Buzzer_BeeNum(uint8_t tone,uint8_t buzzerNum);
 void buzzerTask(void* param);  

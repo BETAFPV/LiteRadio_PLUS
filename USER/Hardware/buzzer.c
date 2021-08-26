@@ -41,6 +41,21 @@ void Buzzer_BeeDown()
     HAL_Delay(400);
     Buzzer_Stop();
 }
+
+void Buzzer_LowElectricity()
+{
+    Buzzer_Start();
+    Buzzer_On(Si);
+    osDelay(200);
+    Buzzer_Stop();
+    osDelay(200);     
+    Buzzer_Start();
+    Buzzer_On(Si);
+    osDelay(200);
+    Buzzer_Stop();
+    osDelay(200);
+}
+
 void Buzzer_BeeNumInit(uint8_t buzzerCountInit)
 {
     buzzerCountCurr = buzzerCountInit;
@@ -203,16 +218,7 @@ void buzzerTask(void* param)
         }
         if((buzzerEvent & LOW_ELECTRICITY_RING) == LOW_ELECTRICITY_RING && buzzerStatus == BUZZER_NORMAL)
         {        
-            Buzzer_Start();
-            Buzzer_On(Si);
-            osDelay(200);
-            Buzzer_Stop();
-            osDelay(200);     
-            Buzzer_Start();
-            Buzzer_On(Si);
-            osDelay(200);
-            Buzzer_Stop();
-            osDelay(200);
+            Buzzer_LowElectricity();
         }
         
         if((buzzerEvent & RISS_WARNING_RING) == RISS_WARNING_RING)
