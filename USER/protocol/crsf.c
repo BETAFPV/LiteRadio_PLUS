@@ -22,6 +22,9 @@ uint16_t requestCount;
 static uint64_t connectTickNow;
 static uint64_t connectTickLast;
 
+static uint64_t rssiWarningNowTick;
+static uint64_t rssiWarningLastTick;
+
 void CRSF_SetBind()
 {
     HAL_Delay(1);
@@ -124,7 +127,13 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
     }
     if(externalCRSFdata.RSSI<RSSI_WARNING_VALUE && crsfLinkCount>10)
     {
-        xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
+        rssiWarningNowTick = HAL_GetTick();
+        if((rssiWarningNowTick - rssiWarningLastTick) > 10000)
+        {
+            xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
+            rssiWarningLastTick = rssiWarningNowTick;
+        }
+
     }
 
 
