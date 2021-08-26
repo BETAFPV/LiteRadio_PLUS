@@ -318,14 +318,21 @@ void rgbTask(void* param)
         
         if((rgbEvent & CHRG_AND_JOYSTICK_RGB) == CHRG_AND_JOYSTICK_RGB)
         {
-            if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
+            if(configFlag)
             {
-                RGB_Breath(RED);
+                RGB_Set(PURPLE,BRIGHTNESS_MAX);
             }
             else
             {
-                RGB_Breath(GREEN);                
-            }   
+                if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
+                {
+                    RGB_Breath(RED);
+                }
+                else
+                {
+                    RGB_Breath(GREEN);                
+                }   
+            }
         }
     }
 }
