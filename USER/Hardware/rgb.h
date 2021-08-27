@@ -56,8 +56,8 @@ void RGB_SetupTwinkle(void);
 void RGB_BindTwinkle(void);
 void RGB_LowElectricityTwinkle(void);
 void RGB_Breath(uint8_t colorIndex);
-void RGB_Breath_Up(uint8_t colorIndex);
-void RGB_Breath_Down(uint8_t colorIndex);
+void RGB_BreathUp(uint8_t colorIndex);
+void RGB_BreathDown(uint8_t colorIndex);
 void rgbTask(void* param);
 #endif
 
