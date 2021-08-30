@@ -343,6 +343,7 @@ void ExpressLRS_Init(uint8_t protocolIndex)
 
 void setup(void)
 {
+    /*获取芯片ID作为连接ID*/
     Get_CRSFUniqueID(MasterUID);
     UID[0] = MasterUID[0];
     UID[1] = MasterUID[1];
@@ -366,6 +367,7 @@ void setup(void)
 
     SX1280_Init();
     SX1280_SetPower((PowerLevels_e)DefaultPowerEnum);
+    tx_config.lastPower = 2;
     SetRFLinkRate(RATE_DEFAULT);
     generateCrc14Table();
     tx_config.rate = 1;
@@ -410,10 +412,11 @@ void setup(void)
         STMFLASH_Write(INTERNAL_ELRS_CONFIGER_INFO_TLM_ADDR,&txConfigInit[2],1);
     }
     tx_config.power = (uint32_t)txConfigInit[0];
-    tx_config.lastPower = tx_config.power;
+
     tx_config.rate = (uint32_t)txConfigInit[1];
-    tx_config.lastRate = tx_config.rate;
+    
     tx_config.tlm = (uint32_t)txConfigInit[2];
+    
     tx_config.lastTLM = tx_config.tlm;
 }
 
@@ -434,7 +437,6 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
         switch(tx_config.rate)
         {
             case FREQ_2400_RATE_500HZ:
-                break;
             case FREQ_2400_RATE_250HZ:
                 SetRFLinkRate(FREQ_2400_RATE_250HZ);
                 TIM1->ARR = 4000;
