@@ -264,7 +264,7 @@ void mixesTask(void* param)
         for(mixIndex = 0;mixIndex < 8;mixIndex++)
         {
             
-            if(mixData[mixIndex].gimbalChannel < 4)
+            if(mixData[mixIndex].gimbalChannel < 4)/*选取的为摇杆通道值，设置混控*/
             {
                 switch (mixData[mixIndex].gimbalChannel)
                 {
@@ -311,7 +311,7 @@ void mixesTask(void* param)
                 mixData[mixIndex].output = Mixes_GimbalWeight(mixData[mixIndex].weight, mixData[mixIndex].output);
                 mixData[mixIndex].output = Mixes_ValueLimit(mixData[mixIndex].output);
             }
-            if(mixData[mixIndex].gimbalChannel >= 4)
+            if(mixData[mixIndex].gimbalChannel >= 4)/*选取的为开关通道值，不设置混控*/
             {
                 mixData[mixIndex].output =  mixesBuff[mixData[mixIndex].gimbalChannel];
                 mixData[mixIndex].output = Mixes_Switchreverse(mixData[mixIndex].reverse, mixData[mixIndex].output);

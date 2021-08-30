@@ -196,6 +196,9 @@ void statusTask(void* param)
     while(1)
     {
         vTaskDelay(1);
+        
+        /*低电量警告*/
+        /*使用影响的通道值做补偿*/
         calADCvalue = Get_AdcValue(3);
         if(  calADCvalue > 1500)
         {
@@ -207,10 +210,9 @@ void statusTask(void* param)
             electricityADCvalue = Get_AdcValue(4);
             electricityADCvalue += (1500 - calADCvalue)*110/1500;
         }
-        
-        
         batteryWarningStatus = Cal_ElectricRelay(electricityADCvalue,batteryWarningStatus,downElectricityLimit,upElectricityLimit);
         
+        /*油门最低警告*/
         if(batteryWarningStatus == DOWN_VALUE_STATUS)
         {
             lowElectricityNowTick = HAL_GetTick();
@@ -221,7 +223,8 @@ void statusTask(void* param)
                 lowElectricityLastTick = lowElectricityNowTick;
             }
         }
-           
+        
+        
         if(lastRCstatus == RC_INIT)
         {
             osDelay(3000);
@@ -245,6 +248,7 @@ void statusTask(void* param)
 		                               pdTRUE,
 	                                   pdFALSE,
 		                               0);  
+        
         if((keyEvent & POWERSWITCH_LONG_PRESS) == POWERSWITCH_LONG_PRESS)
         {    
             if(powerStatus)
@@ -330,16 +334,12 @@ void statusTask(void* param)
             }
             case RC_CHRG_AND_JOYSTICK:
             {    
-                if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port,KEY_POWER_Pin) == GPIO_PIN_RESET)
-                {
-
-                }
-                else
+                if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port,KEY_POWER_Pin) != GPIO_PIN_RESET)
                 {
                     xEventGroupSetBits( rgbEventHandle, CHRG_AND_JOYSTICK_RGB);                
                 }
 
-                
+                /*内部高频头*/
                 if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_OFF && internalCRSFdata.configStatus == CONFIG_CRSF_ON)
                 {
                     vTaskResume(radiolinkTaskHandle);
@@ -352,7 +352,8 @@ void statusTask(void* param)
                     HAL_TIM_Base_Stop_IT(&htim1);
                     internalCRSFdata.lastConfigStatus = CONFIG_CRSF_OFF;
                 }
-
+                
+                /*外部高频头*/
                 if(externalCRSFdata.lastConfigStatus == CONFIG_CRSF_OFF && externalCRSFdata.configStatus == CONFIG_CRSF_ON)
                 {
                     vTaskResume(radiolinkTaskHandle);

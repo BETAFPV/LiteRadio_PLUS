@@ -151,7 +151,7 @@ typedef enum
     FREQ_2400_RATE_250HZ = 1,
     FREQ_2400_RATE_150HZ = 2,
     FREQ_2400_RATE_50HZ = 3,
-} expresslrs_RF_FREQ_2400_rates_e; // Max value of 16 since only 4 bits have been assigned in the sync package.
+} expresslrs_RF_FREQ_2400_rates_e; 
 
 typedef enum
 {
@@ -159,7 +159,7 @@ typedef enum
     FREQ_900_RATE_100HZ = 1,
     FREQ_900_RATE_50HZ = 2,
     FREQ_900_RATE_25HZ = 3,
-} expresslrs_RF_FREQ_900_rates_e; // Max value of 16 since only 4 bits have been assigned in the sync package.
+} expresslrs_RF_FREQ_900_rates_e; 
 
 typedef enum
 {
