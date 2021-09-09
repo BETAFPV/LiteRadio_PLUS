@@ -62,6 +62,11 @@ uint16_t firmwareRev;
 
 uint8_t baseMac[6];
 uint16_t inCRC;
+
+static void delay_us(void)
+{
+	for(int i=0;i<1000;i++){};
+}
 void ProcessTLMpacket()
 {
     inCRC = (((uint16_t)(Radio.radioRXdataBuffer[0] & 0xFC)) << 6 ) | Radio.radioRXdataBuffer[7];
@@ -234,10 +239,12 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     uint8_t WithinSyncSpamResidualWindow = (HAL_GetTick() - rfModeLastChangedMS < syncSpamAResidualTimeMS) ? 1 : 0;
     if((syncSpamCounter || WithinSyncSpamResidualWindow) && NonceFHSSresultWindow)
     {
+		delay_us();     //在发送补偿包的时候，不知道为什么，定时器中断时间会提前中断？需要加延时校准，否者在连接betaflight SPI接收机时 接收端会跳频混乱，后续应该会改善。
         GenerateSyncPacketData();
     }
     else if((!skipSync) && ((HAL_GetTick() > (SyncPacketLastSent + SyncInterval)) && (Radio.currFreq == GetInitialFreq()) && NonceFHSSresultWindow)) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
     {
+		delay_us();     //加延时的原因同上
         GenerateSyncPacketData();
     }
     else
