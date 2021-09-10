@@ -212,17 +212,19 @@ void statusTask(void* param)
         }
         batteryWarningStatus = Cal_ElectricRelay(electricityADCvalue,batteryWarningStatus,downElectricityLimit,upElectricityLimit);
         
-        /*油门最低警告*/
-        if(batteryWarningStatus == DOWN_VALUE_STATUS)
-        {
-            lowElectricityNowTick = HAL_GetTick();
-            if((lowElectricityNowTick - lowElectricityLastTick) > 20000)
-            {
-                xEventGroupSetBits(buzzerEventHandle,LOW_ELECTRICITY_RING);
-                xEventGroupSetBits( rgbEventHandle, LOW_ELECTRICITY_RGB);
-                lowElectricityLastTick = lowElectricityNowTick;
-            }
-        }
+		if(powerStatus == RC_POWER_ON)
+		{
+			if(batteryWarningStatus == DOWN_VALUE_STATUS)
+			{
+				lowElectricityNowTick = HAL_GetTick();
+				if((lowElectricityNowTick - lowElectricityLastTick) > 20000)
+				{
+					xEventGroupSetBits(buzzerEventHandle,LOW_ELECTRICITY_RING);
+					xEventGroupSetBits( rgbEventHandle, LOW_ELECTRICITY_RGB);
+					lowElectricityLastTick = lowElectricityNowTick;
+				}
+			}
+		}
         
         
         if(lastRCstatus == RC_INIT)
