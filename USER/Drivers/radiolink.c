@@ -77,12 +77,12 @@ void radiolinkTask(void* param)
         case 0: RF_Init = ExpressLRS_Init;
                 RF_Process = SX1276_Process;
                 RF_Bind = EnterBindingMode;               
-                break;                             
+                break; 
+#endif                            
         case 1: RF_Init = CRSF_Init;
                 RF_Process = CRSF_Process;
                 RF_Bind = CRSF_SetBind;     
                 break;
-#endif
         default:
                 break;
     }
