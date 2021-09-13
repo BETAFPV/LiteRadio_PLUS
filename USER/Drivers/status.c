@@ -32,8 +32,8 @@ static uint64_t lowElectricityLastTick;
 
 static uint16_t electricityADCvalue;
 static uint16_t calADCvalue;
-uint16_t upElectricityLimit = 3200;
-uint16_t downElectricityLimit = 3000;
+uint16_t upElectricityLimit = 3300;
+uint16_t downElectricityLimit = 3300;
 uint8_t batteryWarningStatus = 1;
 
 void Status_Init()
