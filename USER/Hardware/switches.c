@@ -14,11 +14,11 @@ uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
 		case SWA :
             if( HAL_GPIO_ReadPin(SWA_GPIO_Port, SWA_Pin) != RELEASED)
             {
-                switchValue = SWITCH_MAX_VALUE;
+                switchValue = SWITCH_MIN_VALUE;
             }
             else
             {
-                switchValue = SWITCH_MIN_VALUE;
+                switchValue = SWITCH_MAX_VALUE;
             }
 			break;
         /*3POS*/
@@ -59,11 +59,11 @@ uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
 		case SWD:
             if(HAL_GPIO_ReadPin(SWD_GPIO_Port, SWD_Pin) != GPIO_PIN_SET)
             {
-                switchValue = SWITCH_MAX_VALUE;
+                switchValue =  SWITCH_MIN_VALUE;
             }
             else
             {
-                switchValue = SWITCH_MIN_VALUE;
+                switchValue = SWITCH_MAX_VALUE;
             }
 			break;
 		default :
