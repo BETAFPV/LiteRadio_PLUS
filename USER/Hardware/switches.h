@@ -13,9 +13,9 @@ typedef enum
 }SwitchesChannelTypeDef;
 
 
-#define SWITCH_MAX_VALUE 2000
+#define SWITCH_MAX_VALUE 2012
 #define SWITCH_MID_VALUE 1500
-#define SWITCH_MIN_VALUE 1000
+#define SWITCH_MIN_VALUE 988
 
 #define SWA_GPIO_Port 		GPIOB
 #define SWB_H_GPIO_Port 	GPIOB

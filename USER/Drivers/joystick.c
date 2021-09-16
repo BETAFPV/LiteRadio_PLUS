@@ -28,14 +28,14 @@ void joystickTask(void *param)
         vTaskDelay(joystickDelayTime);
         xQueueReceive(mixesValQueue,mixValBuff,0);
      
-        hidReportData[0] = map(mixValBuff[0],1000,2000,0,2047);
-        hidReportData[1] = map(mixValBuff[1],1000,2000,0,2047);
-        hidReportData[2] = map(mixValBuff[2],1000,2000,0,2047);
-        hidReportData[3] = map(mixValBuff[3],1000,2000,0,2047);
-        hidReportData[4] = map(mixValBuff[4],1000,2000,0,2047);
-        hidReportData[5] = map(mixValBuff[5],1000,2000,0,2047);
-        hidReportData[6] = map(mixValBuff[6],1000,2000,0,2047);
-        hidReportData[7] = map(mixValBuff[7],1000,2000,0,2047);
+        hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
+        hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
+        hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
+        hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
+        hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
+        hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
+        hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
+        hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
 
         if (requestType1 == REQUEST_CHANNEL_INFO)
         {
