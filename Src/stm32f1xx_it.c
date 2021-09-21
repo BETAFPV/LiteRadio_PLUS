@@ -245,7 +245,21 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 0 */
   HAL_PCD_IRQHandler(&hpcd_USB_FS);
   /* USER CODE BEGIN USB_LP_CAN1_RX0_IRQn 1 */
+  //  如果没有数据收到ESOF中断，则关闭如下中断 
+  if (__HAL_PCD_GET_FLAG (&hpcd_USB_FS, USB_ISTR_ESOF))
+  {
+    /* clear ESOF flag in ISTR */
+        USB->CNTR &= 0xe2ff;
 
+        /* Force low-power mode in the macrocell */
+        USB->CNTR |= USB_CNTR_FSUSP;
+        USB->CNTR |= USB_CNTR_LP_MODE;
+        
+        USB->ISTR &= ~USB_ISTR_RESET;
+        USB->ISTR &= ~USB_ISTR_SUSP;
+        USB->ISTR &= ~USB_ISTR_WKUP;
+        USB->ISTR &= ~USB_ISTR_ESOF;
+  }
   /* USER CODE END USB_LP_CAN1_RX0_IRQn 1 */
 }
 
