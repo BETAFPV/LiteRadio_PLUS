@@ -9,6 +9,7 @@ static uint8_t bindStatus = 0;
 static uint8_t color[3] = {0};//color[0] is green;color[1] is red;color[2] is blue;
 uint16_t rgbBuff[25];
 uint8_t rgbDelayCount;
+uint16_t CHRG_Status_filter = 0;
 static uint16_t rgbBrightness;
 static uint8_t rgbBreathStatus;
 static uint8_t highThrottleFlag;
@@ -323,12 +324,17 @@ void rgbTask(void* param)
             {
                 if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
                 {
+					CHRG_Status_filter = 0;       //充电状态标志清0
                     RGB_Breath(RED);
                 }
                 else
-                {
-                    RGB_Breath(GREEN);                
-                }   
+                {              
+					CHRG_Status_filter ++; 
+					if(CHRG_Status_filter > 500)   //因为电池在充满的边界时，充满状态引脚可能会不稳定，等到连续n次都是高电平，那么才认定为真正的充满。
+					{
+						RGB_Breath(GREEN);
+					}
+				}					
             }
         }
     }
