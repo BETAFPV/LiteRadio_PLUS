@@ -252,7 +252,10 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
 		{
 			delay(1000);     
 		}
-		
+		if(tx_config.rate == 0x00)  //500Hz
+		{
+			delay(3000);     
+		}
         GenerateSyncPacketData();
     }
     else
@@ -452,6 +455,9 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
         switch(tx_config.rate)
         {
             case FREQ_2400_RATE_500HZ:
+				SetRFLinkRate(FREQ_2400_RATE_500HZ);
+                TIM1->ARR = 2000;
+                break;
             case FREQ_2400_RATE_250HZ:
                 SetRFLinkRate(FREQ_2400_RATE_250HZ);
                 TIM1->ARR = 4000;
