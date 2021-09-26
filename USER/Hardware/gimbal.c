@@ -9,7 +9,6 @@
 #include "status.h"
 #include "mixes.h"
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
-extern IWDG_HandleTypeDef hiwdg;
 static uint8_t calibrationMode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
 static uint8_t calibrationStatus = 0;
 QueueHandle_t gimbalValQueue = NULL;
@@ -33,7 +32,6 @@ uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 {
 	uint16_t ADTemp = 0 ; 
     uint16_t outputTemp = 0 ;
-	HAL_IWDG_Refresh(&hiwdg);
 	if((channel == RUDDER) || (channel == ELEVATOR) || (channel == AILERON) ||(channel == THROTTLE))
 	{
 		if(calibrationMode == 0)   //如果当前运行状态不在校准模式，正常执行
