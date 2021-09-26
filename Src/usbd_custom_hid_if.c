@@ -360,7 +360,7 @@ void SaveMixValueToFlash(void)
             {
                 sendSpam = 0;
             }
-            /*上位机连接正常*/
+            /*上位机连接正�?*/
             if(requestType1 == 0x00 && requestType2 == 0x03)
             {
                 configFlag = 1;
