@@ -244,7 +244,7 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     else if((!skipSync) && ((HAL_GetTick() > (SyncPacketLastSent + SyncInterval)) && (Radio.currFreq == GetInitialFreq()) && NonceFHSSresultWindow)) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
     {
 		 //在发送补偿包的时候，不知道为什么，定时器中断时间会提前中断？需要加延时校准，否者在连接betaflight SPI接收机时 接收端会跳频混乱，后续应该会改善。
-		if(tx_config.rate == 0x01)  //250Hz
+		if(tx_config.rate == 0x01 && tx_config.rate == 0x00)  //250Hz
 		{
 			delay(2000);     
 		}
@@ -252,10 +252,10 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
 		{
 			delay(1000);     
 		}
-		if(tx_config.rate == 0x00)  //500Hz
-		{
-			delay(3000);     
-		}
+//		if(tx_config.rate == 0x00)  //500Hz
+//		{
+//			delay(3000);     
+//		}
         GenerateSyncPacketData();
     }
     else
@@ -455,9 +455,9 @@ uint16_t SX1280_Process(uint16_t* controlDataBuff)
         switch(tx_config.rate)
         {
             case FREQ_2400_RATE_500HZ:
-				SetRFLinkRate(FREQ_2400_RATE_500HZ);
-                TIM1->ARR = 2000;
-                break;
+//				SetRFLinkRate(FREQ_2400_RATE_500HZ);
+//                TIM1->ARR = 2000;
+//                break;
             case FREQ_2400_RATE_250HZ:
                 SetRFLinkRate(FREQ_2400_RATE_250HZ);
                 TIM1->ARR = 4000;
