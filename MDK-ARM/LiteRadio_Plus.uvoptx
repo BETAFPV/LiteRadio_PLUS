@@ -466,7 +466,6 @@
       <pMultCmdsp></pMultCmdsp>
       <DebugDescription>
         <Enable>1</Enable>
-        <EnableFlashSeq>0</EnableFlashSeq>
         <EnableLog>0</EnableLog>
         <Protocol>2</Protocol>
         <DbgClock>10000000</DbgClock>
@@ -556,7 +555,7 @@
         <bEvRecOn>1</bEvRecOn>
         <bSchkAxf>0</bSchkAxf>
         <bTchkAxf>0</bTchkAxf>
-        <nTsel>3</nTsel>
+        <nTsel>4</nTsel>
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -567,7 +566,7 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>BIN\CMSIS_AGDI.dll</pMon>
+        <pMon>Segger\JL2CM3.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
@@ -578,7 +577,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>JL2CM3</Key>
-          <Name>-U801023810 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO7 -FD20000000 -FC1000 -FN1 -FF0STM32F10x_128.FLM -FS08000000 -FL020000 -FP0($$Device:STM32F103CB$Flash\STM32F10x_128.FLM)</Name>
+          <Name>-U801023810 -O78 -S2 -ZTIFSpeedSel5000 -A0 -C0 -JU1 -JI127.0.0.1 -JP0 -RST0 -N00("ARM CoreSight SW-DP") -D00(1BA01477) -L00(0) -TO18 -TC10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -TB1 -TFE0 -FO15 -FD20000000 -FC1000 -FN1 -FF0STM32F10x_128.FLM -FS08000000 -FL020000 -FP0($$Device:STM32F103CB$Flash\STM32F10x_128.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -598,7 +597,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
+          <Name>d</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -616,489 +615,24 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rgbBuff,0x0A</ItemText>
+          <ItemText>requestType1</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>protocolIndex</ItemText>
+          <ItemText>hidReportData,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>color</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rgbBuff</ItemText>
-        </Ww>
-        <Ww>
-          <count>4</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>control_data</ItemText>
-        </Ww>
-        <Ww>
-          <count>5</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfPacket,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>6</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfcontrol_data</ItemText>
-        </Ww>
-        <Ww>
-          <count>7</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>rfcontrolData,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>8</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dataVal,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>9</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>uxTaskGetStackHighWaterMarkdebug,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>10</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>debug,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>11</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbalDelayTime</ItemText>
-        </Ww>
-        <Ww>
-          <count>12</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>joystickDelayTime</ItemText>
-        </Ww>
-        <Ww>
-          <count>13</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>radiolinkDelayTime</ItemText>
-        </Ww>
-        <Ww>
-          <count>14</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CRSF_Process</ItemText>
-        </Ww>
-        <Ww>
-          <count>15</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Channel_DataBuff,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>16</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>controlmode</ItemText>
-        </Ww>
-        <Ww>
-          <count>17</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Sampling_MaxMinData,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>18</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbalBuff[THROTTLE]</ItemText>
-        </Ww>
-        <Ww>
-          <count>19</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbalBuff,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>20</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ADTemp,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>21</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>outputTemp,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>22</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>mixData,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>23</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>mixValBuff,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>24</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>nmin,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>25</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>nmax,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>26</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>gimbalVaBuff,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>27</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>writeFlag</ItemText>
-        </Ww>
-        <Ww>
-          <count>28</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>joystickwriteFlag</ItemText>
-        </Ww>
-        <Ww>
-          <count>29</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>mixesDelayTime</ItemText>
-        </Ww>
-        <Ww>
-          <count>30</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>USB_Recive_Buffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>31</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>joystickwriteFlag</ItemText>
-        </Ww>
-        <Ww>
-          <count>32</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CONFIGER_INFO_FLAG</ItemText>
-        </Ww>
-        <Ww>
-          <count>33</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfPower</ItemText>
-        </Ww>
-        <Ww>
-          <count>34</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfRegulatoryDomainIndex</ItemText>
-        </Ww>
-        <Ww>
-          <count>35</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfPower</ItemText>
-        </Ww>
-        <Ww>
-          <count>36</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfRATE</ItemText>
-        </Ww>
-        <Ww>
-          <count>37</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfTLMinterval</ItemText>
-        </Ww>
-        <Ww>
-          <count>38</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfStatus,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>39</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>versionSelectFlg</ItemText>
-        </Ww>
-        <Ww>
-          <count>40</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfData,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>41</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>configerRequest</ItemText>
-        </Ww>
-        <Ww>
-          <count>42</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>mixValBuff</ItemText>
-        </Ww>
-        <Ww>
-          <count>43</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crsfPacket,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>44</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>test_1</ItemText>
-        </Ww>
-        <Ww>
-          <count>45</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>test_2</ItemText>
-        </Ww>
-        <Ww>
-          <count>46</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>test_3</ItemText>
-        </Ww>
-        <Ww>
-          <count>47</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>test_1</ItemText>
-        </Ww>
-        <Ww>
-          <count>48</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>dataToCRSF</ItemText>
-        </Ww>
-        <Ww>
-          <count>49</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>reportData</ItemText>
-        </Ww>
-        <Ww>
-          <count>50</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>test,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>51</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>halTxBuffer,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>52</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>halRxBuffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>53</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>firmwareRev,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>54</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>SX1280.currFreq,0x10</ItemText>
-        </Ww>
-        <Ww>
-          <count>55</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>versionSelectFlg</ItemText>
-        </Ww>
-        <Ww>
-          <count>56</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>radiolinkDelayTime</ItemText>
-        </Ww>
-        <Ww>
-          <count>57</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ExpressLRS_currAirRate,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>58</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ExpressLRS_currAirRate</ItemText>
-        </Ww>
-        <Ww>
-          <count>59</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ExpressLRS_currAirRate_Modparams,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>60</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>NonceTX,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>61</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ExpressLRS_currAirRate_Modparams-&gt;FHSShopInterval</ItemText>
-        </Ww>
-        <Ww>
-          <count>62</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>SX1280_SetFrequencyReg</ItemText>
-        </Ww>
-        <Ww>
-          <count>63</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>UID</ItemText>
-        </Ww>
-        <Ww>
-          <count>64</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>NextPacketIsMspData</ItemText>
-        </Ww>
-        <Ww>
-          <count>65</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>SX1280.radioTXdataBuffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>66</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>crc14tab</ItemText>
-        </Ww>
-        <Ww>
-          <count>67</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>InBindingMode</ItemText>
-        </Ww>
-        <Ww>
-          <count>68</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>FHSSsequence,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>69</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>CRCInitializer,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>70</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>controlDataBuff</ItemText>
-        </Ww>
-        <Ww>
-          <count>71</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>nextSwitchIndex</ItemText>
-        </Ww>
-        <Ww>
-          <count>72</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>abc</ItemText>
-        </Ww>
-        <Ww>
-          <count>73</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>UID</ItemText>
-        </Ww>
-        <Ww>
-          <count>74</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>StubbornSender.senderState</ItemText>
-        </Ww>
-        <Ww>
-          <count>75</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>InBindingMode</ItemText>
-        </Ww>
-        <Ww>
-          <count>76</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>maxLength</ItemText>
-        </Ww>
-        <Ww>
-          <count>77</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>data</ItemText>
-        </Ww>
-        <Ww>
-          <count>78</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>SX1280.radioRXdataBuffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>79</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>8</ItemText>
-        </Ww>
-        <Ww>
-          <count>80</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>8</ItemText>
-        </Ww>
-        <Ww>
-          <count>81</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>FIFOaddr</ItemText>
-        </Ww>
-        <Ww>
-          <count>82</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>halRRxBuffer</ItemText>
-        </Ww>
-        <Ww>
-          <count>83</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>linkStatistics,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>84</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ExpressLRS_currAirRate_Modparams-&gt;index</ItemText>
-        </Ww>
-        <Ww>
-          <count>85</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>ExpressLRS_currAirRate_Modparams-&gt;TLMinterval</ItemText>
-        </Ww>
-        <Ww>
-          <count>86</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>syncSpamCounter</ItemText>
-        </Ww>
-        <Ww>
-          <count>87</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>SX1280_RXnbISR</ItemText>
-        </Ww>
-        <Ww>
-          <count>88</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>protocolIndex</ItemText>
-        </Ww>
-        <Ww>
-          <count>89</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>MasterUID</ItemText>
-        </Ww>
-        <Ww>
-          <count>90</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>radiolinkDelayTime</ItemText>
-        </Ww>
-        <Ww>
-          <count>91</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>tx_config.rate</ItemText>
-        </Ww>
-        <Ww>
-          <count>92</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>calADCvalue,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>93</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>electricityADCvalue,0x0A</ItemText>
-        </Ww>
-        <Ww>
-          <count>94</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>Get_AdcValue(4)</ItemText>
-        </Ww>
-        <Ww>
-          <count>95</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>adc_value,0x0A</ItemText>
+          <ItemText>device_info_buff,0x10</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x20000274</ItemText>
+          <ItemText>FIRST_FLASH_MARK_ADDR</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
@@ -1164,7 +698,6 @@
       </SystemViewers>
       <DebugDescription>
         <Enable>1</Enable>
-        <EnableFlashSeq>0</EnableFlashSeq>
         <EnableLog>0</EnableLog>
         <Protocol>2</Protocol>
         <DbgClock>10000000</DbgClock>
@@ -1661,7 +1194,6 @@
       </SystemViewers>
       <DebugDescription>
         <Enable>1</Enable>
-        <EnableFlashSeq>0</EnableFlashSeq>
         <EnableLog>0</EnableLog>
         <Protocol>2</Protocol>
         <DbgClock>10000000</DbgClock>
@@ -1891,7 +1423,7 @@
 
   <Group>
     <GroupName>Drivers/STM32F1xx_HAL_Driver</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

@@ -152,6 +152,33 @@ void joystickTask(void *param)
                 hidReportData[7] = checkSum;
             }
         }
+        else if(requestType1 == REQUEST_DEVICE_INFO)
+        {
+            uint16_t device_info_buff[10] = {0};
+            STMFLASH_Read(LITE_RADIO_HARDWARE_TYPE_ADDR,&device_info_buff[0],1);
+            STMFLASH_Read(INTERNAL_RADIO_TYPE_ADDR,&device_info_buff[1],1);
+            STMFLASH_Read(THROTTLE_ROCKER_POSITION_ADDR,&device_info_buff[2],1);
+            STMFLASH_Read(HARDWARE_MAJOR_VERSION_ADDR,&device_info_buff[3],1);
+            STMFLASH_Read(HARDWARE_MINOR_VERSION_ADDR,&device_info_buff[4],1);
+            STMFLASH_Read(HARDWARE_PATCH_VERSION_ADDR,&device_info_buff[5],1);
+            device_info_buff[6] = FIRMWARE_MAJOR_VERSION;
+            device_info_buff[7] = FIRMWARE_MINOR_VERSION;
+            device_info_buff[8] = FIRMWARE_PITCH_VERSION;
+            STMFLASH_Read(FIRST_FLASH_MARK_ADDR,&device_info_buff[9],1);//0xa55a
+            hidReportData[0] = DEVICE_INFO_ID;
+            hidReportData[1] = (device_info_buff[0]&0x00ff)|((device_info_buff[1]&0x00FF)<<8);
+            hidReportData[2] = (device_info_buff[2]&0x00ff)|((device_info_buff[3]&0x00FF)<<8);
+            hidReportData[3] = (device_info_buff[4]&0x00ff)|((device_info_buff[5]&0x00FF)<<8);
+            hidReportData[4] = (device_info_buff[6]&0x00ff)|((device_info_buff[7]&0x00FF)<<8);
+            hidReportData[5] = (device_info_buff[8]&0x00ff);
+            hidReportData[6] = device_info_buff[9];
+            for(int i=0;i<7;i++)
+            {
+                checkSum += hidReportData[i]&0x00FF;
+            }
+            hidReportData[7] = checkSum;
+
+        }
         checkSum = 0;        
 
         USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));

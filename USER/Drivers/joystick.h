@@ -19,6 +19,7 @@ typedef enum
     REQUEST_COMMOND          = 0x00,
     REQUEST_CHANNEL_INFO     = 0x01,   
     REQUEST_CONIFG_INFO      = 0x02,
+    REQUEST_DEVICE_INFO      = 0x03,
 }requestProtocol_e;
 
 
