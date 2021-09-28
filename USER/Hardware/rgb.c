@@ -302,10 +302,12 @@ void rgbTask(void* param)
                 {
                     highThrottleFlag = Check_HighThrottle();
                     RGB_Set(RED,BRIGHTNESS_MAX);
+					HAL_TIM_Base_Stop_IT(&htim1);
                 }
                 else
                 {
-                    RGB_Set(BLUE,BRIGHTNESS_MAX);                 
+                    RGB_Set(BLUE,BRIGHTNESS_MAX); 
+					HAL_TIM_Base_Start_IT(&htim1);
                 }
             }
         }

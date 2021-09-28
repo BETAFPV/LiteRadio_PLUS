@@ -154,7 +154,7 @@ void Status_Update()
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)              
             if(protocolIndex != CRSF_PROTOCOL_INDEX)
             {
-                HAL_TIM_Base_Start_IT(&htim1);
+                //HAL_TIM_Base_Start_IT(&htim1);
             }
 #endif
         }
