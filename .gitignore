@@ -85,3 +85,5 @@ PROJECT_PROJ.XSD
 *.Bak
 *.scvd
 *.iex
+
+*.uvoptx
