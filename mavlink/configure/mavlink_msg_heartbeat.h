@@ -7,15 +7,16 @@
 typedef struct __mavlink_heartbeat_t {
  uint8_t version; /*<  version*/
  uint8_t protocol; /*<  protocol*/
+ uint8_t device; /*<  device*/
 } mavlink_heartbeat_t;
 
-#define MAVLINK_MSG_ID_heartbeat_LEN 2
-#define MAVLINK_MSG_ID_heartbeat_MIN_LEN 2
-#define MAVLINK_MSG_ID_0_LEN 2
-#define MAVLINK_MSG_ID_0_MIN_LEN 2
+#define MAVLINK_MSG_ID_heartbeat_LEN 3
+#define MAVLINK_MSG_ID_heartbeat_MIN_LEN 3
+#define MAVLINK_MSG_ID_0_LEN 3
+#define MAVLINK_MSG_ID_0_MIN_LEN 3
 
-#define MAVLINK_MSG_ID_heartbeat_CRC 52
-#define MAVLINK_MSG_ID_0_CRC 52
+#define MAVLINK_MSG_ID_heartbeat_CRC 132
+#define MAVLINK_MSG_ID_0_CRC 132
 
 
 
@@ -23,17 +24,19 @@ typedef struct __mavlink_heartbeat_t {
 #define MAVLINK_MESSAGE_INFO_heartbeat { \
     0, \
     "heartbeat", \
-    2, \
+    3, \
     {  { "version", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_heartbeat_t, version) }, \
          { "protocol", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_heartbeat_t, protocol) }, \
+         { "device", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_heartbeat_t, device) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_heartbeat { \
     "heartbeat", \
-    2, \
+    3, \
     {  { "version", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_heartbeat_t, version) }, \
          { "protocol", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_heartbeat_t, protocol) }, \
+         { "device", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_heartbeat_t, device) }, \
          } \
 }
 #endif
@@ -46,21 +49,24 @@ typedef struct __mavlink_heartbeat_t {
  *
  * @param version  version
  * @param protocol  protocol
+ * @param device  device
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_heartbeat_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint8_t version, uint8_t protocol)
+                               uint8_t version, uint8_t protocol, uint8_t device)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_heartbeat_LEN];
     _mav_put_uint8_t(buf, 0, version);
     _mav_put_uint8_t(buf, 1, protocol);
+    _mav_put_uint8_t(buf, 2, device);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_heartbeat_LEN);
 #else
     mavlink_heartbeat_t packet;
     packet.version = version;
     packet.protocol = protocol;
+    packet.device = device;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_heartbeat_LEN);
 #endif
@@ -77,22 +83,25 @@ static inline uint16_t mavlink_msg_heartbeat_pack(uint8_t system_id, uint8_t com
  * @param msg The MAVLink message to compress the data into
  * @param version  version
  * @param protocol  protocol
+ * @param device  device
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_heartbeat_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint8_t version,uint8_t protocol)
+                                   uint8_t version,uint8_t protocol,uint8_t device)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_heartbeat_LEN];
     _mav_put_uint8_t(buf, 0, version);
     _mav_put_uint8_t(buf, 1, protocol);
+    _mav_put_uint8_t(buf, 2, device);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_heartbeat_LEN);
 #else
     mavlink_heartbeat_t packet;
     packet.version = version;
     packet.protocol = protocol;
+    packet.device = device;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_heartbeat_LEN);
 #endif
@@ -111,7 +120,7 @@ static inline uint16_t mavlink_msg_heartbeat_pack_chan(uint8_t system_id, uint8_
  */
 static inline uint16_t mavlink_msg_heartbeat_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_heartbeat_t* heartbeat)
 {
-    return mavlink_msg_heartbeat_pack(system_id, component_id, msg, heartbeat->version, heartbeat->protocol);
+    return mavlink_msg_heartbeat_pack(system_id, component_id, msg, heartbeat->version, heartbeat->protocol, heartbeat->device);
 }
 
 /**
@@ -125,7 +134,7 @@ static inline uint16_t mavlink_msg_heartbeat_encode(uint8_t system_id, uint8_t c
  */
 static inline uint16_t mavlink_msg_heartbeat_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_heartbeat_t* heartbeat)
 {
-    return mavlink_msg_heartbeat_pack_chan(system_id, component_id, chan, msg, heartbeat->version, heartbeat->protocol);
+    return mavlink_msg_heartbeat_pack_chan(system_id, component_id, chan, msg, heartbeat->version, heartbeat->protocol, heartbeat->device);
 }
 
 /**
@@ -134,21 +143,24 @@ static inline uint16_t mavlink_msg_heartbeat_encode_chan(uint8_t system_id, uint
  *
  * @param version  version
  * @param protocol  protocol
+ * @param device  device
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t version, uint8_t protocol)
+static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t version, uint8_t protocol, uint8_t device)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_heartbeat_LEN];
     _mav_put_uint8_t(buf, 0, version);
     _mav_put_uint8_t(buf, 1, protocol);
+    _mav_put_uint8_t(buf, 2, device);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_heartbeat, buf, MAVLINK_MSG_ID_heartbeat_MIN_LEN, MAVLINK_MSG_ID_heartbeat_LEN, MAVLINK_MSG_ID_heartbeat_CRC);
 #else
     mavlink_heartbeat_t packet;
     packet.version = version;
     packet.protocol = protocol;
+    packet.device = device;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_heartbeat, (const char *)&packet, MAVLINK_MSG_ID_heartbeat_MIN_LEN, MAVLINK_MSG_ID_heartbeat_LEN, MAVLINK_MSG_ID_heartbeat_CRC);
 #endif
@@ -162,7 +174,7 @@ static inline void mavlink_msg_heartbeat_send(mavlink_channel_t chan, uint8_t ve
 static inline void mavlink_msg_heartbeat_send_struct(mavlink_channel_t chan, const mavlink_heartbeat_t* heartbeat)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_heartbeat_send(chan, heartbeat->version, heartbeat->protocol);
+    mavlink_msg_heartbeat_send(chan, heartbeat->version, heartbeat->protocol, heartbeat->device);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_heartbeat, (const char *)heartbeat, MAVLINK_MSG_ID_heartbeat_MIN_LEN, MAVLINK_MSG_ID_heartbeat_LEN, MAVLINK_MSG_ID_heartbeat_CRC);
 #endif
@@ -176,18 +188,20 @@ static inline void mavlink_msg_heartbeat_send_struct(mavlink_channel_t chan, con
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_heartbeat_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t version, uint8_t protocol)
+static inline void mavlink_msg_heartbeat_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint8_t version, uint8_t protocol, uint8_t device)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint8_t(buf, 0, version);
     _mav_put_uint8_t(buf, 1, protocol);
+    _mav_put_uint8_t(buf, 2, device);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_heartbeat, buf, MAVLINK_MSG_ID_heartbeat_MIN_LEN, MAVLINK_MSG_ID_heartbeat_LEN, MAVLINK_MSG_ID_heartbeat_CRC);
 #else
     mavlink_heartbeat_t *packet = (mavlink_heartbeat_t *)msgbuf;
     packet->version = version;
     packet->protocol = protocol;
+    packet->device = device;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_heartbeat, (const char *)packet, MAVLINK_MSG_ID_heartbeat_MIN_LEN, MAVLINK_MSG_ID_heartbeat_LEN, MAVLINK_MSG_ID_heartbeat_CRC);
 #endif
@@ -220,6 +234,16 @@ static inline uint8_t mavlink_msg_heartbeat_get_protocol(const mavlink_message_t
 }
 
 /**
+ * @brief Get field device from heartbeat message
+ *
+ * @return  device
+ */
+static inline uint8_t mavlink_msg_heartbeat_get_device(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint8_t(msg,  2);
+}
+
+/**
  * @brief Decode a heartbeat message into a struct
  *
  * @param msg The message to decode
@@ -230,6 +254,7 @@ static inline void mavlink_msg_heartbeat_decode(const mavlink_message_t* msg, ma
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     heartbeat->version = mavlink_msg_heartbeat_get_version(msg);
     heartbeat->protocol = mavlink_msg_heartbeat_get_protocol(msg);
+    heartbeat->device = mavlink_msg_heartbeat_get_device(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_heartbeat_LEN? msg->len : MAVLINK_MSG_ID_heartbeat_LEN;
         memset(heartbeat, 0, MAVLINK_MSG_ID_heartbeat_LEN);

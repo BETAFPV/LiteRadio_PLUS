@@ -20,6 +20,8 @@ uint8_t protocol=0;
 
 uint8_t buff[20]={0};
 uint8_t Length = 0;
+uint8_t device=0;
+
 
 /**********************************************************************************************************
 *函 数 名: mavlinkDecode
@@ -41,6 +43,7 @@ void mavlinkDecode(uint8_t data)
             mavlink_msg_heartbeat_decode(&msg,&currentMsg.heartbeat);
             version = currentMsg.heartbeat.version;
             protocol = currentMsg.heartbeat.protocol;
+            device = currentMsg.heartbeat.device;
             break;
         
         default:

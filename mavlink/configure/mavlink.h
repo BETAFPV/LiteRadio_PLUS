@@ -1,5 +1,5 @@
 /** @file
- *  @brief MAVLink comm protocol built from test.xml
+ *  @brief MAVLink comm protocol built from configure.xml
  *  @see http://mavlink.org
  */
 #pragma once
@@ -29,6 +29,6 @@
 #endif
 
 #include "version.h"
-#include "test.h"
+#include "configure.h"
 
 #endif // MAVLINK_H

@@ -1,10 +1,10 @@
 /** @file
- *    @brief MAVLink comm protocol testsuite generated from test.xml
+ *    @brief MAVLink comm protocol testsuite generated from configure.xml
  *    @see http://qgroundcontrol.org/mavlink/
  */
 #pragma once
-#ifndef TEST_TESTSUITE_H
-#define TEST_TESTSUITE_H
+#ifndef CONFIGURE_TESTSUITE_H
+#define CONFIGURE_TESTSUITE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,12 +13,12 @@ extern "C" {
 #ifndef MAVLINK_TEST_ALL
 #define MAVLINK_TEST_ALL
 
-static void mavlink_test_test(uint8_t, uint8_t, mavlink_message_t *last_msg);
+static void mavlink_test_configure(uint8_t, uint8_t, mavlink_message_t *last_msg);
 
 static void mavlink_test_all(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 
-    mavlink_test_test(system_id, component_id, last_msg);
+    mavlink_test_configure(system_id, component_id, last_msg);
 }
 #endif
 
@@ -37,12 +37,13 @@ static void mavlink_test_heartbeat(uint8_t system_id, uint8_t component_id, mavl
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_heartbeat_t packet_in = {
-        5,72
+        5,72,139
     };
     mavlink_heartbeat_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         packet1.version = packet_in.version;
         packet1.protocol = packet_in.protocol;
+        packet1.device = packet_in.device;
         
         
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -57,12 +58,12 @@ static void mavlink_test_heartbeat(uint8_t system_id, uint8_t component_id, mavl
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_heartbeat_pack(system_id, component_id, &msg , packet1.version , packet1.protocol );
+    mavlink_msg_heartbeat_pack(system_id, component_id, &msg , packet1.version , packet1.protocol , packet1.device );
     mavlink_msg_heartbeat_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_heartbeat_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.version , packet1.protocol );
+    mavlink_msg_heartbeat_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.version , packet1.protocol , packet1.device );
     mavlink_msg_heartbeat_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -75,12 +76,12 @@ static void mavlink_test_heartbeat(uint8_t system_id, uint8_t component_id, mavl
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_heartbeat_send(MAVLINK_COMM_1 , packet1.version , packet1.protocol );
+    mavlink_msg_heartbeat_send(MAVLINK_COMM_1 , packet1.version , packet1.protocol , packet1.device );
     mavlink_msg_heartbeat_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
-static void mavlink_test_test(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+static void mavlink_test_configure(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
     mavlink_test_heartbeat(system_id, component_id, last_msg);
 }
@@ -88,4 +89,4 @@ static void mavlink_test_test(uint8_t system_id, uint8_t component_id, mavlink_m
 #ifdef __cplusplus
 }
 #endif // __cplusplus
-#endif // TEST_TESTSUITE_H
+#endif // CONFIGURE_TESTSUITE_H
