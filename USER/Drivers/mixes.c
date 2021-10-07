@@ -2,7 +2,7 @@
 #include "switches.h"
 #include "buzzer.h"
 #include "tim.h"
-#include "usbd_custom_hid_if.h"
+#include "usbd_hid.h"
 #include "stmflash.h"
 #include "radiolink.h"
 #include "status.h"

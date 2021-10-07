@@ -82,7 +82,7 @@ EndBSPDependencies */
   * @}
   */
 
-
+extern USBD_HID_HandleTypeDef pHIDData;
 
 
 /** @defgroup USBD_HID_Private_FunctionPrototypes
@@ -158,7 +158,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_CfgFSDesc[USB_HID_CONFIG_DESC_SIZ]  __ALIG
   0x01,         /*bNumEndpoints*/
   0x03,         /*bInterfaceClass: HID*/
   0x01,         /*bInterfaceSubClass : 1=BOOT, 0=no boot*/
-  0x02,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
+  0x00,         /*nInterfaceProtocol : 0=none, 1=keyboard, 2=mouse*/
   0,            /*iInterface: Index of string descriptor*/
   /******************** Descriptor of Joystick Mouse HID ********************/
   /* 18 */
@@ -317,52 +317,115 @@ __ALIGN_BEGIN static uint8_t USBD_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
 
 __ALIGN_BEGIN static uint8_t HID_MOUSE_ReportDesc[HID_MOUSE_REPORT_DESC_SIZE]  __ALIGN_END =
 {
-  0x05,   0x01,
-  0x09,   0x02,
-  0xA1,   0x01,
-  0x09,   0x01,
+//  0x05,   0x01,
+//  0x09,   0x04,
+//  0xA1,   0x01,
+//  0x09,   0x01,
 
-  0xA1,   0x00,
-  0x05,   0x09,
-  0x19,   0x01,
-  0x29,   0x03,
+//  0xA1,   0x00,
+//  0x05,   0x09,
+//  0x19,   0x01,
+//  0x29,   0x03,
 
-  0x15,   0x00,
-  0x25,   0x01,
-  0x95,   0x03,
-  0x75,   0x01,
+//  0x15,   0x00,
+//  0x25,   0x01,
+//  0x95,   0x03,
+//  0x75,   0x01,
 
-  0x81,   0x02,
-  0x95,   0x01,
-  0x75,   0x05,
-  0x81,   0x01,
+//  0x81,   0x02,
+//  0x95,   0x01,
+//  0x75,   0x05,
+//  0x81,   0x01,
 
-  0x05,   0x01,
-  0x09,   0x30,
-  0x09,   0x31,
-  0x09,   0x38,
+//  0x05,   0x01,
+//  0x09,   0x30,
+//  0x09,   0x31,
+//  0x09,   0x38,
 
-  0x15,   0x81,
-  0x25,   0x7F,
-  0x75,   0x08,
-  0x95,   0x03,
+//  0x15,   0x81,
+//  0x25,   0x7F,
+//  0x75,   0x08,
+//  0x95,   0x03,
 
-  0x81,   0x06,
-  0xC0,   0x09,
-  0x3c,   0x05,
-  0xff,   0x09,
+//  0x81,   0x06,
+//  0xC0,   0x09,
+//  0x3c,   0x05,
+//  0xff,   0x09,
 
-  0x01,   0x15,
-  0x00,   0x25,
-  0x01,   0x75,
-  0x01,   0x95,
+//  0x01,   0x15,
+//  0x00,   0x25,
+//  0x01,   0x75,
+//  0x01,   0x95,
 
-  0x02,   0xb1,
-  0x22,   0x75,
-  0x06,   0x95,
-  0x01,   0xb1,
+//  0x02,   0xb1,
+//  0x22,   0x75,
+//  0x06,   0x95,
+//  0x01,   0xb1,
 
-  0x01,   0xc0
+//  0x01,   0xc0
+
+	/* USER CODE BEGIN 0 */
+	0x05,0x01,          /*Usage Page(Generic Desktop)*/ 
+	0x09,0x04,          /*Usage(joystick)*/
+	0xA1,0x01,          /*Collection(Application)*/
+	//24
+	0x05, 0x01,         /*USAGE_PAGE (Generic Desktop)*/
+	0x09, 0x01,         /*USAGE (Pointer)*/
+	0xa1, 0x00,         /*COLLECTION (Physical)*/
+	0x09, 0x33,         /*USAGE (Rx)*/
+	0x09, 0x34,         /*USAGE (Ry)*/
+	0x09, 0x35,         /*USAGE (Rz)*/
+	0x15, 0x00,         /*LOGICAL_MINIMUM (0)*/
+	0x26, 0x00, 0x10,   /*LOGICAL_MAXIMUM (4096)*/
+	0x75, 0x10,         /*REPORT_SIZE (16)*/
+	0x95, 0x03,         /*REPORT_COUNT (3)*/
+	0x81, 0x02,         /*INPUT (Data,Var,Abs)*/
+	0xc0,               /*End Collection*/
+	//24
+	0x05,0x01,          /*USAGE_PAGE (Generic Desktop)*/
+	0x09,0x01,          /*USAGE (Pointer)*/
+	0xa1,0x00,          /*COLLECTION (Physical)*/
+	0x09,0x30,          /*Usage(X axis)*/
+	0x09,0x31,          /*Usage(Y axis)*/ 
+	0x09,0x32,          /*Usage(Z axis)*/ 
+	0x15,0x00,          /*Logical Minimum(0)*/
+	0x26,0x00,0x10,     /*Logical Maximum(4096)*/
+	0x95,0x03,          /*REPORT_COUNT(3)*/
+	0x75,0x10,          /*REPORT_SIZE (16)*/
+	0x81,0x02,          /*INPUT (Data,Var,Abs)*/
+	0xc0,               /*End Collection*/
+	//20
+	0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
+	0x09,0x36,			    /*USAGE (Pointer)*/
+	0xA1,0x00,			    /*COLLECTION (Physical)*/
+	0x09,0x36,          /*USAGE (Slider)*/
+	0x15,0x00,			    /*LOGICAL_MINIMUM (0)*/
+	0x26,0x00,0x10,	    /*LOGICAL_MAXIMUM (4096)*/
+	0x75,0x10,          /*REPORT_SIZE (16)*/
+	0x95,0x02,          /*REPORT_COUNT (3)*/
+	0x81,0x02,          /*INPUT (Data,Var,Abs)*/
+	0xc0,               /*End Collection*/
+//	//20
+//	0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
+//	0x09,0x36,			    /*USAGE (Pointer)*/
+//	0xA1,0x00,			    /*COLLECTION (Physical)*/
+//	0x09,0x36,          /*USAGE (Slider)*/
+//	0x15,0x00,			    /*LOGICAL_MINIMUM (0)*/
+//	0x26,0x00,0x10,	    /*LOGICAL_MAXIMUM (4096)*/
+//	0x75,0x10,          /*REPORT_SIZE (16)*/
+//	0x95,0x01,          /*REPORT_COUNT (3)*/
+//	0x81,0x02,          /*INPUT (Data,Var,Abs)*/
+//	0xc0,               /*End Collection*/
+
+	0x09, 0x01,                    //   USAGE (Vendor Usage 1) 
+	0x15, 0x00,                    //   LOGICAL_MINIMUM (0)
+	0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)
+	0x95, 0x04,                    //   REPORT_COUNT (64)
+	0x75, 0x10,                    //   REPORT_SIZE (8) 
+	0x91, 0x02,                    //   OUTPUT (Data,Var,Abs)
+
+	/* USER CODE END 0 */
+	0xC0    /*     END_COLLECTION	             */
 };
 
 /**
@@ -386,7 +449,7 @@ static uint8_t  USBD_HID_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
   USBD_LL_OpenEP(pdev, HID_EPIN_ADDR, USBD_EP_TYPE_INTR, HID_EPIN_SIZE);
   pdev->ep_in[HID_EPIN_ADDR & 0xFU].is_used = 1U;
 
-  pdev->pClassData = USBD_malloc(sizeof(USBD_HID_HandleTypeDef));
+  pdev->pClassData = &pHIDData;
 
   if (pdev->pClassData == NULL)
   {
@@ -432,7 +495,7 @@ static uint8_t  USBD_HID_DeInit(USBD_HandleTypeDef *pdev,
 static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
                                USBD_SetupReqTypedef *req)
 {
-  USBD_HID_HandleTypeDef *hhid = (USBD_HID_HandleTypeDef *) pdev->pClassData;
+  USBD_HID_HandleTypeDef *hhid = &pHIDData;
   uint16_t len = 0U;
   uint8_t *pbuf = NULL;
   uint16_t status_info = 0U;
@@ -551,7 +614,7 @@ uint8_t USBD_HID_SendReport(USBD_HandleTypeDef  *pdev,
                             uint8_t *report,
                             uint16_t len)
 {
-  USBD_HID_HandleTypeDef     *hhid = (USBD_HID_HandleTypeDef *)pdev->pClassData;
+  USBD_HID_HandleTypeDef     *hhid = &pHIDData;
 
   if (pdev->dev_state == USBD_STATE_CONFIGURED)
   {

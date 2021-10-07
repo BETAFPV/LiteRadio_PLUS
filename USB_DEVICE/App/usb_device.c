@@ -24,11 +24,10 @@
 #include "usb_device.h"
 #include "usbd_core.h"
 #include "usbd_desc.h"
-#include "usbd_customhid.h"
-#include "usbd_custom_hid_if.h"
+#include "usbd_hid.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "usbd_composite.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN PV */
@@ -62,25 +61,54 @@ USBD_HandleTypeDef hUsbDeviceFS;
   * Init USB device Library, add supported class and start the library
   * @retval None
   */
+//void MX_USB_DEVICE_Init(void)
+//{
+//  /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
+
+//  /* USER CODE END USB_DEVICE_Init_PreTreatment */
+
+//  /* Init Device Library, add supported class and start the library. */
+//  if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
+//  {
+//    Error_Handler();
+//  }
+//  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_HID) != USBD_OK)
+//  {
+//    Error_Handler();
+//  }
+//  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
+//  {
+//    Error_Handler();
+//  }
+
+//  /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
+
+//  /* USER CODE END USB_DEVICE_Init_PostTreatment */
+//}
+
+/**
+  * Init USB device Library, add supported class and start the library
+  * @retval None
+  */
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
   
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
-
+  
   /* Init Device Library, add supported class and start the library. */
   if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
   {
     Error_Handler();
   }
-  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CUSTOM_HID) != USBD_OK)
+  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_COMPOSITE) != USBD_OK)
   {
     Error_Handler();
   }
-  if (USBD_CUSTOM_HID_RegisterInterface(&hUsbDeviceFS, &USBD_CustomHID_fops_FS) != USBD_OK)
-  {
-    Error_Handler();
-  }
+//  if (USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_CDC_Interface_fops_FS) != USBD_OK)
+//  {
+//    Error_Handler();
+//  }
   if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
   {
     Error_Handler();
@@ -90,6 +118,7 @@ void MX_USB_DEVICE_Init(void)
   
   /* USER CODE END USB_DEVICE_Init_PostTreatment */
 }
+
 
 /**
   * @}

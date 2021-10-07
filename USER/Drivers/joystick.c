@@ -1,7 +1,7 @@
 #include "joystick.h"
 #include "gimbal.h"
 #include "switches.h"
-#include "usbd_customhid.h"
+#include "usbd_hid.h"
 #include "mixes.h"
 #include "stmflash.h"
 #include "radiolink.h"
@@ -9,12 +9,15 @@
 #include "status.h"
 #include "crsf.h"
 #include "common.h"
+#include "usbd_cdc_if.h"
 
 static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
 /*累加和校验算法*/
 static uint16_t checkSum;
 uint8_t sendSpam;
+extern USBD_HandleTypeDef hUsbDeviceFS;
+
 
 void joystickTask(void *param) 
 {
@@ -181,7 +184,11 @@ void joystickTask(void *param)
         }
         checkSum = 0;        
 
-        USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+        //HID send data
+        USBD_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+        
+        //CDC send data
+        //CDC_Transmit_FS((uint8_t*) &hidReportData, 8*sizeof(uint16_t));
     }
 }
 
