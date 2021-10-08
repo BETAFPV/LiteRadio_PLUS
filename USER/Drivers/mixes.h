@@ -19,6 +19,7 @@
 #define INTERNAL_CONFIGER_INFO_ID 0x06
 #define EXTERNAL_CONFIGER_INFO_ID 0X07
 #define DEVICE_INFO_ID 0x5a
+#define UID_BYTES_ID 0x22
 
 #define CHANNEILS_INPUT_ID 0x01
 #define CHANNEILS_REVERSE_ID 0x02
@@ -41,6 +42,15 @@
 #define MIX_CHANNEL_8_INFO_ADDR     0x8007038
 
 #define CACHE_MIX_CHANNEL_INFO_ADDR 0x8007100
+
+#define MasterUidUseChipIDFlag_ADDR  0x8007200
+#define MasterID1FromBindPhrase_ADDR 0x8007202
+#define MasterID2FromBindPhrase_ADDR 0x8007204
+#define MasterID3FromBindPhrase_ADDR 0x8007206
+#define MasterID4FromBindPhrase_ADDR 0x8007208
+#define MasterID5FromBindPhrase_ADDR 0x8007210
+#define MasterID6FromBindPhrase_ADDR 0x8007212
+
 
 #define MIX_AILERON    0x00      
 #define MIX_ELEVATOR   0x01  

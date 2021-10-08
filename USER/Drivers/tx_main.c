@@ -4,10 +4,11 @@
 #include "crsf.h"
 #include "tim.h"
 #include "stmflash.h"
-
+#include "stdbool.h"
 #if defined(Regulatory_Domain_ISM_2400)  
 #include "sx1280.h"
 #include "fhss.h"
+#include "mixes.h"
 #define Radio SX1280
 #define Radio_Config SX1280_Config
 #define RXnb SX1280_RXnb
@@ -62,7 +63,7 @@ uint16_t firmwareRev;
 
 uint8_t baseMac[6];
 uint16_t inCRC;
-
+bool MasterUidUseChipIDFlag = true;
 static void delay(uint16_t n)
 {
 	for(int i=0;i<n;i++){};
@@ -361,8 +362,32 @@ void ExpressLRS_Init(uint8_t protocolIndex)
 
 void setup(void)
 {
-    /*获取芯片ID作为连接ID*/
-    Get_CRSFUniqueID(MasterUID);
+    uint16_t readTemp[1];
+    STMFLASH_Read(MasterUidUseChipIDFlag_ADDR,&readTemp[0],1);
+    MasterUidUseChipIDFlag = readTemp[0];
+    if(MasterUidUseChipIDFlag)
+    {
+        /*获取芯片ID作为连接ID*/
+        Get_CRSFUniqueID(MasterUID);
+    }
+    else
+    {
+        /*获取绑定短语生成的ID作为连接ID*/
+        uint16_t readTemp[6];
+        STMFLASH_Read(MasterID1FromBindPhrase_ADDR,&readTemp[0],1);
+        STMFLASH_Read(MasterID2FromBindPhrase_ADDR,&readTemp[1],1);
+        STMFLASH_Read(MasterID3FromBindPhrase_ADDR,&readTemp[2],1);
+        STMFLASH_Read(MasterID4FromBindPhrase_ADDR,&readTemp[3],1);
+        STMFLASH_Read(MasterID5FromBindPhrase_ADDR,&readTemp[4],1);
+        STMFLASH_Read(MasterID6FromBindPhrase_ADDR,&readTemp[5],1);
+        MasterUID[0] = readTemp[0]&0xff;
+        MasterUID[1] = readTemp[1]&0xff;
+        MasterUID[2] = readTemp[2]&0xff;
+        MasterUID[3] = readTemp[3]&0xff;
+        MasterUID[4] = readTemp[4]&0xff;
+        MasterUID[5] = readTemp[5]&0xff;
+    }
+    
     UID[0] = MasterUID[0];
     UID[1] = MasterUID[1];
     UID[2] = MasterUID[2];
