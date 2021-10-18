@@ -30,6 +30,7 @@
 #include "status.h"
 #include "crsf.h"
 #include "joystick.h"
+#include "stdbool.h"
 
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
 #include "common.h"
@@ -43,7 +44,8 @@
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 static uint8_t USB_Recive_Buffer[64]; 
-
+extern uint8_t MasterUID[6];
+extern bool MasterUidUseChipIDFlag;
 /* USER CODE END PV */
 
 /** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
@@ -318,6 +320,36 @@ void SaveMixValueToFlash(void)
                 tx_config.tlm = internalCRSFdata.crsfParameter.TLM;
             }
             break;  
+        }
+        case UID_BYTES_ID:
+        {
+            if(USB_Recive_Buffer[1]==0&&USB_Recive_Buffer[2]==0&&USB_Recive_Buffer[3]==0&&USB_Recive_Buffer[4]==0&&USB_Recive_Buffer[5]==0&&USB_Recive_Buffer[6]==0)
+            {
+                MasterUidUseChipIDFlag = true;
+                uint16_t Writetemp[1]; 
+                Writetemp[0] = MasterUidUseChipIDFlag;
+                STMFLASH_Write(MasterUidUseChipIDFlag_ADDR,Writetemp,1);
+            }
+            else
+            {
+                MasterUID[0] = USB_Recive_Buffer[1];
+                MasterUID[1] = USB_Recive_Buffer[2];
+                MasterUID[2] = USB_Recive_Buffer[3];
+                MasterUID[3] = USB_Recive_Buffer[4];
+                MasterUID[4] = USB_Recive_Buffer[5];
+                MasterUID[5] = USB_Recive_Buffer[6];
+                
+                MasterUidUseChipIDFlag = false;
+                uint16_t Writetemp[1]; 
+                Writetemp[0] = MasterUidUseChipIDFlag;
+                STMFLASH_Write(MasterUidUseChipIDFlag_ADDR,Writetemp,1);
+                STMFLASH_Write(MasterID1FromBindPhrase_ADDR,&writeWord[1],1);
+                STMFLASH_Write(MasterID2FromBindPhrase_ADDR,&writeWord[2],1);
+                STMFLASH_Write(MasterID3FromBindPhrase_ADDR,&writeWord[3],1);
+                STMFLASH_Write(MasterID4FromBindPhrase_ADDR,&writeWord[4],1);
+                STMFLASH_Write(MasterID5FromBindPhrase_ADDR,&writeWord[5],1);
+                STMFLASH_Write(MasterID6FromBindPhrase_ADDR,&writeWord[6],1);
+            }
         }
 #endif   
         case EXTERNAL_CONFIGER_INFO_ID:
