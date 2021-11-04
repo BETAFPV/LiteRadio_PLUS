@@ -57,7 +57,11 @@ void Status_Init()
     }
     if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port,KEY_POWER_Pin) == GPIO_PIN_RESET)
     {
-        RGB_TwinkleForInit((protocolIndex+1),300);
+#if defined(LiteRadio_Plus_CC2500) 
+        RGB_TwinkleForInit((protocolIndex+1),140);
+#elif defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+		RGB_TwinkleForInit((protocolIndex+1),300);
+#endif
     }
  
     Version_Init(protocolIndex);
