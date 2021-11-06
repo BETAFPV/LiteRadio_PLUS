@@ -160,5 +160,5 @@ void CC2500_Strobe(uint8_t state);
 void CC2500_SetPower(uint8_t power);
 void CC2500_SetTxRxMode(uint8_t mode);
 uint8_t CC2500_Reset(void);
-
+uint16_t CC2500_Process(uint16_t* controlDataBuff);
 #endif

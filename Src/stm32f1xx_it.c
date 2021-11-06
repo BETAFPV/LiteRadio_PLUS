@@ -29,7 +29,8 @@
 #include "tim.h"
 #include "crsf.h"
 #include "radiolink.h"
-
+#include "s_fhss.h"
+#include "frsky_d16.h"
 #if defined(LiteRadio_Plus_SX1280)
 #include "sx1280.h"
 #elif defined(LiteRadio_Plus_SX1276)
@@ -78,7 +79,7 @@ extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim4;
-
+extern uint16_t (*RF_Process)(uint16_t* controlData);
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -275,6 +276,8 @@ void TIM1_UP_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
   SendRCdataToRF(channelData);
+#elif defined(LiteRadio_Plus_CC2500)
+  TIM1->ARR = RF_Process(channelData); 
 #endif        
   /* USER CODE END TIM1_UP_IRQn 1 */
 }

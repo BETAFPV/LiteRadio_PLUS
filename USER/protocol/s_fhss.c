@@ -146,20 +146,30 @@ static void __attribute__((unused)) SFHSS_rf_init()
 	Delay_US(500);
 	CC2500_WriteReg(CC2500_0C_FSCTRL0, 0x0A);
 	CC2500_SetTxRxMode(TX_EN);
-	CC2500_SetPower(RF_POWER);
+	//CC2500_SetPower(RF_POWER);
 }
 
 void initSFHSS(uint8_t protocolIndex)
 {
 	//BIND_DONE;						 // Not a TX bind protocol
 	//SPI2_Init();
+	uint8_t CC2500_Error_flg = 0;
 	MProtocol_id = GetUniqueID();
 	SFHSS_get_tx_id();
 	srand(SysTick->VAL);
 	fhss_code = rand() % 28;  // Initialize it to random 0-27 inclusive
 	CC2500_Reset(); 
 	HAL_Delay(1);
-	SFHSS_rf_init();
+	CC2500_Error_flg = CC2500_Init(protocolIndex); 
+	if(CC2500_Error_flg == 1)
+	{
+		//Initialization failed
+	}
+	else
+	{
+		SFHSS_rf_init();
+	}
+	CC2500_SetPower(RF_POWER);
 	phase = SFHSS_START;
 	//return 10000;
 }
@@ -261,7 +271,7 @@ uint16_t ReadSFHSS(uint16_t* controlData)
     //#define SFHSS_TUNE_TIMING	2020
 #define SFHSS_PACKET_PERIOD	6798
 #define SFHSS_DATA2_TIMING	2020//1647
-#define SFHSS_TUNE_TIMING	2020
+#define SFHSS_TUNE_TIMING	2800
 			// Adjust this value between 1600 and 1650 if your RX(s) are not operating properly   //1647
 		case SFHSS_DATA1:
 			SFHSS_build_data_packet(controlData);

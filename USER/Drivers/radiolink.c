@@ -13,6 +13,7 @@
 #include "frsky_d16.h"
 #include "s_fhss.h"
 #include "cc2500.h"
+uint16_t channelData[16];
 #elif defined(LiteRadio_Plus_SX1280)
 #include "sx1280.h"
 #include "sx1280hal.h"
@@ -34,6 +35,7 @@ uint64_t radiolinkTick;
 void (*RF_Init)(uint8_t protocolIndex);
 void (*RF_Bind)(void);
 uint16_t (*RF_Process)(uint16_t* controlData);
+uint16_t (*RcDateSendToBuff)(uint16_t* controlData);
 
 void Version_Init(uint16_t protocolIndex)
 {
@@ -49,23 +51,31 @@ void radiolinkTask(void* param)
 #if defined(LiteRadio_Plus_CC2500)        
         case 0: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
-                RF_Process = ReadFRSKYD16;      
+                RcDateSendToBuff = CC2500_Process;
+				RF_Process = ReadFRSKYD16;
+				TIM1->ARR = 9000;		
                 break;
         case 1: RF_Init = FRSKYD16_Init;
                 RF_Bind = SetBind;
-                RF_Process = ReadFRSKYD16;
+                RcDateSendToBuff = CC2500_Process;
+				RF_Process = ReadFRSKYD16;
+				TIM1->ARR = 9000;
                 break;
         case 2: RF_Init = initFRSKYD8;
                 RF_Bind = D8_SetBind;
-                RF_Process = ReadFRSKYD8;
+                RcDateSendToBuff = CC2500_Process;
+				RF_Process = ReadFRSKYD8;
+				TIM1->ARR = 9000;
                 break;
         case 3: RF_Init = initSFHSS;
-                RF_Process = ReadSFHSS;
                 RF_Bind = SFHSS_SetBind;
+				RcDateSendToBuff = CC2500_Process;
+				RF_Process = ReadSFHSS;
+				TIM1->ARR = 9000;
                 break;
   
         case 4: RF_Init = CRSF_Init;
-                RF_Process = CRSF_Process;
+                RcDateSendToBuff = CRSF_Process;
                 RF_Bind = CRSF_SetBind;               
                 break;       
 #elif defined(LiteRadio_Plus_SX1280)
@@ -104,8 +114,12 @@ void radiolinkTask(void* param)
         if((radioEvent & RADIOLINK_BIND) == RADIOLINK_BIND)
         {
             RF_Bind();
-        }       
-        RF_Process(rfcontrolData);
+        }  
+#if defined(LiteRadio_Plus_CC2500)  
+		RcDateSendToBuff(rfcontrolData);
+#elif defined(LiteRadio_Plus_SX1280)		
+		RF_Process(rfcontrolData);
+#endif
         radiolinkTick = HAL_GetTick();
     }
 }

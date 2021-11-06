@@ -294,7 +294,7 @@ uint16_t ReadFRSKYD8(uint16_t* controlData)
 			return 8830 ;  
 	  
 	}
-	return 0 ; 
+	return 9000 ; 
 }
 
 void D8_SetBind(void)
@@ -311,7 +311,6 @@ void initFRSKYD8(uint8_t protocolIndex)
     
   	//get chip ID
   	TransmitterID = GetUniqueID();
-
 	//Get the frequency hopping by chip ID
 	Calc_FRSKYD8_Channel();
 	
@@ -339,7 +338,8 @@ void initFRSKYD8(uint8_t protocolIndex)
 			HAL_Delay(1);
 			FRSKYD8_calData[i]  =  CC2500_ReadReg(CC2500_25_FSCAL1);
 		}
-		FRSKYD8_InitDeviceAddr(D8_Bind_flg);	
+		FRSKYD8_InitDeviceAddr(D8_Bind_flg);
+		CC2500_SetPower(RF_POWER);		
 		FRSKYD8Phase = FRSKYD8_DATA ;
 		FRSKYD8_TuneChannel(FRSKYD8_HOPChannel[0]); 
 	}

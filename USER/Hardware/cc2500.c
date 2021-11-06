@@ -128,7 +128,7 @@ static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
 	
 };
 
-uint8_t CC2500_Init(uint8_t versionSelectFlg)
+ uint8_t CC2500_Init(uint8_t versionSelectFlg)
 {
     uint8_t (*cc2500_config)[2];
     
@@ -150,7 +150,7 @@ uint8_t CC2500_Init(uint8_t versionSelectFlg)
 	}
 
     uint8_t CC2500RestError_flag = 0;
-
+	HAL_Delay(100);
 	if(!CC2500_Reset())
 	{
 		CC2500RestError_flag = 1;	
@@ -163,6 +163,8 @@ uint8_t CC2500_Init(uint8_t versionSelectFlg)
 		case 1: cc2500_config = cc2500_conf_EU;
 				break;
 		case 2: cc2500_config = cc2500_conf_D8;
+				break;
+		case 3: 
 				break;
 		default:
 				break;
@@ -178,7 +180,7 @@ uint8_t CC2500_Init(uint8_t versionSelectFlg)
 		//CC2500_Strobe(CC2500_SIDLE);
 		Delay_US(10);
 		CC2500_SetTxRxMode(TX_EN);
-		CC2500_SetPower(RF_POWER);
+		//CC2500_SetPower(RF_POWER);
 		CC2500_Strobe(CC2500_SIDLE);
 		Delay_US(10);
 	}
@@ -268,3 +270,16 @@ void CC2500_SetTxRxMode(uint8_t mode)
 			CC2500_WriteReg(CC2500_00_IOCFG2, 0x2F);
 		}
 }
+
+uint16_t CC2500_Process(uint16_t* controlDataBuff)
+{
+    channelData[0] = controlDataBuff[0];
+    channelData[1] = controlDataBuff[1];
+    channelData[2] = controlDataBuff[2];
+    channelData[3] = controlDataBuff[3];
+    channelData[4] = controlDataBuff[4];
+    channelData[5] = controlDataBuff[5];
+    channelData[6] = controlDataBuff[6];
+    channelData[7] = controlDataBuff[7];
+}
+

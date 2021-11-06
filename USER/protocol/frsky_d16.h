@@ -42,4 +42,5 @@ void FRSKYD16_Init(uint8_t protocolIndex);
 uint16_t ReadFRSKYD16(uint16_t* controlData);
 void SetBind(void) ; 
 void FRSKYD16_build_Data_packet(uint16_t* controlData);
+
 #endif

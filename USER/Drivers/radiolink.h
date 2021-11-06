@@ -12,8 +12,8 @@
 #define VERSION_INDEX 2
 #endif
 
-#define D16_INTERVAL   9
-#define D8_INTERVAL    9
+#define D16_INTERVAL   2
+#define D8_INTERVAL    2
 #define SFHSS_INTERVAL 2
 #define CRSF_INTERVAL  2
 
@@ -28,7 +28,7 @@
 
 #define RADIOLINK_BIND	        (0x01 << 0)	
 #define RADIOLINK_DATA	        (0x01 << 1)	
-#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276) || (LiteRadio_Plus_CC2500)
 extern uint16_t channelData[16];
 #endif
 extern uint32_t radiolinkDelayTime ;

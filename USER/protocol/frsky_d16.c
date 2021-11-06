@@ -431,7 +431,7 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 		break;  
 	  
 	}
-	return 0 ; 
+	return 9000 ; 
 }
 
 void SetBind(void)
@@ -448,7 +448,6 @@ void FRSKYD16_Init(uint8_t protocolIndex)
   	uint8_t CC2500_Error_flg = 0;
     //get chip ID
   	TransmitterID = GetUniqueID();
-
 	//Get the frequency hopping by chip ID
 	//Calc_FRSKYD16_Channel();
 	Frsky_init_hop();
@@ -476,7 +475,7 @@ void FRSKYD16_Init(uint8_t protocolIndex)
 			HAL_Delay(1);
 			FRSKYD16_calData[i]  =  CC2500_ReadReg(CC2500_25_FSCAL1);
 		}
-			
+		CC2500_SetPower(RF_POWER);	
 		FRSKYD16Phase = FRSKYD16_DATA ;
 		FRSKYD16_TuneChannel(FRSKYD16_HOPChannel[FRSKYD16_Channel_Num]) ; 
 	}
