@@ -119,6 +119,7 @@ int main(void)
   MX_TIM2_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
+  HAL_TIM_Base_Stop_IT(&htim1);//开机完成之前先关闭射频输出
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 #ifdef LiteRadio_Plus_CC2500

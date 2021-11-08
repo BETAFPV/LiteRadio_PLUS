@@ -108,13 +108,51 @@ void RGB_Set(uint8_t colorIndex,uint8_t brightness)
 void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime)
 {
     uint8_t i;
-    for(i=0; i<num; i++)
+    
+#if defined(LiteRadio_Plus_CC2500) 
+    if(num<=4)//内置射频模块，闪红灯
     {
-        RGB_Set(RED,BRIGHTNESS_MAX);
-        HAL_Delay(twinkleDelayTime);
-        RGB_Set(BLACK,BRIGHTNESS_MAX);
-        HAL_Delay(twinkleDelayTime);
+       for(i=0; i<num; i++)
+        {
+            RGB_Set(RED,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+            RGB_Set(BLACK,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+        } 
     }
+    else//使用外置射频模块，闪紫灯
+    {
+        for(i=0; i<3; i++)
+        {
+            RGB_Set(PURPLE,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+            RGB_Set(BLACK,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+        } 
+    }
+    
+#elif defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+	if(num<=1)//内置射频模块，闪红灯
+    {
+       for(i=0; i<num; i++)
+        {
+            RGB_Set(RED,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+            RGB_Set(BLACK,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+        } 
+    }
+    else//使用外置射频模块，闪紫灯
+    {
+        for(i=0; i<3; i++)
+        {
+            RGB_Set(PURPLE,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+            RGB_Set(BLACK,BRIGHTNESS_MAX);
+            HAL_Delay(twinkleDelayTime);
+        } 
+    }
+#endif
 }
 
 void RGB_LowElectricityTwinkle()
