@@ -41,7 +41,12 @@ void Status_Init()
     STMFLASH_Read(CONFIGER_INFO_ADDR,&protocolIndex,1);
     if(protocolIndex > PROTOCOL_INDEX_LIMIT)
     {
-        protocolIndex = 0;
+#if defined(LiteRadio_Plus_CC2500) 
+        protocolIndex = 2;
+#elif defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+		protocolIndex = 0;
+#endif
+        
         STMFLASH_Write(CONFIGER_INFO_ADDR,&protocolIndex,1);
     }
     
