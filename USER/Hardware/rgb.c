@@ -4,6 +4,7 @@
 #include "gimbal.h"
 #include "status.h"
 #include "radiolink.h"
+#include "stdbool.h"
 EventGroupHandle_t rgbEventHandle;
 
 static uint8_t bindStatus = 0;
@@ -289,7 +290,7 @@ void RGB_Breath(uint8_t colorIndex)
     RGB_Set(colorIndex,rgbBrightness);
 
 }
-
+static bool Tim1IsOpen = false;
 void rgbTask(void* param)
 {
     EventBits_t rgbEvent;
@@ -349,7 +350,12 @@ void rgbTask(void* param)
 #if defined(LiteRadio_Plus_CC2500)  
 		if(Get_Protocol_Select() <= 3)//CC2500使用内置射频模块才打开定时器1
         {
-            HAL_TIM_Base_Start_IT(&htim1);
+            if(Tim1IsOpen == false)
+            {
+                Tim1IsOpen = true;
+                HAL_TIM_Base_Start_IT(&htim1);
+            }
+            
         }
 					
 #elif defined(LiteRadio_Plus_SX1280)		
