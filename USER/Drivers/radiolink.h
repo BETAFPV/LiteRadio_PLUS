@@ -37,7 +37,7 @@ extern EventGroupHandle_t radioEventHandle;
 
 void Version_Init(uint16_t protocolIndex);
 void radiolinkTask(void* param);
-
+uint8_t Get_Protocol_Select(void);
 
 #endif
 

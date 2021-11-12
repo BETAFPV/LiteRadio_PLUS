@@ -41,6 +41,11 @@ void Version_Init(uint16_t protocolIndex)
 {
     versionSelectFlg = protocolIndex;
 }
+uint8_t Get_Protocol_Select(void)
+{
+    return versionSelectFlg;
+}
+
 
 void radiolinkTask(void* param)
 {
