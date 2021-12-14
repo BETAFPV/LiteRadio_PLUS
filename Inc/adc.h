@@ -34,7 +34,7 @@ extern ADC_HandleTypeDef hadc1;
 
 /* USER CODE BEGIN Private defines */
 
-#define ADC_SAMPLE_NUM	10
+#define ADC_SAMPLE_NUM	5
 #define ADC_CHAL_NUM    5
 
 /* USER CODE END Private defines */

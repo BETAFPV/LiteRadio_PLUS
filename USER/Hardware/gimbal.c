@@ -38,22 +38,22 @@ uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 	{
 		if(calibrationMode == 0)   //如果当前运行状态不在校准模式，正常执行
 		{
-			if(Sampling_MaxMinData[channel][MAXDAT] < MAX_VALUE_MIN)
+			if(Sampling_MaxMinData[channel][MAXDAT] < Sampling_MaxMinData[channel][MIDDAT])
 			{
-				Sampling_MaxMinData[channel][MAXDAT] = MAX_VALUE_MIN;
+				Sampling_MaxMinData[channel][MAXDAT] = Sampling_MaxMinData[channel][MIDDAT];
 			}
-			if(Sampling_MaxMinData[channel][MINDAT] > MIN_VALUE_MAX)  
+			if(Sampling_MaxMinData[channel][MINDAT] > Sampling_MaxMinData[channel][MIDDAT])  
 			{
-				Sampling_MaxMinData[channel][MINDAT] = MIN_VALUE_MAX; 
+				Sampling_MaxMinData[channel][MINDAT] = Sampling_MaxMinData[channel][MIDDAT]; 
 			}
-			if(Sampling_MaxMinData[channel][MIDDAT] > AD_MIDVALUE_MAX)  
-			{
-				Sampling_MaxMinData[channel][MIDDAT] = AD_MIDVALUE_MAX; 
-			}
-			else if(Sampling_MaxMinData[channel][MIDDAT] < AD_MIDVALUE_MIN) 
-			{
-				Sampling_MaxMinData[channel][MIDDAT] = AD_MIDVALUE_MIN; 
-			}
+//			if(Sampling_MaxMinData[channel][MIDDAT] > Sampling_MaxMinData[channel][MIDDAT])  
+//			{
+//				Sampling_MaxMinData[channel][MIDDAT] = Sampling_MaxMinData[channel][MIDDAT]; 
+//			}
+//			else if(Sampling_MaxMinData[channel][MIDDAT] < Sampling_MaxMinData[channel][MIDDAT]) 
+//			{
+//				Sampling_MaxMinData[channel][MIDDAT] = Sampling_MaxMinData[channel][MIDDAT]; 
+//			}
 		}
 		//限定AD值的采样范围
 		if(Get_AdcValue(channel) > Sampling_MaxMinData[channel][MAXDAT]) 
@@ -123,7 +123,16 @@ uint8_t Check_HighThrottle(void)
 
 void SaveCalibrationValueToFlash(void)
 {
-	STMFLASH_Write(ELEVATOR_MAXVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MAXDAT],1);
+	Sampling_MaxMinData[THROTTLE][MAXDAT] = Sampling_MaxMinData[THROTTLE][MAXDAT]-25;
+    Sampling_MaxMinData[THROTTLE][MINDAT] = Sampling_MaxMinData[THROTTLE][MINDAT]+25;
+    Sampling_MaxMinData[RUDDER][MAXDAT] = Sampling_MaxMinData[RUDDER][MAXDAT]-40;
+    Sampling_MaxMinData[RUDDER][MINDAT] = Sampling_MaxMinData[RUDDER][MINDAT]+40;
+    Sampling_MaxMinData[ELEVATOR][MAXDAT] = Sampling_MaxMinData[ELEVATOR][MAXDAT]-25;
+    Sampling_MaxMinData[ELEVATOR][MINDAT] = Sampling_MaxMinData[ELEVATOR][MINDAT]+25;
+    Sampling_MaxMinData[AILERON][MAXDAT] = Sampling_MaxMinData[AILERON][MAXDAT]-40;
+    Sampling_MaxMinData[AILERON][MINDAT] = Sampling_MaxMinData[AILERON][MINDAT]+40;
+
+    STMFLASH_Write(ELEVATOR_MAXVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MAXDAT],1);
 	STMFLASH_Write(ELEVATOR_MIDVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MIDDAT],1);
 	STMFLASH_Write(ELEVATOR_MINVALUE_ADDR,&Sampling_MaxMinData[ELEVATOR][MINDAT],1);
 	

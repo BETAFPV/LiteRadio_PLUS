@@ -51,15 +51,15 @@ typedef enum
 #define ADC_INPUT_MID 2047
 #define ADC_INPUT_MIN 0
 
-#define MAX_VALUE_MIN  3095
-#define MIN_VALUE_MAX  1000
+#define MAX_VALUE_MIN  2100
+#define MIN_VALUE_MAX  1900
 
 #define MAXDAT 0 
 #define MIDDAT 1
 #define MINDAT 2 
 
-#define AD_MIDVALUE_MIN (ADC_INPUT_MID - 350)
-#define AD_MIDVALUE_MAX	(ADC_INPUT_MID + 350)
+#define AD_MIDVALUE_MIN (ADC_INPUT_MID - 500)
+#define AD_MIDVALUE_MAX	(ADC_INPUT_MID + 500)
 
 void Gimbal_Init(void);
 void gimbalTask(void* param);

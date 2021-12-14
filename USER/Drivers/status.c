@@ -65,7 +65,7 @@ void Status_Init()
 #if defined(LiteRadio_Plus_CC2500) 
         RGB_TwinkleForInit((protocolIndex+1),180);
 #elif defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
-		RGB_TwinkleForInit((protocolIndex+1),300);
+		RGB_TwinkleForInit((protocolIndex+1),200);
 #endif
     }
  
