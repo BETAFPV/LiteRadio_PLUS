@@ -2407,7 +2407,7 @@
             <NotGenerated>0</NotGenerated>
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
-          <OutputDirectory>LiteRadio_Plus\</OutputDirectory>
+          <OutputDirectory>.\LiteRadio_Plus\</OutputDirectory>
           <OutputName>LiteRadio_Plus</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>

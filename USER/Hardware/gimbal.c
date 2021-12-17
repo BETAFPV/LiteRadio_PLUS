@@ -38,14 +38,21 @@ uint16_t Get_GimbalValue(gimbalChannelTypeDef channel)
 	{
 		if(calibrationMode == 0)   //如果当前运行状态不在校准模式，正常执行
 		{
-			if(Sampling_MaxMinData[channel][MAXDAT] < Sampling_MaxMinData[channel][MIDDAT])
-			{
-				Sampling_MaxMinData[channel][MAXDAT] = Sampling_MaxMinData[channel][MIDDAT];
-			}
-			if(Sampling_MaxMinData[channel][MINDAT] > Sampling_MaxMinData[channel][MIDDAT])  
-			{
-				Sampling_MaxMinData[channel][MINDAT] = Sampling_MaxMinData[channel][MIDDAT]; 
-			}
+            //第一次烧录，未校准过遥控器，从flash读取的值为65535，这里对该值重新赋值一下，
+            if(Sampling_MaxMinData[channel][MAXDAT] == 65535)
+            {
+                Sampling_MaxMinData[channel][MAXDAT] = 2500;
+                Sampling_MaxMinData[channel][MIDDAT] = 2000;
+                Sampling_MaxMinData[channel][MINDAT] = 1500;
+            }
+//			if(Sampling_MaxMinData[channel][MAXDAT] < Sampling_MaxMinData[channel][MIDDAT])
+//			{
+//				Sampling_MaxMinData[channel][MAXDAT] = Sampling_MaxMinData[channel][MIDDAT];
+//			}
+//			if(Sampling_MaxMinData[channel][MINDAT] > Sampling_MaxMinData[channel][MIDDAT])  
+//			{
+//				Sampling_MaxMinData[channel][MINDAT] = Sampling_MaxMinData[channel][MIDDAT]; 
+//			}
 //			if(Sampling_MaxMinData[channel][MIDDAT] > Sampling_MaxMinData[channel][MIDDAT])  
 //			{
 //				Sampling_MaxMinData[channel][MIDDAT] = Sampling_MaxMinData[channel][MIDDAT]; 
