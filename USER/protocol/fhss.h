@@ -27,9 +27,7 @@ extern int32_t FreqCorrection;
 // The number of FHSS frequencies in the table
 #define NR_FHSS_ENTRIES (sizeof(FHSSfreqs) / sizeof(uint32_t))
 
-#define NR_SEQUENCE_ENTRIES 256
-extern uint8_t FHSSsequence[NR_SEQUENCE_ENTRIES];
-void FHSSrandomiseFHSSsequence(const uint8_t UID[]);
+void FHSSrandomiseFHSSsequence(const uint32_t seed);
 
 void FHSSsetCurrIndex(uint8_t value);
 uint8_t FHSSgetCurrIndex(void);

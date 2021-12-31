@@ -2,7 +2,6 @@
 
 int32_t FreqCorrection = 0;
 uint8_t volatile FHSSptr = 0;
-uint8_t FHSSsequence[256] = {0};
 
 // Our table of FHSS frequencies. Define a regulatory domain to select the correct set for your location and radio
 #ifdef Regulatory_Domain_EU_868
@@ -182,6 +181,12 @@ uint32_t FHSSfreqs[] = {
 #error No regulatory domain defined, please define one in user_defines.txt
 #endif
 
+uint8_t sync_channel;
+#define FHSS_FREQ_CNT  80
+#define  FHSS_SEQUENCE_CNT  240
+uint8_t FHSSsequence[FHSS_SEQUENCE_CNT] = {0};  
+extern uint8_t FHSSsequence[FHSS_SEQUENCE_CNT];    
+    
 void FHSSsetCurrIndex(uint8_t value)
 { 
     // set the current index of the FHSS pointer
@@ -196,28 +201,33 @@ uint8_t FHSSgetCurrIndex()
 
 uint32_t GetInitialFreq()
 {
-    return FHSSfreqs[0] - FreqCorrection;  
+    return FHSSfreqs[sync_channel] - FreqCorrection;  
 }
 
 uint32_t FHSSgetNextFreq()
 {
-    return FHSSfreqs[FHSSsequence[FHSSptr++]] - FreqCorrection;
+    FHSSptr = (FHSSptr + 1) % FHSS_SEQUENCE_CNT;
+    uint32_t freq = FHSSfreqs[FHSSsequence[FHSSptr]] - FreqCorrection;
+    return freq;
 }
 
 
 static unsigned long seed = 0;
 
-// returns 0 <= x < max where max <= 256
-// (actual upper limit is higher, but there is one and I haven't
-//  thought carefully about what it is)
+
+uint16_t rng(void)
+{
+    const uint32_t m = 2147483648;
+    const uint32_t a = 214013;
+    const uint32_t c = 2531011;
+    seed = (a * seed + c) % m;
+    return seed >> 16;
+}
+
+
 static unsigned int rngN(unsigned int max)
 {
-    unsigned long m = 2147483648;
-    long a = 214013;
-    long c = 2531011;
-    seed = (a * seed + c) % m;
-    unsigned int result = ((seed >> 16) * max) / RNG_MAX;
-    return result;
+    return rng() % max;
 }
 
 // Set all of the flags in the array to true, except for the first one
@@ -233,92 +243,57 @@ void resetIsAvailable(uint8_t *array)
         array[i] = 1;
 }
 
-/**
-Requirements:
-1. 0 every n hops
-2. No two repeated channels
-3. Equal occurance of each (or as even as possible) of each channel
-4. Pesudorandom
-
-Approach:
-  Initialise an array of flags indicating which channels have not yet been assigned and a counter of how many channels are available
-  Iterate over the FHSSsequence array using index
-    if index is a multiple of SYNC_INTERVAL assign the sync channel index (0)
-    otherwise, generate a random number between 0 and the number of channels left to be assigned
-    find the index of the nth remaining channel
-    if the index is a repeat, generate a new random number
-    if the index is not a repeat, assing it to the FHSSsequence array, clear the availability flag and decrement the available count
-    if there are no available channels left, reset the flags array and the count
-*/
-void FHSSrandomiseFHSSsequence(const uint8_t UID[])
+void rngSeed(const uint32_t newSeed)
 {
-    seed = ((long)UID[2] << 24) + ((long)UID[3] << 16) + ((long)UID[4] << 8) + UID[5];
+    seed = newSeed;
+}
 
-    uint8_t isAvailable[NR_FHSS_ENTRIES];
+void FHSSrandomiseFHSSsequence(const uint32_t seed)
+{
 
-    resetIsAvailable(isAvailable);
 
-    // Fill the FHSSsequence with channel indices
-    // The 0 index is special - the 'sync' channel. The sync channel appears every
-    // syncInterval hops. The other channels are randomly distributed between the
-    // sync channels
-    const int SYNC_INTERVAL = NR_FHSS_ENTRIES;
+//    DBGLN("Number of FHSS frequencies = %u", FHSS_FREQ_CNT);
 
-    int nLeft = NR_FHSS_ENTRIES - 1; // how many channels are left to be allocated. Does not include the sync channel
-    unsigned int prev = 0;           // needed to prevent repeats of the same index
+    sync_channel = FHSS_FREQ_CNT / 2;
+//    DBGLN("Sync channel = %u", sync_channel);
 
-    // for each slot in the sequence table
-    for (int i = 0; i < NR_SEQUENCE_ENTRIES; i++)
+    // reset the pointer (otherwise the tests fail)
+    FHSSptr = 0;
+    rngSeed(seed);
+
+    // initialize the sequence array
+    for (uint8_t i = 0; i < FHSS_SEQUENCE_CNT; i++)
     {
-        if (i % SYNC_INTERVAL == 0)
-        {
-            // assign sync channel 0
+        if (i % FHSS_FREQ_CNT == 0) {
+            FHSSsequence[i] = sync_channel;
+        } else if (i % FHSS_FREQ_CNT == sync_channel) {
             FHSSsequence[i] = 0;
-            prev = 0;
+        } else {
+            FHSSsequence[i] = i % FHSS_FREQ_CNT;
         }
-        else
+    }
+
+    for (uint8_t i=0; i < FHSS_SEQUENCE_CNT; i++)
+    {
+        // if it's not the sync channel
+        if (i % FHSS_FREQ_CNT != 0)
         {
-            // pick one of the available channels. May need to loop to avoid repeats
-            unsigned int index;
-            do
-            {
-                int c = rngN(nLeft); // returnc 0<c<nLeft
-                // find the c'th entry in the isAvailable array
-                // can skip 0 as that's the sync channel and is never available for normal allocation
-                index = 1;
-                int found = 0;
-                while (index < NR_FHSS_ENTRIES)
-                {
-                    if (isAvailable[index])
-                    {
-                        if (found == c)
-                            break;
-                        found++;
-                    }
-                    index++;
-                }
-                if (index == NR_FHSS_ENTRIES)
-                {
-                    // This should never happen
-                //    Serial.print("FAILED to find the available entry!\n");
-                    // What to do? We don't want to hang as that will stop us getting to the wifi hotspot
-                    // Use the sync channel
-                    index = 0;
-                    break;
-                }
-            } while (index == prev); // can't use index if it repeats the previous value
+            uint8_t offset = (i / FHSS_FREQ_CNT) * FHSS_FREQ_CNT; // offset to start of current block
+            uint8_t rand = rngN(FHSS_FREQ_CNT-1)+1; // random number between 1 and FHSS_FREQ_CNT
 
-            FHSSsequence[i] = index; // assign the value to the sequence array
-            isAvailable[index] = 0;  // clear the flag
-            prev = index;            // remember for next iteration
-            nLeft--;                 // reduce the count of available channels
-            if (nLeft == 0)
-            {
-                // we've assigned all of the channels, so reset for next cycle
-                resetIsAvailable(isAvailable);
-                nLeft = NR_FHSS_ENTRIES - 1;
-            }
+            // switch this entry and another random entry in the same block
+            uint8_t temp = FHSSsequence[i];
+            FHSSsequence[i] = FHSSsequence[offset+rand];
+            FHSSsequence[offset+rand] = temp;
         }
-    } // for each element in FHSSsequence
+    }
 
+//    // output FHSS sequence
+//    for (uint8_t i=0; i < FHSS_SEQUENCE_CNT; i++)
+//    {
+//        DBG("%u ",FHSSsequence[i]);
+//        if (i % 10 == 9)
+//            DBGCR;
+//    }
+//    DBGCR;
 }

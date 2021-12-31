@@ -375,3 +375,10 @@ uint16_t calcCrc14(uint8_t *data, uint8_t len, uint16_t crc)
     }
     return crc & 0x3FFF;
 }
+
+uint32_t uidMacSeedGet(void)
+{
+    const uint32_t macSeed = ((uint32_t)UID[2] << 24) + ((uint32_t)UID[3] << 16) +
+                             ((uint32_t)UID[4] << 8) + UID[5];
+    return macSeed;
+}

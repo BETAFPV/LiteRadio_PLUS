@@ -205,44 +205,50 @@ void Rate_Modify(uint8_t index)
 uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
 {
 
+    if (!InBindingMode)
+        NonceTX++; 
+    
     busyTransmitting = 1;
-    uint8_t *data;
-    uint8_t maxLength;
-    uint8_t packageIndex;
+    uint32_t now = HAL_GetTick();
+    static uint8_t syncSlot;
+//    uint8_t *data;
+//    uint8_t maxLength;
+//    uint8_t packageIndex;
 
-    /////// This Part Handles the Telemetry Response ///////
-    if ((uint8_t)ExpressLRS_currAirRate_Modparams->TLMinterval > 0)
-    {
-        uint8_t modresult = (NonceTX) % TLMratioEnumToValue(ExpressLRS_currAirRate_Modparams->TLMinterval);
-        if (modresult == 0)
-        { // wait for tlm response
-            if (WaitRXresponse == 1)
-            {
-                WaitRXresponse = 0;
-                //LQCalc.inc();
-                return 0;
-            }
-            else
-            {
-                NonceTX++;
-            }
-        }
-    }
+//    /////// This Part Handles the Telemetry Response ///////
+//    if ((uint8_t)ExpressLRS_currAirRate_Modparams->TLMinterval > 0)
+//    {
+//        uint8_t modresult = (NonceTX) % TLMratioEnumToValue(ExpressLRS_currAirRate_Modparams->TLMinterval);
+//        if (modresult == 0)
+//        { // wait for tlm response
+//            if (WaitRXresponse == 1)
+//            {
+//                WaitRXresponse = 0;
+//                //LQCalc.inc();
+//                return 0;
+//            }
+//            else
+//            {
+//                NonceTX++;
+//            }
+//        }
+//    }
 
     uint32_t SyncInterval;
 
     SyncInterval = (connectionState == connected) ? ExpressLRS_currAirRate_RFperfParams->SyncPktIntervalConnected : ExpressLRS_currAirRate_RFperfParams->SyncPktIntervalDisconnected;
 
-    uint8_t skipSync = 0;
+    bool skipSync = InBindingMode;
 
     uint8_t NonceFHSSresult = NonceTX % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
-    uint8_t NonceFHSSresultWindow = (NonceFHSSresult == 1 || NonceFHSSresult == 2) ? 1 : 0; // restrict to the middle nonce ticks (not before or after freq chance)
+//    uint8_t NonceFHSSresultWindow = (NonceFHSSresult == 1 || NonceFHSSresult == 2) ? 1 : 0; // restrict to the middle nonce ticks (not before or after freq chance)
     uint8_t WithinSyncSpamResidualWindow = (HAL_GetTick() - rfModeLastChangedMS < syncSpamAResidualTimeMS) ? 1 : 0;
-    if((syncSpamCounter || WithinSyncSpamResidualWindow) && NonceFHSSresultWindow)
+    if((syncSpamCounter || WithinSyncSpamResidualWindow) &&  (NonceFHSSresult == 1 || NonceFHSSresult == 2))
     {  
         GenerateSyncPacketData();
+        syncSlot = 0;
     }
-    else if((!skipSync) && ((HAL_GetTick() > (SyncPacketLastSent + SyncInterval)) && (Radio.currFreq == GetInitialFreq()) && NonceFHSSresultWindow)) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
+    else if((!skipSync) && ((syncSlot / 2) <= NonceFHSSresult) && (now - SyncPacketLastSent > SyncInterval) && (Radio.currFreq == GetInitialFreq())) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
     {
 		 //在发送补偿包的时候，不知道为什么，定时器中断时间会提前中断？需要加延时校准，否者在连接betaflight SPI接收机时 接收端会跳频混乱，后续应该会改善。
 		if(tx_config.rate == 0x01)  //250Hz
@@ -258,11 +264,15 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
 			delay(3000);     
 		}
         GenerateSyncPacketData();
+        syncSlot = (syncSlot + 1) % (ExpressLRS_currAirRate_Modparams->FHSShopInterval * 2);
     }
     else
     {
         if(NextPacketIsMspData && StubbornSender_IsActive())
         {
+            uint8_t *data;
+            uint8_t maxLength;
+            uint8_t packageIndex;
             StubbornSender_GetCurrentPayload(&packageIndex, &maxLength, &data);
             
             Radio.radioTXdataBuffer[0] = MSP_DATA_PACKET & 0x03;
@@ -276,6 +286,8 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
             NextPacketIsMspData = 0;
             // counter can be increased even for normal msp messages since it's reset if a real bind message should be sent
             BindingSendCount++;
+            if (ExpressLRS_currAirRate_Modparams->TLMinterval != TLM_RATIO_1_2)
+                syncSpamCounter = 1;
             if (InBindingMode)
             {
                 // exit bind mode if package after some repeats
@@ -396,7 +408,7 @@ void setup(void)
     UID[5] = MasterUID[5];
     
     CRCInitializer = (UID[4] << 8) | UID[5];
-    FHSSrandomiseFHSSsequence(UID); 
+    FHSSrandomiseFHSSsequence(uidMacSeedGet()); 
 #if !defined(Regulatory_Domain_ISM_2400)
     Radio.currSyncWord = UID[3];
 #endif    
@@ -413,9 +425,9 @@ void setup(void)
     tx_config.lastPower = 2;
     SetRFLinkRate(RATE_DEFAULT);
     generateCrc14Table();
-    tx_config.rate = 1;
-    tx_config.lastRate = 1;
-    TIM1->ARR = 3999;
+    tx_config.rate = 3;
+    tx_config.lastRate = 3;
+    TIM1->ARR = 20000;
 #elif defined(Regulatory_Domain_EU_868) || defined(Regulatory_Domain_FCC_915)
     SX1276_Init();
     SX1276_Reset();
@@ -663,11 +675,11 @@ void EnterBindingMode()
 
     // Start attempting to bind
     // Lock the RF rate and freq while binding
-    SetRFLinkRate(0);
+    SetRFLinkRate(RATE_BINDING);
     Radio.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
     SetFrequencyReg(Radio.currFreq); 
     // Start transmitting again
-    TIM1->ARR = 2000;
+    TIM1->ARR = 20000;
     HAL_TIM_Base_Start_IT(&htim1);
 }
 

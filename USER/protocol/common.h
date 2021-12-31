@@ -24,9 +24,9 @@
 #define HARDWARE_MINOR_VERSION_ADDR     0x8007A10
 #define HARDWARE_PATCH_VERSION_ADDR     0x8007A12
 
-#define FIRMWARE_MAJOR_VERSION (0x01U)
+#define FIRMWARE_MAJOR_VERSION (0x02U)
 #define FIRMWARE_MINOR_VERSION (0x00U)
-#define FIRMWARE_PITCH_VERSION (0x01U)
+#define FIRMWARE_PITCH_VERSION (0x00U)
 typedef struct
 {
     uint8_t MAJOR_VERSION;
@@ -229,7 +229,8 @@ typedef struct expresslrs_mod_settings_s
 
 #if defined(Regulatory_Domain_ISM_2400)
 #define RATE_MAX 4
-#define RATE_DEFAULT 1
+#define RATE_DEFAULT 3
+#define RATE_BINDING 3
 typedef struct expresslrs_mod_settings_s
 {
     int8_t index;
@@ -278,7 +279,7 @@ uint8_t StubbornSender_IsActive(void);
 
 void generateCrc14Table(void);
 uint16_t calcCrc14(uint8_t *data, uint8_t len, uint16_t crc);
-
+uint32_t uidMacSeedGet(void);
 #endif
 
 #endif
