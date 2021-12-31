@@ -201,8 +201,8 @@ typedef struct expresslrs_rf_pref_params_s
     expresslrs_RFrates_e enum_rate; // Max value of 16 since only 4 bits have been assigned in the sync package.
     int32_t RXsensitivity;          // expected RF sensitivity based on
     uint32_t TOA;                   // time on air in microseconds
-    uint32_t RFmodeCycleInterval;
-    uint32_t RFmodeCycleAddtionalTime;
+    uint32_t DisconnectTimeoutMs;
+    uint32_t RxLockTimeoutMs;
     uint32_t SyncPktIntervalDisconnected; // how often to send the SYNC_PACKET packet (ms) when there is no response from RX
     uint32_t SyncPktIntervalConnected;    // how often to send the SYNC_PACKET packet (ms) when there we have a connection
 
@@ -242,7 +242,7 @@ typedef struct expresslrs_mod_settings_s
     expresslrs_tlm_ratio_e TLMinterval; // every X packets is a response TLM packet, should be a power of 2
     uint8_t FHSShopInterval;            // every X packets we hop to a new frequency. Max value of 16 since only 4 bits have been assigned in the sync package.
     uint8_t PreambleLen;
-
+    uint8_t PayloadLength;            // Number of OTA bytes to be sent.
 } expresslrs_mod_settings_s;
 
 #endif

@@ -78,6 +78,7 @@ void SX1280_SetPacketParams(uint8_t PreambleLength, SX1280_RadioLoRaPacketLength
 void SX1280_SetFrequencyReg(uint32_t freq);
 void SX1280_SetFIFOaddr(uint8_t txBaseAddr, uint8_t rxBaseAddr);    
 void SX1280_SetDioIrqParams(uint16_t irqMask, uint16_t dio1Mask, uint16_t dio2Mask, uint16_t dio3Mask);
+uint16_t SX1280_GetIrqStatus(void);
 void SX1280_ClearIrqStatus(uint16_t irqMask);
 uint8_t SX1280_GetRxBufferAddr(void);
 void SX1280_GetLastPacketStats(void);
@@ -91,7 +92,7 @@ void SX1280_TXnb(volatile uint8_t *data, uint8_t length);
 void SX1280_RXnb(void);
 void SX1280_TXnbISR(void);
 void SX1280_RXnbISR(void);
-
+void  SX1280_IsrCallback(void);
 uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data);
 /*power*/
 PowerLevels_e SX1280_SetPower(PowerLevels_e Power);

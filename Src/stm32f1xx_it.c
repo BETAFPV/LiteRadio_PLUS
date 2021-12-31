@@ -343,6 +343,7 @@ void EXTI15_10_IRQHandler(void)
     {
         SX1280_TXnbISR();
     }
+//    SX1280_IsrCallback();
 #elif defined(LiteRadio_Plus_SX1276)
     if (SX1276.InterruptAssignment == SX127x_INTERRUPT_RX_DONE)
     {

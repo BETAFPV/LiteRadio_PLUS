@@ -34,7 +34,7 @@ uint8_t NextPacketIsMspData = 0;  // if true the next packet will contain the ms
 
 ////////////SYNC PACKET/////////
 /// sync packet spamming on mode change vars ///
-#define syncSpamAResidualTimeMS 1500 // we spam some more after rate change to help link get up to speed
+#define syncSpamAResidualTimeMS 500 // we spam some more after rate change to help link get up to speed
 #define syncSpamAmount 3
 volatile uint8_t syncSpamCounter = 0;
 uint32_t rfModeLastChangedMS = 0;
@@ -125,18 +125,23 @@ void GenerateSyncPacketData()
     if (syncSpamCounter)
     {
         Index = (tx_config.rate & 0x03);
-        TLMrate = (tx_config.tlm & 0x07);
+//        TLMrate = (tx_config.tlm & 0x07);
     }
     else
     {
         Index = (ExpressLRS_currAirRate_Modparams->index & 0x03);
-        TLMrate = (ExpressLRS_currAirRate_Modparams->TLMinterval & 0x07);
+//        TLMrate = (ExpressLRS_currAirRate_Modparams->TLMinterval & 0x07);
     }
+    expresslrs_tlm_ratio_e newRatio = (StubbornSender_IsActive()) ? TLM_RATIO_1_2 : (expresslrs_tlm_ratio_e)tx_config.tlm;
 
+    if (connectionState == connected && ExpressLRS_currAirRate_Modparams->TLMinterval < newRatio)
+    LastTLMpacketRecvMillis = SyncPacketLastSent;
+    ExpressLRS_currAirRate_Modparams->TLMinterval = newRatio;
+    
     Radio.radioTXdataBuffer[0] = SYNC_PACKET & 0x03;
     Radio.radioTXdataBuffer[1] = FHSSgetCurrIndex();
     Radio.radioTXdataBuffer[2] = NonceTX;
-    Radio.radioTXdataBuffer[3] = (Index << 6) + (TLMrate << 3) + (SwitchEncMode << 1);
+    Radio.radioTXdataBuffer[3] = (Index << 6) + (newRatio << 3) + (SwitchEncMode << 1);
     Radio.radioTXdataBuffer[4] = UID[3];
     Radio.radioTXdataBuffer[5] = UID[4];
     Radio.radioTXdataBuffer[6] = UID[5];
@@ -155,7 +160,7 @@ void SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
 //        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
 //        && (invertIQ == Radio.IQinverted))
 //    return;
-
+    TIM1->ARR = ModParams->interval;
     Radio_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
 
     ExpressLRS_currAirRate_Modparams = ModParams;
@@ -167,17 +172,23 @@ void SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
 
 void HandleFHSS()
 {
-    if (InBindingMode)
-    {
-        return;
-    }
+//    if (InBindingMode)
+//    {
+//        return;
+//    }
 
-    uint8_t modresult = (NonceTX) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
+//    uint8_t modresult = (NonceTX+1) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
 
-    if (modresult == 0) // if it time to hop, do so.
-    {
+//    if (modresult == 0) // if it time to hop, do so.
+//    {
+//        SetFrequencyReg(FHSSgetNextFreq());
+//    }
+      uint8_t modresult = (NonceTX + 1) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
+      // If the next packet should be on the next FHSS frequency, do the hop
+      if (!InBindingMode && modresult == 0)
+      {
         SetFrequencyReg(FHSSgetNextFreq());
-    }
+      }
 }
 
 void HandleTLM()
@@ -250,19 +261,19 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     }
     else if((!skipSync) && ((syncSlot / 2) <= NonceFHSSresult) && (now - SyncPacketLastSent > SyncInterval) && (Radio.currFreq == GetInitialFreq())) // don't sync just after we changed freqs (helps with hwTimer.init() being in sync from the get go)
     {
-		 //在发送补偿包的时候，不知道为什么，定时器中断时间会提前中断？需要加延时校准，否者在连接betaflight SPI接收机时 接收端会跳频混乱，后续应该会改善。
-		if(tx_config.rate == 0x01)  //250Hz
-		{
-			delay(2000);     
-		}
-		if(tx_config.rate == 0x02)  //150Hz
-		{
-			delay(1000);     
-		}
-		if(tx_config.rate == 0x00)  //500Hz
-		{
-			delay(3000);     
-		}
+//		 //在发送补偿包的时候，不知道为什么，定时器中断时间会提前中断？需要加延时校准，否者在连接betaflight SPI接收机时 接收端会跳频混乱，后续应该会改善。
+//		if(tx_config.rate == 0x01)  //250Hz
+//		{
+//			delay(2000);     
+//		}
+//		if(tx_config.rate == 0x02)  //150Hz
+//		{
+//			delay(1000);     
+//		}
+//		if(tx_config.rate == 0x00)  //500Hz
+//		{
+//			delay(3000);     
+//		}
         GenerateSyncPacketData();
         syncSlot = (syncSlot + 1) % (ExpressLRS_currAirRate_Modparams->FHSShopInterval * 2);
     }
@@ -308,7 +319,7 @@ uint16_t SendRCdataToRF(uint16_t* crsfcontrol_data)
     ///// Next, Calculate the CRC and put it into the buffer /////
 
     uint16_t crc = calcCrc14(Radio.radioTXdataBuffer, 7, CRCInitializer);
-    Radio.radioTXdataBuffer[0] |= (crc >> 6) & 0xFC;
+    Radio.radioTXdataBuffer[0] =(Radio.radioTXdataBuffer[0] & 0x03) | ((crc >> 6) & 0xFC);
     Radio.radioTXdataBuffer[7] = crc & 0xFF;
 
     TXnb(Radio.radioTXdataBuffer, 8);
@@ -361,9 +372,9 @@ void RXdoneISR()
 void TXdoneISR()
 {
     busyTransmitting = 0;
-    NonceTX++; // must be done before callback
+//    NonceTX++; // must be done before callback
     HandleFHSS();
-    HandleTLM();
+//    HandleTLM();
 }
 
 void ExpressLRS_Init(uint8_t protocolIndex)
