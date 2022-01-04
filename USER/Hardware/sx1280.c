@@ -73,10 +73,7 @@ void  SX1280_IsrCallback(void)
 {
     uint16_t irqStatus = SX1280_GetIrqStatus();
     SX1280_ClearIrqStatus(SX1280_IRQ_RADIO_ALL);
-    if ((irqStatus & SX1280_IRQ_TX_DONE))
-        SX1280_TXnbISR();
-    else if ((irqStatus & SX1280_IRQ_RX_DONE))
-        SX1280_RXnbISR();
+    SX1280_TXnbISR();
 }
 void SX1280_Reset(void)
 {

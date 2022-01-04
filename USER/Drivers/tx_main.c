@@ -153,13 +153,13 @@ void GenerateSyncPacketData()
 
 void SetRFLinkRate(uint8_t index) // Set speed of RF link (hz)
 {
-    expresslrs_mod_settings_s *const ModParams = get_elrs_airRateConfig(index);
-    expresslrs_rf_pref_params_s *const RFperf = get_elrs_RFperfParams(index);
+    expresslrs_mod_settings_s * ModParams = get_elrs_airRateConfig(index);
+    expresslrs_rf_pref_params_s * RFperf = get_elrs_RFperfParams(index);
     uint8_t invertIQ = UID[5] & 0x01;
-//    if ((ModParams == ExpressLRS_currAirRate_Modparams)
-//        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
-//        && (invertIQ == Radio.IQinverted))
-//    return;
+    if ((ModParams == ExpressLRS_currAirRate_Modparams)
+        && (RFperf == ExpressLRS_currAirRate_RFperfParams)
+        && (invertIQ == Radio.IQinverted))
+    return;
     TIM1->ARR = ModParams->interval;
     Radio_Config(ModParams->bw, ModParams->sf, ModParams->cr, GetInitialFreq(), ModParams->PreambleLen, invertIQ);
 
@@ -185,7 +185,7 @@ void HandleFHSS()
 //    }
       uint8_t modresult = (NonceTX + 1) % ExpressLRS_currAirRate_Modparams->FHSShopInterval;
       // If the next packet should be on the next FHSS frequency, do the hop
-      if (!InBindingMode && modresult == 0)
+      if ((InBindingMode == 0) && (modresult == 0))
       {
         SetFrequencyReg(FHSSgetNextFreq());
       }
