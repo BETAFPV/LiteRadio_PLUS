@@ -372,7 +372,6 @@ void RXdoneISR()
 void TXdoneISR()
 {
     busyTransmitting = 0;
-//    NonceTX++; // must be done before callback
     HandleFHSS();
 //    HandleTLM();
 }
