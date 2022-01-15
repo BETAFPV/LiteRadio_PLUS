@@ -25,6 +25,11 @@ static uint64_t connectTickLast;
 static uint64_t rssiWarningNowTick;
 static uint64_t rssiWarningLastTick;
 
+
+crsfParameter_t externalRFprarmeter = {0xff,0xff,0xff};
+uint8_t maxPackSize = 64;
+
+
 void CRSF_SetBind()
 {
     HAL_Delay(1);
@@ -37,70 +42,77 @@ void CRSF_Init(uint8_t protocolIndex)
 
 uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
 {   
+    static uint8_t rateToSend = 0;
+    static uint8_t timeCount = 0;
+    timeCount++;
     if(externalCRSFdata.configSetFlag)
     {
         if(externalCRSFdata.crsfParameter.rate != externalCRSFdata.lastCRSFparameter.rate)
         {
-            switch (externalCRSFdata.regulatoryDomainIndex)
-            {
-                case FREQ_FCC_915:
-                case FREQ_EU_868:
-                {
-                    switch (externalCRSFdata.crsfParameter.rate)
-                    {
-                        case FREQ_900_RATE_200HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_200HZ;
-                            break;
-                        case FREQ_900_RATE_100HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_100HZ;
-                            break;
-                        case FREQ_900_RATE_50HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
-                            break;
-                        case FREQ_900_RATE_25HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_25HZ;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                }
-                case FREQ_ISM_2400:
-                {
-                    switch (externalCRSFdata.crsfParameter.rate)
-                    {
-                        case FREQ_2400_RATE_500HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_500HZ;
-                            break;
-                        case FREQ_2400_RATE_250HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_250HZ;
-                            break;
-                        case FREQ_2400_RATE_150HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_150HZ;
-                            break;
-                        case FREQ_2400_RATE_50HZ:
-                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                }
-                default:
-                    break;
-                            
-            }
-            Send_CRSFParameterPackage(0x01,externalCRSFdata.crsfParameter.rate);
+//            switch (externalCRSFdata.regulatoryDomainIndex)
+//            {
+//                case FREQ_FCC_915:
+//                case FREQ_EU_868:
+//                {
+//                    switch (externalCRSFdata.crsfParameter.rate)
+//                    {
+//                        case FREQ_900_RATE_200HZ:
+//                            externalCRSFdata.crsfParameter.rate = RATE_200HZ;
+//                            break;
+//                        case FREQ_900_RATE_100HZ:
+//                            externalCRSFdata.crsfParameter.rate = RATE_100HZ;
+//                            break;
+//                        case FREQ_900_RATE_50HZ:
+//                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
+//                            break;
+//                        case FREQ_900_RATE_25HZ:
+//                            externalCRSFdata.crsfParameter.rate = RATE_25HZ;
+//                            break;
+//                        default:
+//                            break;
+//                    }
+//                    break;
+//                }
+//                case FREQ_ISM_2400:
+//                {
+//                    switch (externalCRSFdata.crsfParameter.rate)
+//                    {
+//                        case FREQ_2400_RATE_500HZ:
+//                            rateToSend = FREQ_2400_RATE_500HZ;
+////                            externalCRSFdata.crsfParameter.rate = RATE_500HZ;
+//                            break;
+//                        case FREQ_2400_RATE_250HZ:
+//                            rateToSend = FREQ_2400_RATE_250HZ;
+////                            externalCRSFdata.crsfParameter.rate = RATE_250HZ;
+//                            break;
+//                        case FREQ_2400_RATE_150HZ:
+//                            rateToSend = FREQ_2400_RATE_150HZ;
+////                            externalCRSFdata.crsfParameter.rate = RATE_150HZ;
+//                            break;
+//                        case FREQ_2400_RATE_50HZ:
+//                            rateToSend = FREQ_2400_RATE_50HZ;
+////                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
+//                            break;
+//                        default:
+//                            break;
+//                    }
+//                    break;
+//                }
+//                default:
+//                    break;
+//                            
+//            }
+            Send_CRSFParameterPackage(rate,externalCRSFdata.crsfParameter.rate);
             externalCRSFdata.lastCRSFparameter.rate = externalCRSFdata.crsfParameter.rate;
         }
         if(externalCRSFdata.crsfParameter.TLM != externalCRSFdata.lastCRSFparameter.TLM)
         {
-            Send_CRSFParameterPackage(0x02,externalCRSFdata.crsfParameter.TLM);
+            Send_CRSFParameterPackage(tlm,externalCRSFdata.crsfParameter.TLM);
             externalCRSFdata.lastCRSFparameter.TLM = externalCRSFdata.crsfParameter.TLM;
         }
         if(externalCRSFdata.crsfParameter.power != externalCRSFdata.lastCRSFparameter.power)
         {
-            Send_CRSFParameterPackage(0x03,externalCRSFdata.crsfParameter.power);
+            Send_CRSFParameterPackage(power,externalCRSFdata.crsfParameter.power);
             externalCRSFdata.lastCRSFparameter.power = externalCRSFdata.crsfParameter.power;
         }
         if(externalCRSFdata.inBindingMode)
@@ -115,26 +127,44 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         }                
         externalCRSFdata.configSetFlag = 0;
     }
-//    else if()
-//    {
-//        GetSbusPackage(sbusPacket,crsfcontrol_data);
-//        HAL_UART_Transmit_DMA(&huart1,sbusPacket,25);
-//    }
-    else
+    else if(externalCRSFdata.regulatoryDomainIndex==0 && (timeCount>30))
+    {
+        timeCount = 0;
+        GetExternalRFWorkFrequency();
+    }
+    else if(externalRFprarmeter.power==0xff && (timeCount>30))
+    {
+        timeCount = 0;
+        if(maxPackSize==64) GetExternalRFParameter(6,0);
+        else if(maxPackSize == 32) GetExternalRFParameter(6,1);
+    }
+    else if(externalRFprarmeter.rate==0xff && (timeCount>30))
+    {
+        timeCount = 0;
+        if(maxPackSize==64) GetExternalRFParameter(1,1);
+        else if(maxPackSize == 32) GetExternalRFParameter(1,2);
+    }
+    else if(externalRFprarmeter.TLM==0xff && (timeCount>30))
+    {
+        timeCount = 0;
+        if(maxPackSize==64) GetExternalRFParameter(2,0);
+        else if(maxPackSize == 32) GetExternalRFParameter(2,2);
+    }
+    else if(externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)
     {
         Get_CRSFPackage(crsfPacket,crsfcontrol_data);
         HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
     }
-    if(externalCRSFdata.RSSI<RSSI_WARNING_VALUE && crsfLinkCount>10)
-    {
-        rssiWarningNowTick = HAL_GetTick();
-        if((rssiWarningNowTick - rssiWarningLastTick) > 10000)
-        {
-            xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
-            rssiWarningLastTick = rssiWarningNowTick;
-        }
+//    if(externalCRSFdata.RSSI<RSSI_WARNING_VALUE && crsfLinkCount>10)
+//    {
+//        rssiWarningNowTick = HAL_GetTick();
+//        if((rssiWarningNowTick - rssiWarningLastTick) > 10000)
+//        {
+//            xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
+//            rssiWarningLastTick = rssiWarningNowTick;
+//        }
 
-    }
+//    }
 
 
 
@@ -271,4 +301,31 @@ void Send_CRSFParameterPackage(uint8_t dataType,uint8_t dataParameter)
     uint8_t * pointDataToCRSF = &dataToCRSF[2];
     dataToCRSF[7] = crc8(pointDataToCRSF, 5);  
     HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8);    
+}
+
+void GetExternalRFParameter(uint8_t dataType,uint8_t chunk)
+{
+    dataToCRSF[0] = CRSF_ADDRESS_CRSF_TRANSMITTER; 
+    dataToCRSF[1] = 0x06; 
+    dataToCRSF[2] = CRSF_FRAMETYPE_PARAMETER_READ;
+    dataToCRSF[3] = CRSF_ADDRESS_CRSF_TRANSMITTER;
+    dataToCRSF[4] = CRSF_ADDRESS_RADIO_TRANSMITTER;
+    dataToCRSF[5] = dataType;
+    dataToCRSF[6] = chunk;
+    uint8_t * pointDataToCRSF = &dataToCRSF[2];
+    dataToCRSF[7] = crc8(&dataToCRSF[2], 5);   
+    HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8);  
+}
+void GetExternalRFWorkFrequency(void)
+{
+    dataToCRSF[0] = CRSF_ADDRESS_CRSF_TRANSMITTER; 
+    dataToCRSF[1] = 0x04; 
+    dataToCRSF[2] = CRSF_FRAMETYPE_DEVICE_PING;
+    dataToCRSF[3] = 0;
+    dataToCRSF[4] = CRSF_ADDRESS_RADIO_TRANSMITTER;
+    dataToCRSF[5] = 84;
+    dataToCRSF[6] = 147;
+    uint8_t * pointDataToCRSF = &dataToCRSF[2];
+    dataToCRSF[7] = crc8(&dataToCRSF[2], 5);   
+    HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8); 
 }

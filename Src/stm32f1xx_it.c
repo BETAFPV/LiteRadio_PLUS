@@ -33,6 +33,7 @@
 #include "frsky_d16.h"
 #if defined(LiteRadio_Plus_SX1280)
 #include "sx1280.h"
+#include "status.h"
 #elif defined(LiteRadio_Plus_SX1276)
 #include "sx1276.h"
 #endif
@@ -55,7 +56,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-static uint8_t crsfRXPacket[15] = {0};
+uint8_t crsfRXPacket[64] = {0};
 
 /* USER CODE END PV */
 
@@ -214,7 +215,7 @@ void DMA1_Channel4_IRQHandler(void)
 void DMA1_Channel5_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
-  Get_LinkStatis(crsfRXPacket);
+//  Get_LinkStatis(crsfRXPacket);
   /* USER CODE END DMA1_Channel5_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart1_rx);
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
@@ -275,7 +276,8 @@ void TIM1_UP_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
-  SendRCdataToRF(channelData);
+    if(Get_ProtocolIndex()==0)
+        SendRCdataToRF(channelData);
 #elif defined(LiteRadio_Plus_CC2500)
   TIM1->ARR = RF_Process(channelData); 
 #endif        
@@ -360,7 +362,113 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    HAL_UART_Receive_DMA(&huart1,crsfRXPacket,15);
+#if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
+    if(Get_ProtocolIndex()==0)
+        return;
+#elif defined(LiteRadio_Plus_CC2500)
+  if(Get_ProtocolIndex()==4)
+        return;
+#endif
+    
+    if(externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)
+        return;
+    
+    HAL_UART_Receive_DMA(&huart1,crsfRXPacket,maxPackSize);
+    
+    if (crsfRXPacket[0]!= RADIO_ADDRESS)
+        return;
+    
+    if(maxPackSize == 64)
+    {
+        switch(crsfRXPacket[5])
+        {
+            case rate:
+                if(crsfRXPacket[6]==0 && crsfRXPacket[14]==41)
+                {
+                    externalCRSFdata.crsfParameter.rate = crsfRXPacket[16];
+                    externalCRSFdata.lastCRSFparameter.rate = crsfRXPacket[16];
+                    externalRFprarmeter.rate = crsfRXPacket[16];
+                }
+                else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                {
+                    maxPackSize = 32;
+                }
+                break;
+                
+            case tlm:
+                if(crsfRXPacket[6]==0 && crsfRXPacket[56]==50)
+                {
+                    externalCRSFdata.crsfParameter.TLM = crsfRXPacket[58];
+                    externalCRSFdata.lastCRSFparameter.TLM = crsfRXPacket[58];
+                    externalRFprarmeter.TLM =  crsfRXPacket[58];
+                }
+                else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                {
+                    maxPackSize = 32;
+                }
+                break;
+                
+            case power:
+                if(crsfRXPacket[6]==0 && crsfRXPacket[38]==48)
+                {
+                    externalCRSFdata.crsfParameter.power = crsfRXPacket[40];
+                    externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[40];
+                    externalRFprarmeter.power = crsfRXPacket[40];
+                }
+                else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                {
+                    maxPackSize = 32;
+                }
+                break;
+                
+            case regulatoryDomain:
+                if(crsfRXPacket[13]==50 && crsfRXPacket[15]==52)
+                {
+                    externalCRSFdata.regulatoryDomainIndex = 0x06;
+                }   
+                break;
+                
+            default:
+                break;       
+        }
+    }
+    else if(maxPackSize == 32)
+    {
+         switch(crsfRXPacket[5])
+        {
+            case rate:
+                if(crsfRXPacket[6]==0 && crsfRXPacket[22]==41)
+                {
+                    externalCRSFdata.crsfParameter.rate = crsfRXPacket[24];
+                    externalCRSFdata.lastCRSFparameter.rate = crsfRXPacket[24];
+                    externalRFprarmeter.rate = crsfRXPacket[24];
+                }
+                break;
+            case tlm:
+                if(crsfRXPacket[6]==0 && crsfRXPacket[8]==50)
+                {
+                    externalCRSFdata.crsfParameter.TLM = crsfRXPacket[10];
+                    externalCRSFdata.lastCRSFparameter.TLM = crsfRXPacket[10];
+                    externalRFprarmeter.TLM =  crsfRXPacket[10];
+                }
+                break;
+            case power:
+                if(crsfRXPacket[6]==0 && crsfRXPacket[14]==48)
+                {
+                    externalCRSFdata.crsfParameter.power = crsfRXPacket[16];
+                    externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[16];
+                    externalRFprarmeter.power = crsfRXPacket[16];
+                }
+                break;
+            case regulatoryDomain:
+                if(crsfRXPacket[13]==50 && crsfRXPacket[15]==52)
+                        externalCRSFdata.regulatoryDomainIndex = 0x06;
+                break;
+            default:
+                break;       
+        }
+    }
+    
 }
 
 /* USER CODE END 1 */

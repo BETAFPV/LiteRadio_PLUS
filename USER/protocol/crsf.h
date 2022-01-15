@@ -20,6 +20,8 @@
 /*crsf frame type*/
 #define CRSF_FRAMETYPE_LINK_STATISTICS     0x14
 #define CRSF_FRAMETYPE_RC_CHANNELS_PACKED  0x16
+#define CRSF_FRAMETYPE_DEVICE_PING         0x28
+#define CRSF_FRAMETYPE_PARAMETER_READ      0x2C
 #define CRSF_FRAMETYPE_RADIO_ID            0x3A
 #define CRSF_FRAMETYPE_PARAMETER_WRITE     0x2D
 
@@ -31,6 +33,19 @@
 #define FREQ_AU_433 4
 #define FREQ_EU_433 5
 #define FREQ_ISM_2400 6
+
+
+enum{
+    rate =1,
+    tlm = 2,
+    power =6,
+    regulatoryDomain = 66,
+};
+#define RADIO_ADDRESS                  0xEA
+#define UART_SYNC                      0xC8
+extern uint8_t maxPackSize;
+
+
 
 typedef enum
 {
@@ -45,6 +60,8 @@ typedef struct
     uint8_t TLM;  
 }
 crsfParameter_t;
+extern crsfParameter_t externalRFprarmeter;
+
 
 typedef struct
 {
@@ -86,6 +103,8 @@ void CRSF_SetBind(void);
 void CRSF_Init(uint8_t protocolIndex);
 uint16_t CRSF_Process(uint16_t* controlData);
 void Send_CRSFParameterPackage(uint8_t dataType,uint8_t dataParameter);
+void GetExternalRFParameter(uint8_t dataType,uint8_t chunk);
+void GetExternalRFWorkFrequency(void);
 void Get_CRSFPackage(uint8_t* channelToCRSF,uint16_t* controlDataBuff);
 void Get_LinkStatis(uint8_t* CRSF_RXPacket);
 #endif

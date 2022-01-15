@@ -34,5 +34,5 @@ uint32_t Get_ProtocolDelayTime(void);
 void Status_Init(void);
 void Status_Update(void);
 void statusTask(void* param);
-
+uint8_t Get_ProtocolIndex();
 #endif  

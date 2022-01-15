@@ -23,7 +23,7 @@ typedef enum
 }requestProtocol_e;
 
 
-extern uint8_t sendSpam;                                                                
+extern uint16_t sendSpam;                                                                
                                                                 
 void joystickTask(void *param);
 extern TaskHandle_t joystickTaskHandle;

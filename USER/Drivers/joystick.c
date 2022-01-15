@@ -14,8 +14,8 @@ static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
 /*累加和校验算法*/
 static uint16_t checkSum;
-uint8_t sendSpam;
-
+uint16_t sendSpam;
+extern crsfParameter_t externalRFprarmeter;
 void joystickTask(void *param) 
 {
     uint16_t hidReportData[8];
@@ -28,14 +28,14 @@ void joystickTask(void *param)
         vTaskDelay(joystickDelayTime);
         xQueueReceive(mixesValQueue,mixValBuff,0);
      
-        hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
-        hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
-        hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
-        hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
-        hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
-        hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
-        hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
-        hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
+//        hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
+//        hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
+//        hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
+//        hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
+//        hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
+//        hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
+//        hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
+//        hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
 
         if (requestType1 == REQUEST_CHANNEL_INFO)
         {
@@ -47,11 +47,13 @@ void joystickTask(void *param)
                 checkSum += hidReportData[i]&0x00FF;
             }
             hidReportData[7] = checkSum; 
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
         }
         else if (requestType1 == REQUEST_CONIFG_INFO)
         {
             if(requestType2 == 0x00)/*lite_info*/
             {
+                sendSpam = 0;
                 STMFLASH_Read(CONFIGER_INFO_ADDR,&requestDataBuff[0],3);
                 hidReportData[0] = LITE_CONFIGER_INFO_ID|(VERSION_INDEX << 8);
                 hidReportData[1] = requestDataBuff[0]|(requestDataBuff[1] << 8);
@@ -60,7 +62,8 @@ void joystickTask(void *param)
                 {
                     checkSum += hidReportData[i]&0x00FF;
                 }
-                hidReportData[7] = checkSum;    
+                hidReportData[7] = checkSum;
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
             }
             else if(requestType2 == 0x01)/*internal_info*/
             {
@@ -78,78 +81,85 @@ void joystickTask(void *param)
                     checkSum += hidReportData[i] & 0x00FF;
                 }
                 hidReportData[7] = checkSum;
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
 
             }
             else if(requestType2 == 0x02)/*external_info*/
             {
-                if(sendSpam>100)
+//                if(sendSpam>100)
+//                {
+//                    requestType1 = 0x00;
+//                    requestType2 = 0x01;
+//                    sendSpam = 0;
+//                }
+//                else
+//                {
+//                    sendSpam++;
+//                }
+                sendSpam++;
+                if((externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)||(sendSpam>=5000))
                 {
-                    requestType1 = 0x00;
-                    requestType2 = 0x01;
-                    sendSpam = 0;
-                }
-                else
-                {
-                    sendSpam++;
-                }
-                hidReportData[0] = EXTERNAL_CONFIGER_INFO_ID|(0x01 <<8);;
-                uint8_t currentrate;
-                switch (externalCRSFdata.regulatoryDomainIndex)
-                {
-                    case FREQ_FCC_915:
-                    case FREQ_EU_868:
+                    hidReportData[0] = EXTERNAL_CONFIGER_INFO_ID|(0x01 <<8);;
+//                    uint8_t currentrate;
+//                    switch (externalCRSFdata.regulatoryDomainIndex)
+//                    {
+//                        case FREQ_FCC_915:
+//                        case FREQ_EU_868:
+//                        {
+//                            switch (externalCRSFdata.crsfParameter.rate)
+//                            {
+//                                case RATE_200HZ:
+//                                    currentrate = FREQ_900_RATE_200HZ;
+//                                    break;
+//                                case RATE_100HZ:
+//                                    currentrate = FREQ_900_RATE_100HZ;
+//                                    break;
+//                                case RATE_50HZ:
+//                                    currentrate = FREQ_900_RATE_50HZ;
+//                                    break;
+//                                case RATE_25HZ:
+//                                    currentrate = FREQ_900_RATE_25HZ;
+//                                    break;
+//                                default:
+//                                    break;
+//                            }
+//                            break;
+//                        }
+//                        case FREQ_ISM_2400:
+//                        {
+//                            switch (externalCRSFdata.crsfParameter.rate)
+//                            {
+//                                case FREQ_2400_RATE_500HZ:
+//                                    currentrate = FREQ_2400_RATE_500HZ;
+//                                    break;
+//                                case FREQ_2400_RATE_250HZ:
+//                                    currentrate = FREQ_2400_RATE_250HZ;
+//                                    break;
+//                                case FREQ_2400_RATE_150HZ:
+//                                    currentrate = FREQ_2400_RATE_150HZ;
+//                                    break;
+//                                case FREQ_2400_RATE_50HZ:
+//                                    currentrate = FREQ_2400_RATE_50HZ;
+//                                    break;
+//                                default:
+//                                    break;
+//                            }
+//                            break;
+//                        }
+//                        default:
+//                            break;
+//                                    
+//                    }
+                    hidReportData[1] = externalCRSFdata.crsfParameter.power|(externalCRSFdata.crsfParameter.rate<< 8);
+                    hidReportData[2] = externalCRSFdata.crsfParameter.TLM|(externalCRSFdata.regulatoryDomainIndex << 8);
+                    for(int i=0;i<7;i++)
                     {
-                        switch (externalCRSFdata.crsfParameter.rate)
-                        {
-                            case RATE_200HZ:
-                                currentrate = FREQ_900_RATE_200HZ;
-                                break;
-                            case RATE_100HZ:
-                                currentrate = FREQ_900_RATE_100HZ;
-                                break;
-                            case RATE_50HZ:
-                                currentrate = FREQ_900_RATE_50HZ;
-                                break;
-                            case RATE_25HZ:
-                                currentrate = FREQ_900_RATE_25HZ;
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
+                        checkSum += hidReportData[i]&0x00FF;
                     }
-                    case FREQ_ISM_2400:
-                    {
-                        switch (externalCRSFdata.crsfParameter.rate)
-                        {
-                            case RATE_500HZ:
-                                currentrate = FREQ_2400_RATE_500HZ;
-                                break;
-                            case RATE_250HZ:
-                                currentrate = FREQ_2400_RATE_250HZ;
-                                break;
-                            case RATE_150HZ:
-                                currentrate = FREQ_2400_RATE_150HZ;
-                                break;
-                            case RATE_50HZ:
-                                currentrate = FREQ_2400_RATE_50HZ;
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    }
-                    default:
-                        break;
-                                
+                    hidReportData[7] = checkSum;
+                    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
                 }
-                hidReportData[1] = externalCRSFdata.crsfParameter.power|(currentrate << 8);
-                hidReportData[2] = externalCRSFdata.crsfParameter.TLM|(externalCRSFdata.regulatoryDomainIndex << 8);
-                for(int i=0;i<7;i++)
-                {
-                    checkSum += hidReportData[i]&0x00FF;
-                }
-                hidReportData[7] = checkSum;
+                
             }
         }
         else if(requestType1 == REQUEST_DEVICE_INFO)
@@ -177,11 +187,24 @@ void joystickTask(void *param)
                 checkSum += hidReportData[i]&0x00FF;
             }
             hidReportData[7] = checkSum;
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
 
+        }
+        else 
+        {
+            hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
+            hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
+            hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
+            hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
+            hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
+            hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
+            hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
+            hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
         }
         checkSum = 0;        
 
-        USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+        
     }
 }
 
