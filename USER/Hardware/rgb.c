@@ -348,7 +348,7 @@ void rgbTask(void* param)
                 {
                     RGB_Set(BLUE,BRIGHTNESS_MAX); 
 #if defined(LiteRadio_Plus_CC2500)  
-		if(Get_Protocol_Select() <= 3)//CC2500使用内置射频模块才打开定时器1
+		if(Get_Protocol_Select() <= CC2500_FHSS)//CC2500使用内置射频模块才打开定时器1
         {
             if(Tim1IsOpen == false)
             {

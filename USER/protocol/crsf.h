@@ -46,6 +46,12 @@ enum{
 extern uint8_t maxPackSize;
 
 
+enum{
+    NANO_TX_915Mhz = 0x02,
+    NANO_TX_868Mhz = 0x03,
+    NANO_TX_2400Mhz = 0x06,
+};
+
 
 typedef enum
 {

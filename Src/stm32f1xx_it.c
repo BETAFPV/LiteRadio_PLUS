@@ -337,7 +337,8 @@ void EXTI15_10_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_10);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 #if defined(LiteRadio_Plus_SX1280)
-    SX1280_IsrCallback();
+    if(Get_ProtocolIndex()==SX1280_ELRS)
+        SX1280_IsrCallback();
 #elif defined(LiteRadio_Plus_SX1276)
     if (SX1276.InterruptAssignment == SX127x_INTERRUPT_RX_DONE)
     {
@@ -363,10 +364,10 @@ void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
-    if(Get_ProtocolIndex()==0)
+    if(Get_ProtocolIndex()!=SX1280_CRSF)
         return;
 #elif defined(LiteRadio_Plus_CC2500)
-  if(Get_ProtocolIndex()==4)
+  if(Get_ProtocolIndex()!=CC2500_CRSF)
         return;
 #endif
     
@@ -422,10 +423,14 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
                 break;
                 
             case regulatoryDomain:
-                if(crsfRXPacket[13]==50 && crsfRXPacket[15]==52)
+                if(crsfRXPacket[13]=='2' && crsfRXPacket[15]=='4')
                 {
-                    externalCRSFdata.regulatoryDomainIndex = 0x06;
-                }   
+                    externalCRSFdata.regulatoryDomainIndex = NANO_TX_2400Mhz;
+                }
+                else if(crsfRXPacket[13]=='9' && crsfRXPacket[15]=='0')
+                {
+                    externalCRSFdata.regulatoryDomainIndex = NANO_TX_915Mhz;
+                }
                 break;
                 
             default:
@@ -461,8 +466,10 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
                 }
                 break;
             case regulatoryDomain:
-                if(crsfRXPacket[13]==50 && crsfRXPacket[15]==52)
-                        externalCRSFdata.regulatoryDomainIndex = 0x06;
+                if(crsfRXPacket[13]=='2' && crsfRXPacket[15]=='4')
+                        externalCRSFdata.regulatoryDomainIndex = NANO_TX_2400Mhz;
+                else if(crsfRXPacket[13]=='9' && crsfRXPacket[15]=='0')
+                    externalCRSFdata.regulatoryDomainIndex = NANO_TX_915Mhz;
                 break;
             default:
                 break;       

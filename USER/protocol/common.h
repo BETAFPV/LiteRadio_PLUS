@@ -34,7 +34,18 @@ typedef struct
     uint8_t PITCH_VERSIO;
 }Hardware_Version_t;
 
+enum{
+    SX1280_ELRS,
+    SX1280_CRSF,
+};
 
+enum{
+    CC2500_FCC_D16,
+    CC2500_LBT_D16,
+    CC2500_D8,
+    CC2500_FHSS,
+    CC2500_CRSF,
+};
 
 #define INTERNAL_ELRS_CONFIGER_INFO_ADDR           0x08007068
 #define INTERNAL_ELRS_CONFIGER_INFO_POWER_ADDR     0x08007068
