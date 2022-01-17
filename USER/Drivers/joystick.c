@@ -54,6 +54,7 @@ void joystickTask(void *param)
             if(requestType2 == 0x00)/*lite_info*/
             {
                 sendSpam = 0;
+                externalCRSFdata.regulatoryDomainIndex = 0;
                 STMFLASH_Read(CONFIGER_INFO_ADDR,&requestDataBuff[0],3);
                 hidReportData[0] = LITE_CONFIGER_INFO_ID|(VERSION_INDEX << 8);
                 hidReportData[1] = requestDataBuff[0]|(requestDataBuff[1] << 8);
@@ -100,57 +101,63 @@ void joystickTask(void *param)
                 if((externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)||(sendSpam>=5000))
                 {
                     hidReportData[0] = EXTERNAL_CONFIGER_INFO_ID|(0x01 <<8);;
-//                    uint8_t currentrate;
-//                    switch (externalCRSFdata.regulatoryDomainIndex)
-//                    {
-//                        case FREQ_FCC_915:
-//                        case FREQ_EU_868:
-//                        {
-//                            switch (externalCRSFdata.crsfParameter.rate)
-//                            {
-//                                case RATE_200HZ:
-//                                    currentrate = FREQ_900_RATE_200HZ;
-//                                    break;
-//                                case RATE_100HZ:
-//                                    currentrate = FREQ_900_RATE_100HZ;
-//                                    break;
-//                                case RATE_50HZ:
-//                                    currentrate = FREQ_900_RATE_50HZ;
-//                                    break;
-//                                case RATE_25HZ:
-//                                    currentrate = FREQ_900_RATE_25HZ;
-//                                    break;
-//                                default:
-//                                    break;
-//                            }
-//                            break;
-//                        }
-//                        case FREQ_ISM_2400:
-//                        {
-//                            switch (externalCRSFdata.crsfParameter.rate)
-//                            {
-//                                case FREQ_2400_RATE_500HZ:
-//                                    currentrate = FREQ_2400_RATE_500HZ;
-//                                    break;
-//                                case FREQ_2400_RATE_250HZ:
-//                                    currentrate = FREQ_2400_RATE_250HZ;
-//                                    break;
-//                                case FREQ_2400_RATE_150HZ:
-//                                    currentrate = FREQ_2400_RATE_150HZ;
-//                                    break;
-//                                case FREQ_2400_RATE_50HZ:
-//                                    currentrate = FREQ_2400_RATE_50HZ;
-//                                    break;
-//                                default:
-//                                    break;
-//                            }
-//                            break;
-//                        }
-//                        default:
-//                            break;
-//                                    
-//                    }
-                    hidReportData[1] = externalCRSFdata.crsfParameter.power|(externalCRSFdata.crsfParameter.rate<< 8);
+                    uint8_t rateToConfigurator = 0,powerToConfigurator = 0;
+                    switch (externalCRSFdata.regulatoryDomainIndex)
+                    {
+                        case NANO_TX_915Mhz:
+                        {
+                            switch (externalCRSFdata.crsfParameter.rate)
+                            {
+                                case FREQ_900_RATE_200HZ:
+                                    rateToConfigurator = 3;
+                                    break;
+                                case FREQ_900_RATE_100HZ:
+                                    rateToConfigurator = 2;
+                                    break;
+                                case FREQ_900_RATE_50HZ:
+                                    rateToConfigurator = 1;
+                                    break;
+                                case FREQ_900_RATE_25HZ:
+                                    rateToConfigurator = 0;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        }
+                        case NANO_TX_2400Mhz:
+                        {
+                            rateToConfigurator = externalCRSFdata.crsfParameter.rate;
+                            break;
+                        }
+                        default:
+                            break;
+                                    
+                    }
+                    switch(externalCRSFdata.regulatoryDomainIndex)
+                    {
+                        case NANO_TX_915Mhz:
+                            switch(externalCRSFdata.crsfParameter.power)
+                            {
+                                case power915Mhz100mw:
+                                    powerToConfigurator = power100mw;
+                                    break;
+                                case power915Mhz250mw:
+                                    powerToConfigurator = power250mw;
+                                    break;
+                                case power915Mhz500mw:
+                                    powerToConfigurator = power500mw;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case NANO_TX_2400Mhz:
+                            powerToConfigurator = externalCRSFdata.crsfParameter.power;
+                            break;
+                        
+                    }
+                    hidReportData[1] = powerToConfigurator|(rateToConfigurator<< 8);
                     hidReportData[2] = externalCRSFdata.crsfParameter.TLM|(externalCRSFdata.regulatoryDomainIndex << 8);
                     for(int i=0;i<7;i++)
                     {

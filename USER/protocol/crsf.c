@@ -102,6 +102,8 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
 //                    break;
 //                            
 //            }
+
+   
             Send_CRSFParameterPackage(rate,externalCRSFdata.crsfParameter.rate);
             externalCRSFdata.lastCRSFparameter.rate = externalCRSFdata.crsfParameter.rate;
         }
@@ -127,7 +129,7 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         }                
         externalCRSFdata.configSetFlag = 0;
     }
-    else if(externalCRSFdata.regulatoryDomainIndex==0 && (timeCount>30))
+    else if(externalCRSFdata.regulatoryDomainIndex==0 && (timeCount>20))
     {
         timeCount = 0;
         GetExternalRFWorkFrequency();
@@ -137,12 +139,14 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         timeCount = 0;
         if(maxPackSize==64) GetExternalRFParameter(6,0);
         else if(maxPackSize == 32) GetExternalRFParameter(6,1);
+        
     }
     else if(externalRFprarmeter.rate==0xff && (timeCount>30))
     {
         timeCount = 0;
         if(maxPackSize==64) GetExternalRFParameter(1,1);
         else if(maxPackSize == 32) GetExternalRFParameter(1,2);
+        
     }
     else if(externalRFprarmeter.TLM==0xff && (timeCount>30))
     {

@@ -338,7 +338,7 @@ void EXTI15_10_IRQHandler(void)
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
 #if defined(LiteRadio_Plus_SX1280)
     if(Get_ProtocolIndex()==SX1280_ELRS)
-        SX1280_IsrCallback();
+            SX1280_IsrCallback();
 #elif defined(LiteRadio_Plus_SX1276)
     if (SX1276.InterruptAssignment == SX127x_INTERRUPT_RX_DONE)
     {
@@ -384,16 +384,33 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
         switch(crsfRXPacket[5])
         {
             case rate:
-                if(crsfRXPacket[6]==0 && crsfRXPacket[14]==41)
+                if(externalCRSFdata.regulatoryDomainIndex == NANO_TX_2400Mhz)
                 {
-                    externalCRSFdata.crsfParameter.rate = crsfRXPacket[16];
-                    externalCRSFdata.lastCRSFparameter.rate = crsfRXPacket[16];
-                    externalRFprarmeter.rate = crsfRXPacket[16];
+                    if(crsfRXPacket[6]==0 && crsfRXPacket[14]==41)
+                    {
+                        externalCRSFdata.crsfParameter.rate = crsfRXPacket[16];
+                        externalCRSFdata.lastCRSFparameter.rate = crsfRXPacket[16];
+                        externalRFprarmeter.rate = crsfRXPacket[16];
+                    }
+                    else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                    {
+                        maxPackSize = 32;
+                    }
                 }
-                else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                else if(externalCRSFdata.regulatoryDomainIndex == NANO_TX_915Mhz)
                 {
-                    maxPackSize = 32;
+                    if(crsfRXPacket[6]==0 && crsfRXPacket[13]==41)
+                    {
+                        externalCRSFdata.crsfParameter.rate = crsfRXPacket[15];
+                        externalCRSFdata.lastCRSFparameter.rate = crsfRXPacket[15];
+                        externalRFprarmeter.rate = crsfRXPacket[15];
+                    }
+                    else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                    {
+                        maxPackSize = 32;
+                    }
                 }
+                
                 break;
                 
             case tlm:
@@ -410,16 +427,33 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
                 break;
                 
             case power:
-                if(crsfRXPacket[6]==0 && crsfRXPacket[38]==48)
+                if(externalCRSFdata.regulatoryDomainIndex == NANO_TX_2400Mhz)
                 {
-                    externalCRSFdata.crsfParameter.power = crsfRXPacket[40];
-                    externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[40];
-                    externalRFprarmeter.power = crsfRXPacket[40];
+                    if(crsfRXPacket[6]==0 && crsfRXPacket[38]==48)
+                    {
+                        externalCRSFdata.crsfParameter.power = crsfRXPacket[40];
+                        externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[40];
+                        externalRFprarmeter.power = crsfRXPacket[40];
+                    }
+                    else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                    {
+                        maxPackSize = 32;
+                    }
                 }
-                else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                else if(externalCRSFdata.regulatoryDomainIndex == NANO_TX_915Mhz)
                 {
-                    maxPackSize = 32;
+                    if(crsfRXPacket[6]==0 && crsfRXPacket[29]==48)
+                    {
+                        externalCRSFdata.crsfParameter.power = crsfRXPacket[31];
+                        externalCRSFdata.lastCRSFparameter.power = crsfRXPacket[31];
+                        externalRFprarmeter.power = crsfRXPacket[31];
+                    }
+                    else if(crsfRXPacket[6]==1||crsfRXPacket[6]==2)
+                    {
+                        maxPackSize = 32;
+                    }
                 }
+                
                 break;
                 
             case regulatoryDomain:

@@ -376,9 +376,65 @@ void SaveMixValueToFlash(void)
                 }
                 else
                 {
-                    externalCRSFdata.crsfParameter.power = writeWord[2];
-                    externalCRSFdata.crsfParameter.rate = writeWord[3];
+                    uint8_t rate = 0,power = 0;
+                    power = writeWord[2];
+                    rate = writeWord[3];
                     externalCRSFdata.crsfParameter.TLM = writeWord[4];
+                    switch (externalCRSFdata.regulatoryDomainIndex)
+                    {
+                        case NANO_TX_915Mhz:
+                            switch(rate)
+                            {
+                                case 0:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_900_RATE_25HZ;
+                                    break;
+                                case 1:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_900_RATE_50HZ;
+                                    break;
+                                case 2:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_900_RATE_100HZ;
+                                    break;
+                                case 3:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_900_RATE_200HZ;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            
+                            break;
+                        case NANO_TX_2400Mhz:
+                            externalCRSFdata.crsfParameter.rate = rate;
+                            externalCRSFdata.crsfParameter.power = power;
+                            break;
+                        default:
+                            externalCRSFdata.crsfParameter.rate = rate;
+                            break;
+                    }
+                    switch(externalCRSFdata.regulatoryDomainIndex)
+                    {
+                        case NANO_TX_915Mhz:
+                            switch(power)
+                            {
+                                case power100mw:
+                                    externalCRSFdata.crsfParameter.power = power915Mhz100mw;
+                                    break;
+                                case power250mw:
+                                    externalCRSFdata.crsfParameter.power = power915Mhz100mw;
+                                    break;
+                                case power500mw:
+                                    externalCRSFdata.crsfParameter.power = power915Mhz500mw;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                            case NANO_TX_2400Mhz:
+                                externalCRSFdata.crsfParameter.power = power;
+                                break;
+                            default:
+                                break;
+                    }
+                    
                 }
             }
             break;

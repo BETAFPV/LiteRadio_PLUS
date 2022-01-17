@@ -52,6 +52,22 @@ enum{
     NANO_TX_2400Mhz = 0x06,
 };
 
+enum{
+    power10mw,
+    power25mw,
+    power50mw,
+    power100mw,
+    power250mw,
+    power500mw,
+    power1000mw,
+    power2000mw,
+};
+
+enum{
+    power915Mhz100mw,
+    power915Mhz250mw,
+    power915Mhz500mw,
+};
 
 typedef enum
 {
