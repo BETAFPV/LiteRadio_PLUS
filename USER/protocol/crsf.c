@@ -42,68 +42,13 @@ void CRSF_Init(uint8_t protocolIndex)
 
 uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
 {   
-    static uint8_t rateToSend = 0;
-    static uint8_t timeCount = 0;
-    timeCount++;
+    static uint8_t rateToSend = 0; 
+    static uint32_t LastCRSFProcessMillis = 0;
+    const uint8_t intervalOfGetParameter = 50;
     if(externalCRSFdata.configSetFlag)
     {
         if(externalCRSFdata.crsfParameter.rate != externalCRSFdata.lastCRSFparameter.rate)
-        {
-//            switch (externalCRSFdata.regulatoryDomainIndex)
-//            {
-//                case FREQ_FCC_915:
-//                case FREQ_EU_868:
-//                {
-//                    switch (externalCRSFdata.crsfParameter.rate)
-//                    {
-//                        case FREQ_900_RATE_200HZ:
-//                            externalCRSFdata.crsfParameter.rate = RATE_200HZ;
-//                            break;
-//                        case FREQ_900_RATE_100HZ:
-//                            externalCRSFdata.crsfParameter.rate = RATE_100HZ;
-//                            break;
-//                        case FREQ_900_RATE_50HZ:
-//                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
-//                            break;
-//                        case FREQ_900_RATE_25HZ:
-//                            externalCRSFdata.crsfParameter.rate = RATE_25HZ;
-//                            break;
-//                        default:
-//                            break;
-//                    }
-//                    break;
-//                }
-//                case FREQ_ISM_2400:
-//                {
-//                    switch (externalCRSFdata.crsfParameter.rate)
-//                    {
-//                        case FREQ_2400_RATE_500HZ:
-//                            rateToSend = FREQ_2400_RATE_500HZ;
-////                            externalCRSFdata.crsfParameter.rate = RATE_500HZ;
-//                            break;
-//                        case FREQ_2400_RATE_250HZ:
-//                            rateToSend = FREQ_2400_RATE_250HZ;
-////                            externalCRSFdata.crsfParameter.rate = RATE_250HZ;
-//                            break;
-//                        case FREQ_2400_RATE_150HZ:
-//                            rateToSend = FREQ_2400_RATE_150HZ;
-////                            externalCRSFdata.crsfParameter.rate = RATE_150HZ;
-//                            break;
-//                        case FREQ_2400_RATE_50HZ:
-//                            rateToSend = FREQ_2400_RATE_50HZ;
-////                            externalCRSFdata.crsfParameter.rate = RATE_50HZ;
-//                            break;
-//                        default:
-//                            break;
-//                    }
-//                    break;
-//                }
-//                default:
-//                    break;
-//                            
-//            }
-
-   
+        {   
             Send_CRSFParameterPackage(rate,externalCRSFdata.crsfParameter.rate);
             externalCRSFdata.lastCRSFparameter.rate = externalCRSFdata.crsfParameter.rate;
         }
@@ -129,28 +74,28 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         }                
         externalCRSFdata.configSetFlag = 0;
     }
-    else if(externalCRSFdata.regulatoryDomainIndex==0 && (timeCount>20))
+    else if(externalCRSFdata.regulatoryDomainIndex==0 && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
-        timeCount = 0;
+        LastCRSFProcessMillis = HAL_GetTick();
         GetExternalRFWorkFrequency();
     }
-    else if(externalRFprarmeter.power==0xff && (timeCount>30))
+    else if(externalRFprarmeter.power==0xff && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
-        timeCount = 0;
+        LastCRSFProcessMillis = HAL_GetTick();
         if(maxPackSize==64) GetExternalRFParameter(6,0);
         else if(maxPackSize == 32) GetExternalRFParameter(6,1);
         
     }
-    else if(externalRFprarmeter.rate==0xff && (timeCount>30))
+    else if(externalRFprarmeter.rate==0xff && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
-        timeCount = 0;
+        LastCRSFProcessMillis = HAL_GetTick();
         if(maxPackSize==64) GetExternalRFParameter(1,1);
         else if(maxPackSize == 32) GetExternalRFParameter(1,2);
         
     }
-    else if(externalRFprarmeter.TLM==0xff && (timeCount>30))
+    else if(externalRFprarmeter.TLM==0xff && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
-        timeCount = 0;
+        LastCRSFProcessMillis = HAL_GetTick();
         if(maxPackSize==64) GetExternalRFParameter(2,0);
         else if(maxPackSize == 32) GetExternalRFParameter(2,2);
     }

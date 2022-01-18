@@ -31,7 +31,7 @@
 #include "crsf.h"
 #include "joystick.h"
 #include "stdbool.h"
-
+#include "common.h"
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
 #include "common.h"
 #endif    

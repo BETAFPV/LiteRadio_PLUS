@@ -5,6 +5,7 @@
 #include "status.h"
 #include "radiolink.h"
 #include "stdbool.h"
+#include "common.h"
 EventGroupHandle_t rgbEventHandle;
 
 static uint8_t bindStatus = 0;

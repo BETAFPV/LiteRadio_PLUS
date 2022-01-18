@@ -31,6 +31,7 @@
 #include "radiolink.h"
 #include "s_fhss.h"
 #include "frsky_d16.h"
+#include "common.h"
 #if defined(LiteRadio_Plus_SX1280)
 #include "sx1280.h"
 #include "status.h"

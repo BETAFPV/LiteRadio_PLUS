@@ -55,6 +55,9 @@ void joystickTask(void *param)
             {
                 sendSpam = 0;
                 externalCRSFdata.regulatoryDomainIndex = 0;
+                externalRFprarmeter.power = 0xff;
+                externalRFprarmeter.rate = 0xff;
+                externalRFprarmeter.TLM =0xff;
                 STMFLASH_Read(CONFIGER_INFO_ADDR,&requestDataBuff[0],3);
                 hidReportData[0] = LITE_CONFIGER_INFO_ID|(VERSION_INDEX << 8);
                 hidReportData[1] = requestDataBuff[0]|(requestDataBuff[1] << 8);
