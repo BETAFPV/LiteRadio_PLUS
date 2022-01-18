@@ -458,7 +458,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
                 break;
                 
             case regulatoryDomain:
-                if(crsfRXPacket[13]=='2' && crsfRXPacket[15]=='4')
+                if(crsfRXPacket[13]=='2' &&(crsfRXPacket[14]=='4'||crsfRXPacket[15]=='4') )
                 {
                     externalCRSFdata.regulatoryDomainIndex = NANO_TX_2400Mhz;
                 }

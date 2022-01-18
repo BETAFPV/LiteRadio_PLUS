@@ -53,11 +53,7 @@ void joystickTask(void *param)
         {
             if(requestType2 == 0x00)/*lite_info*/
             {
-                sendSpam = 0;
-                externalCRSFdata.regulatoryDomainIndex = 0;
-                externalRFprarmeter.power = 0xff;
-                externalRFprarmeter.rate = 0xff;
-                externalRFprarmeter.TLM =0xff;
+
                 STMFLASH_Read(CONFIGER_INFO_ADDR,&requestDataBuff[0],3);
                 hidReportData[0] = LITE_CONFIGER_INFO_ID|(VERSION_INDEX << 8);
                 hidReportData[1] = requestDataBuff[0]|(requestDataBuff[1] << 8);
@@ -101,7 +97,7 @@ void joystickTask(void *param)
 //                    sendSpam++;
 //                }
                 sendSpam++;
-                if((externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)||(sendSpam>=5000))
+                if((externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)||(sendSpam>=10000))
                 {
                     hidReportData[0] = EXTERNAL_CONFIGER_INFO_ID|(0x01 <<8);;
                     uint8_t rateToConfigurator = 0,powerToConfigurator = 0;
@@ -174,6 +170,12 @@ void joystickTask(void *param)
         }
         else if(requestType1 == REQUEST_DEVICE_INFO)
         {
+            sendSpam = 0;
+            externalCRSFdata.regulatoryDomainIndex = 0;
+            externalRFprarmeter.power = 0xff;
+            externalRFprarmeter.rate = 0xff;
+            externalRFprarmeter.TLM =0xff;
+            
             uint16_t device_info_buff[10] = {0};
             STMFLASH_Read(LITE_RADIO_HARDWARE_TYPE_ADDR,&device_info_buff[0],1);
             STMFLASH_Read(INTERNAL_RADIO_TYPE_ADDR,&device_info_buff[1],1);

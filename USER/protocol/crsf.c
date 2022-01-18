@@ -82,22 +82,22 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
     else if(externalRFprarmeter.power==0xff && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
         LastCRSFProcessMillis = HAL_GetTick();
-        if(maxPackSize==64) GetExternalRFParameter(6,0);
-        else if(maxPackSize == 32) GetExternalRFParameter(6,1);
+        if(maxPackSize==64) GetExternalRFParameter(power,0);
+        else if(maxPackSize == 32) GetExternalRFParameter(power,1);
         
     }
     else if(externalRFprarmeter.rate==0xff && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
         LastCRSFProcessMillis = HAL_GetTick();
-        if(maxPackSize==64) GetExternalRFParameter(1,1);
-        else if(maxPackSize == 32) GetExternalRFParameter(1,2);
+        if(maxPackSize==64) GetExternalRFParameter(rate,1);
+        else if(maxPackSize == 32) GetExternalRFParameter(rate,2);
         
     }
     else if(externalRFprarmeter.TLM==0xff && ( (HAL_GetTick()-LastCRSFProcessMillis) > intervalOfGetParameter))
     {
         LastCRSFProcessMillis = HAL_GetTick();
-        if(maxPackSize==64) GetExternalRFParameter(2,0);
-        else if(maxPackSize == 32) GetExternalRFParameter(2,2);
+        if(maxPackSize==64) GetExternalRFParameter(tlm,0);
+        else if(maxPackSize == 32) GetExternalRFParameter(tlm,2);
     }
     else if(externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)
     {
