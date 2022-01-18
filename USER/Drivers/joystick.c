@@ -126,7 +126,24 @@ void joystickTask(void *param)
                         }
                         case NANO_TX_2400Mhz:
                         {
-                            rateToConfigurator = externalCRSFdata.crsfParameter.rate;
+                            switch (externalCRSFdata.crsfParameter.rate)
+                            {
+                                case FREQ_2400_RATE_500HZ:
+                                    rateToConfigurator = 3;
+                                    break;
+                                case FREQ_2400_RATE_250HZ:
+                                    rateToConfigurator = 2;
+                                    break;
+                                case FREQ_2400_RATE_150HZ:
+                                    rateToConfigurator = 1;
+                                    break;
+                                case FREQ_2400_RATE_50HZ:
+                                    rateToConfigurator = 0;
+                                    break;
+                                default:
+                                    break;
+                            }
+//                            rateToConfigurator = externalCRSFdata.crsfParameter.rate;
                             break;
                         }
                         default:

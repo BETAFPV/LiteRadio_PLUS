@@ -403,11 +403,25 @@ void SaveMixValueToFlash(void)
                             
                             break;
                         case NANO_TX_2400Mhz:
-                            externalCRSFdata.crsfParameter.rate = rate;
-                            externalCRSFdata.crsfParameter.power = power;
+                            switch(rate)
+                            {
+                                case 0:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_2400_RATE_50HZ;
+                                    break;
+                                case 1:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_2400_RATE_150HZ;
+                                    break;
+                                case 2:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_2400_RATE_250HZ;
+                                    break;
+                                case 3:
+                                    externalCRSFdata.crsfParameter.rate = FREQ_2400_RATE_500HZ;
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
                         default:
-                            externalCRSFdata.crsfParameter.rate = rate;
                             break;
                     }
                     switch(externalCRSFdata.regulatoryDomainIndex)
@@ -419,7 +433,7 @@ void SaveMixValueToFlash(void)
                                     externalCRSFdata.crsfParameter.power = power915Mhz100mw;
                                     break;
                                 case power250mw:
-                                    externalCRSFdata.crsfParameter.power = power915Mhz100mw;
+                                    externalCRSFdata.crsfParameter.power = power915Mhz250mw;
                                     break;
                                 case power500mw:
                                     externalCRSFdata.crsfParameter.power = power915Mhz500mw;
