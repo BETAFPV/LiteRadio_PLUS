@@ -1,5 +1,7 @@
 #include "buzzer.h"
 #include "rgb.h"
+#include "mixes.h"
+#include "stmflash.h"
 static uint8_t buzzerCountCurr = 0;
 static uint64_t buzzerNowTick;
 static uint64_t buzzerStartTick;
@@ -9,6 +11,8 @@ EventGroupHandle_t buzzerEventHandle = NULL;
 static uint8_t buzzerStartStatus = 0;
 static uint8_t buzzerStopStatus = 0;
 static uint8_t buzzerStopDelayStatus = 0;
+
+uint16_t BuzzerSwitch = 0;//0x0F：蜂鸣器关闭 其他值：蜂鸣器开启
 
 void Buzzer_BeeStay(uint8_t tone,uint32_t stayTime)
 {
@@ -195,83 +199,90 @@ void buzzerTask(void* param)
     EventBits_t buzzerEvent;
     uint8_t buzzerStatus = BUZZER_NORMAL;
     uint8_t lastBuzzerStatus = BUZZER_NORMAL;
+    
+    STMFLASH_Read(BuzzerSwitch_ADDR,&BuzzerSwitch,1);
     while(1)
     {   
-        vTaskDelay(5);        
+        vTaskDelay(5);
         buzzerEvent= xEventGroupWaitBits( buzzerEventHandle,
 		                              POWER_ON_RING|POWER_OFF_RING|SETUP_MID_RING|SETUP_MINMAX_RING|SETUP_END_RING|LOW_ELECTRICITY_RING|RISS_WARNING_RING,
 		                              pdTRUE,
 	                                  pdFALSE,
 		                              0);
-        /*POWER RING*/
-        if((buzzerEvent & POWER_ON_RING) == POWER_ON_RING)
-        {         
-            Buzzer_BeeUp();
-        }
-        if((buzzerEvent & POWER_OFF_RING) == POWER_OFF_RING)
-        {				
-            Buzzer_BeeDown();
-        } 
-        
-        /*SETUP RING*/
-        if((buzzerEvent & SETUP_MID_RING) == SETUP_MID_RING)
+        if(BuzzerSwitch != 0x0F)
         {
-            buzzerStatus = SETUP_RING_TWO;
-            if(buzzerStatus != lastBuzzerStatus)
-            {
-                Buzzer_BeeNumInit(2);
+            /*POWER RING*/
+            if((buzzerEvent & POWER_ON_RING) == POWER_ON_RING)
+            {         
+                Buzzer_BeeUp();
             }
-        }
-        if((buzzerEvent & SETUP_MINMAX_RING) == SETUP_MINMAX_RING)
-        {
-            buzzerStatus = SETUP_RING_THREE;
-        }
-        if((buzzerEvent & SETUP_END_RING) == SETUP_END_RING)
-        {
-            buzzerStatus = SETUP_RING_BEE;
+            if((buzzerEvent & POWER_OFF_RING) == POWER_OFF_RING)
+            {				
+                Buzzer_BeeDown();
+            } 
+            
+            /*SETUP RING*/
+            if((buzzerEvent & SETUP_MID_RING) == SETUP_MID_RING)
+            {
+                buzzerStatus = SETUP_RING_TWO;
+                if(buzzerStatus != lastBuzzerStatus)
+                {
+                    Buzzer_BeeNumInit(2);
+                }
+            }
+            if((buzzerEvent & SETUP_MINMAX_RING) == SETUP_MINMAX_RING)
+            {
+                buzzerStatus = SETUP_RING_THREE;
+            }
+            if((buzzerEvent & SETUP_END_RING) == SETUP_END_RING)
+            {
+                buzzerStatus = SETUP_RING_BEE;
 
+            }
+            if((buzzerEvent & LOW_ELECTRICITY_RING) == LOW_ELECTRICITY_RING && buzzerStatus == BUZZER_NORMAL)
+            {        
+                Buzzer_LowElectricity();
+            }
+            
+            if((buzzerEvent & RISS_WARNING_RING) == RISS_WARNING_RING)
+            {
+                Buzzer_RSSIwarning();
+            }        
+            switch(buzzerStatus)
+            {
+                case BUZZER_NORMAL:
+                {             
+                    break;
+                }
+                case SETUP_RING_TWO:
+                {
+                    Buzzer_BeeNum(Do,2);
+                    break;
+                }
+                case SETUP_RING_THREE:
+                {
+                    Buzzer_BeeNum(Do,3);
+                    break;                
+                }
+                case SETUP_RING_BEE:
+                {
+                    Buzzer_Stop();
+                    osDelay(200);
+                    buzzerStartStatus = 0;
+                    buzzerStopStatus = 0;
+                    buzzerStopDelayStatus = 0;
+                    Buzzer_BeeStay(Do,600);
+                    buzzerStatus = BUZZER_NORMAL;        
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+            
         }
-        if((buzzerEvent & LOW_ELECTRICITY_RING) == LOW_ELECTRICITY_RING && buzzerStatus == BUZZER_NORMAL)
-        {        
-            Buzzer_LowElectricity();
-        }
-        
-        if((buzzerEvent & RISS_WARNING_RING) == RISS_WARNING_RING)
-        {
-            Buzzer_RSSIwarning();
-        }        
-        switch(buzzerStatus)
-        {
-            case BUZZER_NORMAL:
-            {             
-                break;
-            }
-            case SETUP_RING_TWO:
-            {
-                Buzzer_BeeNum(Do,2);
-                break;
-            }
-            case SETUP_RING_THREE:
-            {
-                Buzzer_BeeNum(Do,3);
-                break;                
-            }
-            case SETUP_RING_BEE:
-            {
-                Buzzer_Stop();
-                osDelay(200);
-                buzzerStartStatus = 0;
-                buzzerStopStatus = 0;
-                buzzerStopDelayStatus = 0;
-                Buzzer_BeeStay(Do,600);
-                buzzerStatus = BUZZER_NORMAL;        
-                break;
-            }
-            default:
-            {
-                break;
-            }
-        }
+       
         lastBuzzerStatus = buzzerStatus;
     }
 }

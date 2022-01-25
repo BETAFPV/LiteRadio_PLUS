@@ -18,6 +18,7 @@
 #define LITE_CONFIGER_INFO_ID     0x05
 #define INTERNAL_CONFIGER_INFO_ID 0x06
 #define EXTERNAL_CONFIGER_INFO_ID 0X07
+#define EXTRA_CUSTOM_CONFIG_ID 0x08
 #define DEVICE_INFO_ID 0x5a
 #define UID_BYTES_ID 0x22
 
@@ -51,6 +52,12 @@
 #define MasterID5FromBindPhrase_ADDR 0x8007210
 #define MasterID6FromBindPhrase_ADDR 0x8007212
 
+#define JoystickDeadZonePercent_ADDR 0x8007214
+#define BuzzerSwitch_ADDR 0x8007216
+
+#define DeafultDeadZonePercent 4
+#define MinDeadZonePercent 1
+#define MaxDeadZonePercent 10
 
 #define MIX_AILERON    0x00      
 #define MIX_ELEVATOR   0x01  

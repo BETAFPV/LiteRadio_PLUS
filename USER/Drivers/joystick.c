@@ -219,6 +219,21 @@ void joystickTask(void *param)
             USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
 
         }
+        else if(requestType1 == REQUEST_EXTRA_CONFIG_INFO)
+        {
+            uint16_t JoystickDeadZonePercent,BuzzerSwitch;
+            STMFLASH_Read(JoystickDeadZonePercent_ADDR,&JoystickDeadZonePercent,1);
+            STMFLASH_Read(BuzzerSwitch_ADDR,&BuzzerSwitch,1);
+            hidReportData[0] = EXTRA_CUSTOM_CONFIG_ID;
+            hidReportData[1] = (JoystickDeadZonePercent&0x00ff)|((BuzzerSwitch&0x00ff)<<8);
+
+            for(int i=0;i<7;i++)
+            {
+                checkSum += hidReportData[i]&0x00FF;
+            }
+            hidReportData[7] = checkSum;
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+        }
         else 
         {
             hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);

@@ -20,6 +20,7 @@ typedef enum
     REQUEST_CHANNEL_INFO     = 0x01,   
     REQUEST_CONIFG_INFO      = 0x02,
     REQUEST_DEVICE_INFO      = 0x03,
+    REQUEST_EXTRA_CONFIG_INFO      = 0x04,
 }requestProtocol_e;
 
 
