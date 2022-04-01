@@ -52,7 +52,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, CRSF_EN_Pin|POWER_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, SX1280_TXRX_EN_Pin|EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, PA_TXRX_EN_Pin|EXTERNAL_RF_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SX1280_RST_GPIO_Port, SX1280_RST_Pin, GPIO_PIN_SET);
@@ -81,7 +81,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_Init(POWER_EN_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PAPin PAPin */
-  GPIO_InitStruct.Pin = SX1280_TXRX_EN_Pin|EXTERNAL_RF_EN_Pin;
+  GPIO_InitStruct.Pin = PA_TXRX_EN_Pin|EXTERNAL_RF_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -140,7 +140,7 @@ void MX_GPIO_Init(void)
 #ifdef LiteRadio_Plus_CC2500
 void CC2500_GPIO_Disable(void)
 {
-    HAL_GPIO_DeInit(GPIOA,SX1280_TXRX_EN_Pin);
+    HAL_GPIO_DeInit(GPIOA,PA_TXRX_EN_Pin);
     HAL_GPIO_DeInit(GPIOA,SX1280_RST_Pin);
     HAL_GPIO_DeInit(GPIOB,SX1280_BUSY_Pin);
     HAL_GPIO_DeInit(GPIOB,SX1280_DIO1_Pin);

@@ -185,14 +185,14 @@ void SX1280_HalReadBuffer(uint8_t offset, volatile uint8_t *buffer, uint8_t size
 void SX1280Hal_TXenable()
 {
     SX1280.InterruptAssignment = SX1280_INTERRUPT_TX_DONE;
-    HAL_GPIO_WritePin(GPIOA, SX1280_TXRX_EN_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, PA_TXRX_EN_Pin, GPIO_PIN_SET);
 }
 
 
 void SX1280Hal_RXenable()
 {
     SX1280.InterruptAssignment = SX1280_INTERRUPT_RX_DONE;
-    HAL_GPIO_WritePin(GPIOA, SX1280_TXRX_EN_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOA, PA_TXRX_EN_Pin, GPIO_PIN_RESET);
 }
 
 
