@@ -133,7 +133,8 @@ static uint8_t cc2500_conf_FCC[CC2500_CONFIG_CNTS][2]=
     uint8_t (*cc2500_config)[2];
     CC2500_PA_TXEN();              //ENABLE PA TX
     uint16_t internalPower;
-    STMFLASH_Read(INTERNAL_CONFIGER_INFO_POWER_ADDR,&internalPower,1);
+    //STMFLASH_Read(INTERNAL_CONFIGER_INFO_POWER_ADDR,&internalPower,1);
+	internalPower = PWR_100mW;
 	switch(internalPower)
 	{
 		case PWR_25mW: 
@@ -281,6 +282,7 @@ uint16_t CC2500_Process(uint16_t* controlDataBuff)
     channelData[5] = controlDataBuff[5];
     channelData[6] = controlDataBuff[6];
     channelData[7] = controlDataBuff[7];
+	return 0;
 }
 
 void CC2500_PA_TXEN()

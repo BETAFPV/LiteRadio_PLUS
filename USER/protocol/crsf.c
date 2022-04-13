@@ -22,8 +22,8 @@ uint16_t requestCount;
 static uint64_t connectTickNow;
 static uint64_t connectTickLast;
 
-static uint64_t rssiWarningNowTick;
-static uint64_t rssiWarningLastTick;
+//static uint64_t rssiWarningNowTick;
+//static uint64_t rssiWarningLastTick;
 
 
 crsfParameter_t externalRFprarmeter = {0xff,0xff,0xff};
@@ -42,7 +42,7 @@ void CRSF_Init(uint8_t protocolIndex)
 
 uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
 {   
-    static uint8_t rateToSend = 0; 
+ //   static uint8_t rateToSend = 0; 
     static uint32_t LastCRSFProcessMillis = 0;
     const uint8_t intervalOfGetParameter = 50;
     if(externalCRSFdata.configSetFlag)
@@ -261,7 +261,7 @@ void GetExternalRFParameter(uint8_t dataType,uint8_t chunk)
     dataToCRSF[4] = CRSF_ADDRESS_RADIO_TRANSMITTER;
     dataToCRSF[5] = dataType;
     dataToCRSF[6] = chunk;
-    uint8_t * pointDataToCRSF = &dataToCRSF[2];
+//    uint8_t * pointDataToCRSF = &dataToCRSF[2];
     dataToCRSF[7] = crc8(&dataToCRSF[2], 5);   
     HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8);  
 }
@@ -274,7 +274,7 @@ void GetExternalRFWorkFrequency(void)
     dataToCRSF[4] = CRSF_ADDRESS_RADIO_TRANSMITTER;
     dataToCRSF[5] = 84;
     dataToCRSF[6] = 147;
-    uint8_t * pointDataToCRSF = &dataToCRSF[2];
+//    uint8_t * pointDataToCRSF = &dataToCRSF[2];
     dataToCRSF[7] = crc8(&dataToCRSF[2], 5);   
     HAL_UART_Transmit_DMA(&huart1,dataToCRSF,8); 
 }

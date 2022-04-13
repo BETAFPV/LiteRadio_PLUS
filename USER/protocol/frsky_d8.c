@@ -22,7 +22,7 @@ uint8_t  FRSKYD8_Channel_Num = 0   ;
 uint8_t  D8_SendPacket[18] ; 							    
 
 static uint16_t TransmitterID ; 							    //Ò£¿ØÆ÷Î¨Ò»ID
-static uint8_t RF_POWER = 0xff;
+static uint8_t RF_POWER = 0xFF;
 
 static uint16_t Channel_DataBuff[8] = {1500,1500,1500,1500,1500,1500,1500,1500};
 typedef enum 
@@ -265,7 +265,7 @@ uint16_t ReadFRSKYD8(uint16_t* controlData)
             if(FRSKYD8_BindCounts < 600)
 			{
 				FRSKYD8_TuneChannel(FRSKYD8_BINDCHANNEL) ; 
-				CC2500_SetPower(CC2500_POWER_3);
+				CC2500_SetPower(RF_POWER);
 				CC2500_Strobe(CC2500_SFRX);
 				Frsky_D8_build_Bind_packet();
 				CC2500_Strobe(CC2500_SIDLE);
