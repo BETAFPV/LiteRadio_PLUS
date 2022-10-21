@@ -36,8 +36,6 @@ static uint16_t TransmitterID ; 							    //遥控器唯一ID
 uint8_t  SendPacket[40] ; 							    //发送数据包缓存 (1) 对码数据包14Byte   (2)发送遥控数据包 28Byte(8 + 16CH*2 = 40)
 
 
-    
-static uint8_t RF_POWER = 0xff;
 
 static uint8_t versionSelectFlg;
 
@@ -403,7 +401,7 @@ uint16_t ReadFRSKYD16(uint16_t* controlData)
 			{    
                 ++FRSKYD16_BindCounts ;    
 				FRSKYD16_TuneChannel(FRSKYD16_BINDCHANNEL) ; 
-				CC2500_SetPower(CC2500_POWER_17);
+				CC2500_SetPower(RF_POWER);
 				CC2500_Strobe(CC2500_SFRX);
 				Frsky_D16_build_Bind_packet();
 				Delay_US(19);

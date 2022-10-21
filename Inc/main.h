@@ -64,8 +64,8 @@ void Error_Handler(void);
 #define KEY_POWER_GPIO_Port GPIOC
 #define POWER_EN_Pin GPIO_PIN_15
 #define POWER_EN_GPIO_Port GPIOC
-#define SX1280_TXRX_EN_Pin GPIO_PIN_5
-#define SX1280_TXRX_EN_GPIO_Port GPIOA
+#define PA_TXRX_EN_Pin GPIO_PIN_5
+#define PA_TXRX_EN_GPIO_Port GPIOA
 #define SX1280_RST_Pin GPIO_PIN_7
 #define SX1280_RST_GPIO_Port GPIOA
 #define CHRG_IN_Pin GPIO_PIN_0

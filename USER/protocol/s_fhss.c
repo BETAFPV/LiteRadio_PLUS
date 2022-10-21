@@ -146,7 +146,7 @@ static void __attribute__((unused)) SFHSS_rf_init()
 	Delay_US(500);
 	CC2500_WriteReg(CC2500_0C_FSCTRL0, 0x0A);
 	CC2500_SetTxRxMode(TX_EN);
-	//CC2500_SetPower(RF_POWER);
+	CC2500_SetPower(RF_POWER);
 }
 
 void initSFHSS(uint8_t protocolIndex)
@@ -294,7 +294,7 @@ uint16_t ReadSFHSS(uint16_t* controlData)
 			//sbus_checkrx();
 			//SFHSS_tune_freq();
 			SFHSS_tune_chan_fast();
-			//CC2500_SetPower(CC2500_POWER_15);
+			CC2500_SetPower(RF_POWER);
 			//return 1845;   //1845
         return (SFHSS_PACKET_PERIOD-SFHSS_DATA2_TIMING-SFHSS_TUNE_TIMING);
             //return (SFHSS_PACKET_PERIOD-SFHSS_DATA2_TIMING-SFHSS_TUNE_TIMING);
