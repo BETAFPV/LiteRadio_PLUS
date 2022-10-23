@@ -115,7 +115,11 @@ uint8_t Check_HighThrottle(void)
     }
     else
     {
+#ifndef LITE_RADIO_1
         throttleValue = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR);
+#else
+		throttleValue = Get_GimbalValue(ELEVATOR);
+#endif
     }
     if(throttleValue < HIGH_THROTTLE_THRESHOLD) 
     {        
@@ -272,8 +276,13 @@ void gimbalTask(void* param)
 
         gimbalBuff[THROTTLE] = Get_GimbalValue(THROTTLE);
         gimbalBuff[RUDDER] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(RUDDER);
+#ifndef LITE_RADIO_1               //LR1通道值与LR3和LR2不同，需要打开LITE_RADIO_1的宏，在main.h里
         gimbalBuff[AILERON] = Get_GimbalValue(AILERON);
         gimbalBuff[ELEVATOR] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR);
+#else
+		gimbalBuff[AILERON] = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(AILERON);
+        gimbalBuff[ELEVATOR] = Get_GimbalValue(ELEVATOR);
+#endif
 
         gimbalEvent= xEventGroupWaitBits( gimbalEventHandle,
 		                                  GIMBAL_CALIBRATE_IN,

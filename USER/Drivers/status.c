@@ -32,8 +32,13 @@ static uint64_t lowElectricityLastTick;
 
 static uint16_t electricityADCvalue;
 static uint16_t calADCvalue;
+#ifndef LITE_RADIO_1
 uint16_t upElectricityLimit = 3300;
 uint16_t downElectricityLimit = 3300;
+#else
+uint16_t upElectricityLimit = 3089;       //LR1 
+uint16_t downElectricityLimit = 3089;
+#endif
 uint8_t batteryWarningStatus = 1;
 
 void Status_Init()

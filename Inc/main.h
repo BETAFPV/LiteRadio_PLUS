@@ -115,6 +115,8 @@ void Error_Handler(void);
 #define JOYSTICK_AXIS_ENABLED  	        1
 #define SECONDARY_AXIS_ENABLED  	    1
 #define BUTTONS_ENABLED  	            0
+
+#define LITE_RADIO_1
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -55,7 +55,12 @@
 #define JoystickDeadZonePercent_ADDR 0x8007214
 #define BuzzerSwitch_ADDR 0x8007216
 
-#define DeafultDeadZonePercent 4
+#ifndef LITE_RADIO_1
+	#define DeafultDeadZonePercent 4
+#else
+	#define DeafultDeadZonePercent 7
+#endif
+
 #define MinDeadZonePercent 1
 #define MaxDeadZonePercent 10
 
