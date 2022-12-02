@@ -137,7 +137,7 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
     0xc0,               /*End Collection*/
 	//20
     0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
-	0x09,0x36,			/*USAGE (Pointer)*/
+	0x09,0x01,			/*USAGE (Pointer)*/
 	0xA1,0x00,			/*COLLECTION (Physical)*/
 	0x09,0x36,          /*USAGE (Slider)*/
 	0x15,0x00,			/*LOGICAL_MINIMUM (0)*/
@@ -148,9 +148,9 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
 	0xc0,               /*End Collection*/
     //20
     0x05,0x01,          /*USAGE_PAGE (Generic Desktop*/
-	0x09,0x36,			/*USAGE (Pointer)*/
+	0x09,0x01,			/*USAGE (Pointer)*/
 	0xA1,0x00,			/*COLLECTION (Physical)*/
-	0x09,0x36,          /*USAGE (Slider)*/
+	0x09,0x37,          /*USAGE (Slider)*/
 	0x15,0x00,			/*LOGICAL_MINIMUM (0)*/
 	0x26,0x00,0x08,	    /*LOGICAL_MAXIMUM (2048)*/
 	0x75,0x10,          /*REPORT_SIZE (16)*/
@@ -158,12 +158,12 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
 	0x81,0x02,          /*INPUT (Data,Var,Abs)*/
 	0xc0,               /*End Collection*/
     
-    0x09, 0x01,                    //   USAGE (Vendor Usage 1) 每个功能的一个卷标志
-    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)    表示每个传输数据限定�??0
-    0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)    表示每个传输数据的最大�?�限定为255
-    0x95, 0x40,                    //   REPORT_COUNT (64) 每次接收的数据长度，这里�??64�??
-    0x75, 0x08,                    //   REPORT_SIZE (8)        传输字段的宽度为8bit，表示每个传输的数据范围�??0~ffff ffff
-    0x91, 0x02,                    //   OUTPUT (Data,Var,Abs) 表示USB设备要接收PC的数据的功能
+    0x09, 0x01,                    //   USAGE (Vendor Usage 1) æ¯ä¸ªåŠŸèƒ½çš„ä¸€ä¸ªå·æ ‡å¿—
+    0x15, 0x00,                    //   LOGICAL_MINIMUM (0)    è¡¨ç¤ºæ¯ä¸ªä¼ è¾“æ•°æ®é™å®šï¿??0
+    0x26, 0xff, 0x00,              //   LOGICAL_MAXIMUM (255)    è¡¨ç¤ºæ¯ä¸ªä¼ è¾“æ•°æ®çš„æœ€å¤§ï¿½?ï¿½é™å®šä¸º255
+    0x95, 0x40,                    //   REPORT_COUNT (64) æ¯æ¬¡æŽ¥æ”¶çš„æ•°æ®é•¿åº¦ï¼Œè¿™é‡Œï¿??64ï¿??
+    0x75, 0x08,                    //   REPORT_SIZE (8)        ä¼ è¾“å­—æ®µçš„å®½åº¦ä¸º8bitï¼Œè¡¨ç¤ºæ¯ä¸ªä¼ è¾“çš„æ•°æ®èŒƒå›´ï¿??0~ffff ffff
+    0x91, 0x02,                    //   OUTPUT (Data,Var,Abs) è¡¨ç¤ºUSBè®¾å¤‡è¦æŽ¥æ”¶PCçš„æ•°æ®çš„åŠŸèƒ½
     
   /* USER CODE END 0 */
   0xC0    /*     END_COLLECTION	             */
@@ -471,12 +471,12 @@ void SaveMixValueToFlash(void)
         {
             requestType1 = USB_Recive_Buffer[1];
             requestType2 = USB_Recive_Buffer[2];
-            /*当请求停止时*/
+            /*å½“è¯·æ±‚åœæ­¢æ—¶*/
             if(requestType1 == 0x00 && requestType2 == 0x01)
             {
                 sendSpam = 0;
             }
-            /*上位机连接正�?*/
+            /*ä¸Šä½æœºè¿žæŽ¥æ­£å¸?*/
             if(requestType1 == 0x00 && requestType2 == 0x03)
             {
                 configFlag = 1;
