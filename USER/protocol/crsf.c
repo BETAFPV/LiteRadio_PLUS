@@ -99,7 +99,15 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         if(maxPackSize==64) GetExternalRFParameter(tlm,0);
         else if(maxPackSize == 32) GetExternalRFParameter(tlm,2);
     }
-    else if(externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)
+//    else if(externalCRSFdata.regulatoryDomainIndex != 0
+//    && externalRFprarmeter.power !=0xff 
+//    && externalRFprarmeter.rate != 0xff
+//    && externalRFprarmeter.TLM != 0xff)
+//    {
+//        Get_CRSFPackage(crsfPacket,crsfcontrol_data);
+//        HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
+//    }
+    else
     {
         Get_CRSFPackage(crsfPacket,crsfcontrol_data);
         HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
