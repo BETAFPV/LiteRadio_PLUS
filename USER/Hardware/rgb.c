@@ -25,6 +25,11 @@ static uint8_t rgbStartStatus = 0;
 static uint8_t rgbStopStatus = 0;
 static uint8_t rgbStopDelayStatus = 0;
 
+uint8_t getHighThrottleFlag(void)
+{
+    return highThrottleFlag;
+}
+    
 void Color_Set(uint8_t colorIndex,uint8_t brightness)
 {
     switch (colorIndex)

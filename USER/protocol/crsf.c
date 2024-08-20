@@ -6,6 +6,10 @@
 #include "status.h"
 #include "common.h"
 
+
+
+uint8_t getHighThrottleFlag(void);
+
 uint8_t crsfPacket[26] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
                              0x04, 0x20, 0x00, 0x01, 0x08, 0x07, 0x38, 0x00, 0x10, 0x80, 0x00, 0x04,0x00};
 uint8_t sbusPacket[25] = {0x0F, 0x00, 0x34, 0x1F, 0xA8, 0x09, 0x08, 0x6A, 0x50, 0x03,0x10, 0x80, 0x00,
@@ -99,32 +103,11 @@ uint16_t CRSF_Process(uint16_t* crsfcontrol_data)
         if(maxPackSize==64) GetExternalRFParameter(tlm,0);
         else if(maxPackSize == 32) GetExternalRFParameter(tlm,2);
     }
-//    else if(externalCRSFdata.regulatoryDomainIndex != 0
-//    && externalRFprarmeter.power !=0xff 
-//    && externalRFprarmeter.rate != 0xff
-//    && externalRFprarmeter.TLM != 0xff)
-//    {
-//        Get_CRSFPackage(crsfPacket,crsfcontrol_data);
-//        HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
-//    }
-    else
+    else if(getHighThrottleFlag() == 0)//油门已解锁时才允许发送数据
     {
         Get_CRSFPackage(crsfPacket,crsfcontrol_data);
         HAL_UART_Transmit_DMA(&huart1,crsfPacket,26);
     }
-//    if(externalCRSFdata.RSSI<RSSI_WARNING_VALUE && crsfLinkCount>10)
-//    {
-//        rssiWarningNowTick = HAL_GetTick();
-//        if((rssiWarningNowTick - rssiWarningLastTick) > 10000)
-//        {
-//            xEventGroupSetBits(buzzerEventHandle,RISS_WARNING_RING);
-//            rssiWarningLastTick = rssiWarningNowTick;
-//        }
-
-//    }
-
-
-
 	return 0; 
 }
 
