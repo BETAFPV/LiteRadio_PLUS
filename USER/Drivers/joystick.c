@@ -99,7 +99,7 @@ void joystickTask(void *param)
                 sendSpam++;
                 if((externalCRSFdata.regulatoryDomainIndex!=0&&externalRFprarmeter.power!=0xff&&externalRFprarmeter.rate!=0xff&&externalRFprarmeter.TLM!=0xff)||(sendSpam>=10000))
                 {
-                    hidReportData[0] = EXTERNAL_CONFIGER_INFO_ID|(0x01 <<8);;
+                    hidReportData[0] = EXTERNAL_CONFIGER_INFO_ID|(0x01 <<8);
                     uint8_t rateToConfigurator = 0,powerToConfigurator = 0;
                     switch (externalCRSFdata.regulatoryDomainIndex)
                     {
@@ -182,7 +182,22 @@ void joystickTask(void *param)
                     hidReportData[7] = checkSum;
                     USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
                 }
-                
+                else//旧代码上位机配置外置高频头相关的业务已不可用，强制发送一些固定信息，无实际效果
+                {
+                    uint8_t* buf = (uint8_t*)hidReportData;
+                    buf[0] = EXTERNAL_CONFIGER_INFO_ID;
+                    buf[1] = 0x01;
+                    buf[2] = power50mw;
+                    buf[3] = ELRS_PkgRate2400_250HZ;
+                    buf[4] = TLM_1_64;
+                    buf[5] = NANO_TX_2400Mhz;
+                    for(int i=0;i<7;i++)
+                    {
+                        checkSum += hidReportData[i]&0x00FF;
+                    }
+                    hidReportData[7] = checkSum;
+                    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+                }
             }
         }
         else if(requestType1 == REQUEST_DEVICE_INFO)

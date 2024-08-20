@@ -372,6 +372,8 @@ void SaveMixValueToFlash(void)
             {
                 externalCRSFdata.configStatus = CONFIG_CRSF_ON;
                 externalCRSFdata.configUpdateFlag = 0x01;
+                requestType1 = 0x02;
+                requestType2 = 0x02;
             }
             else if(writeWord[1] == 0x00)
             {

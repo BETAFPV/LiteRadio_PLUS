@@ -63,6 +63,26 @@ enum{
     power2000mw,
 };
 
+typedef enum
+{
+    ELRS_PkgRate2400_500HZ = 0x00U,
+    ELRS_PkgRate2400_250HZ = 0x01U,
+    ELRS_PkgRate2400_150HZ = 0x02U,
+    ELRS_PkgRate2400_50HZ = 0x03U,
+}ExpressLRS_PkgRate2400_e;
+
+typedef enum
+{
+    TLM_NO      = 0x00U,
+    TLM_1_128   = 0x01U,
+    TLM_1_64    = 0x02U,
+    TLM_1_32    = 0x03U,
+    TLM_1_16    = 0x04U,
+    TLM_1_8     = 0x05U,
+    TLM_1_4     = 0x06U,
+    TLM_1_2     = 0x07U,
+}bfLink_TLM_e;
+
 enum{
     power915Mhz100mw,
     power915Mhz250mw,
