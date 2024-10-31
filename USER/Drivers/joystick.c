@@ -18,25 +18,16 @@ uint16_t sendSpam;
 extern crsfParameter_t externalRFprarmeter;
 void joystickTask(void *param) 
 {
-    uint16_t hidReportData[8];
-    uint16_t requestDataBuff[8];
-    uint16_t mixValBuff[8];
+    uint8_t     hidReportBuf[20] = { 0 };
+    uint16_t*   hidReportData = (uint16_t*)hidReportBuf;
+    uint16_t    requestDataBuff[8];
+    uint16_t    mixValBuff[8];
 
     joystickDelayTime = Get_ProtocolDelayTime();
     while(1)
     {
         vTaskDelay(joystickDelayTime);
         xQueueReceive(mixesValQueue,mixValBuff,0);
-     
-//        hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
-//        hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
-//        hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
-//        hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
-//        hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
-//        hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
-//        hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
-//        hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
-
         if (requestType1 == REQUEST_CHANNEL_INFO)
         {
             hidReportData[0] = CHANNEILS_INFO_ID|((requestType2- 0x01) << 8);
@@ -47,7 +38,7 @@ void joystickTask(void *param)
                 checkSum += hidReportData[i]&0x00FF;
             }
             hidReportData[7] = checkSum; 
-            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
         }
         else if (requestType1 == REQUEST_CONIFG_INFO)
         {
@@ -63,7 +54,7 @@ void joystickTask(void *param)
                     checkSum += hidReportData[i]&0x00FF;
                 }
                 hidReportData[7] = checkSum;
-                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
             }
             else if(requestType2 == 0x01)/*internal_info*/
             {
@@ -81,7 +72,7 @@ void joystickTask(void *param)
                     checkSum += hidReportData[i] & 0x00FF;
                 }
                 hidReportData[7] = checkSum;
-                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
 
             }
             else if(requestType2 == 0x02)/*external_info*/
@@ -180,7 +171,7 @@ void joystickTask(void *param)
                         checkSum += hidReportData[i]&0x00FF;
                     }
                     hidReportData[7] = checkSum;
-                    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+                    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
                 }
                 else//旧代码上位机配置外置高频头相关的业务已不可用，强制发送一些固定信息，无实际效果
                 {
@@ -196,7 +187,7 @@ void joystickTask(void *param)
                         checkSum += hidReportData[i]&0x00FF;
                     }
                     hidReportData[7] = checkSum;
-                    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+                    USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
                 }
             }
         }
@@ -231,7 +222,7 @@ void joystickTask(void *param)
                 checkSum += hidReportData[i]&0x00FF;
             }
             hidReportData[7] = checkSum;
-            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
 
         }
         else if(requestType1 == REQUEST_EXTRA_CONFIG_INFO)
@@ -247,7 +238,7 @@ void joystickTask(void *param)
                 checkSum += hidReportData[i]&0x00FF;
             }
             hidReportData[7] = checkSum;
-            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
         }
         else 
         {
@@ -259,7 +250,15 @@ void joystickTask(void *param)
             hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
             hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
             hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
-            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
+            hidReportBuf[16] = 0;
+            //模式切换映射
+            if      (mixValBuff[5] < 1200)  hidReportBuf[16] |= 0x80;
+            else if (mixValBuff[5] < 1800)  hidReportBuf[16] |= 0x40;
+            //自定义按键5
+            if      (mixValBuff[6] > 1800)  hidReportBuf[16] |= 0x08;
+            //自定义按键6
+            if      (mixValBuff[7] > 1800)  hidReportBuf[16] |= 0x02;
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
         }
         checkSum = 0;        
 

@@ -105,6 +105,46 @@ extern bool MasterUidUseChipIDFlag;
 /** Usb HID report descriptor. */
 __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DESC_SIZE] __ALIGN_END =
 {
+    0x05, 0x01,         //  Usage Page (Generic Desktop Controls)
+    0x09, 0x05,         //  Usage (Game Pad)
+    0xA1, 0x01,         //  Collection (Application)
+    //6
+    0x05, 0x01,         //      Usage Page (Generic Desktop Controls)
+    0x09, 0x30,         //      Usage (Direction-X)
+    0x09, 0x31,         //      Usage (Direction-Y)
+    0x09, 0x32,         //      Usage (Direction-Z)
+    0x09, 0x33,         //      Usage (Rotate-X)
+    0x09, 0x34,         //      Usage (Rotate-Y)
+    0x09, 0x35,         //      Usage (Rotate-Z)
+    0x09, 0x36,         //      Usage (Slider)
+    0x09, 0x36,         //      Usage (Slider)
+    0x15, 0x00,         //      Logical Minimum (0)
+    0x26, 0xFF, 0x07,   //      Logical Maximum (2047)
+    0x75, 0x10,         //      Report Size (16)
+    0x95, 0x08,         //      Report Count (8)
+    0x81, 0x02,         //      Input (Var)
+    //29
+    0x05, 0x09,         //      Usage Page (Buttons)
+    0x19, 0x01,         //      Usage Minimum (1)
+    0x29, 0x10,         //      Usage Maximum (16)
+    0x15, 0x00,         //      Logical Minimum (0)
+    0x25, 0x01,         //      Logical Maximum (1)
+    0x75, 0x01,         //      Report Size (1)
+    0x95, 0x10,         //      Report Count (16)
+    0x81, 0x02,         //      Input (Var)
+    //16
+    0x09, 0x01,         //      Usage (Vendor Usage 1)
+    0x15, 0x00,         //      Logical Minimum (0)
+    0x26, 0xff, 0x00,   //      Logical Maximum (255)
+    0x95, 0x40,         //      Report Count (64)
+    0x75, 0x08,         //      Report Size (8)
+    0x91, 0x02,         //      Output (Data,Var,Abs)
+    //13
+    0xC0                //  End Collection
+    //1
+    
+    //total bytes = 6+29+16+13+1 = 65
+#if 0
   /* USER CODE BEGIN 0 */
     0x05,0x01,          /*Usage Page(Generic Desktop)*/ 
     0x09,0x04,          /*Usage(joystick)*/
@@ -167,6 +207,7 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
     
   /* USER CODE END 0 */
   0xC0    /*     END_COLLECTION	             */
+#endif
 };
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
