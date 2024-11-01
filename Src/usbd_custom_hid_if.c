@@ -34,7 +34,8 @@
 #include "common.h"
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
 #include "common.h"
-#endif    
+#endif
+#include "xinput.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -117,7 +118,7 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
     0x09, 0x34,         //      Usage (Rotate-Y)
     0x09, 0x35,         //      Usage (Rotate-Z)
     0x09, 0x36,         //      Usage (Slider)
-    0x09, 0x36,         //      Usage (Slider)
+    0x09, 0x37,         //      Usage (Caller)
     0x15, 0x00,         //      Logical Minimum (0)
     0x26, 0xFF, 0x07,   //      Logical Maximum (2047)
     0x75, 0x10,         //      Report Size (16)
@@ -290,6 +291,7 @@ static int8_t CUSTOM_HID_DeInit_FS(void)
 static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state)
 {
   /* USER CODE BEGIN 6 */
+    if(isXboxMode)return (USBD_OK);
     char i;
 
     USBD_CUSTOM_HID_HandleTypeDef   *hhid;

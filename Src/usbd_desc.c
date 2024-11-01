@@ -25,6 +25,7 @@
 #include "usbd_conf.h"
 
 /* USER CODE BEGIN INCLUDE */
+#include "xinput.h"
 
 /* USER CODE END INCLUDE */
 
@@ -167,6 +168,28 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   USBD_MAX_NUM_CONFIGURATION  /*bNumConfigurations*/
 };
 
+__ALIGN_BEGIN uint8_t USBD_FS_XinDeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
+{
+  0x12,                       /*bLength */
+  USB_DESC_TYPE_DEVICE,       /*bDescriptorType*/
+  0x00,                       /*bcdUSB */
+  0x02,
+  0xFF,                       /*bDeviceClass*/
+  0xFF,                       /*bDeviceSubClass*/
+  0xFF,                       /*bDeviceProtocol*/
+  USB_MAX_EP0_SIZE,           /*bMaxPacketSize*/
+  LOBYTE(0x045EU),            /*idVendor*/
+  HIBYTE(0x045EU),            /*idVendor*/
+  LOBYTE(0x028EU),            /*idProduct*/
+  HIBYTE(0x028EU),            /*idProduct*/
+  0x00,                       /*bcdDevice rel. 2.00*/
+  0x02,
+  USBD_IDX_MFC_STR,           /*Index of manufacturer  string*/
+  USBD_IDX_PRODUCT_STR,       /*Index of product string*/
+  USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
+  USBD_MAX_NUM_CONFIGURATION  /*bNumConfigurations*/
+};
+
 /* USB_DeviceDescriptor */
 
 /**
@@ -223,8 +246,14 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
 uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   UNUSED(speed);
-  *length = sizeof(USBD_FS_DeviceDesc);
-  return USBD_FS_DeviceDesc;
+  if(isXboxMode)
+  {
+    *length = sizeof(USBD_FS_XinDeviceDesc);
+    return USBD_FS_XinDeviceDesc;
+  }else{
+    *length = sizeof(USBD_FS_DeviceDesc);
+    return USBD_FS_DeviceDesc;
+  }
 }
 
 /**

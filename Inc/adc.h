@@ -38,7 +38,7 @@ extern ADC_HandleTypeDef hadc1;
 #define ADC_CHAL_NUM    5
 
 /* USER CODE END Private defines */
-
+extern uint16_t adc_value[150];
 void MX_ADC1_Init(void);
 
 /* USER CODE BEGIN Prototypes */

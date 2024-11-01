@@ -45,7 +45,7 @@ EndBSPDependencies */
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_customhid.h"
 #include "usbd_ctlreq.h"
-
+#include "xinput.h"
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
@@ -189,6 +189,50 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_CfgFSDesc[USB_CUSTOM_HID_CONFIG_DES
   0x00,
   CUSTOM_HID_FS_BINTERVAL,  /* bInterval: Polling Interval */
   /* 41 */
+};
+
+__ALIGN_BEGIN static uint8_t USBD_Xin_CfgFSDesc[48] __ALIGN_END =
+{
+    0x09,                           // bLength                  : 0x09 (9 bytes)
+    USB_DESC_TYPE_CONFIGURATION,    // bDescriptorType          : 0x02 (Configuration Descriptor)
+    0x30,                           // wTotalLength             : 0x0030 (48 bytes)
+    0x00,                           
+    0x01,                           // bNumInterfaces           : 0x01 (1 Interface)
+    0x01,                           // bConfigurationValue      : 0x01 (Configuration 1)
+    0x00,                           // iConfiguration           : 0x00 (No String Descriptor)
+    0xA0,                           // bmAttributes             : 0xA0
+    0xFA,                           // MaxPower                 : 0xFA (500 mA)
+
+    0x09,                           // bLength                  : 0x09 (9 bytes)
+    USB_DESC_TYPE_INTERFACE,        // bDescriptorType          : 0x04 (Interface Descriptor)
+    0x00,                           // bInterfaceNumber         : 0x00 (Interface 0)
+    0x00,                           // bAlternateSetting        : 0x00
+    0x02,                           // bNumEndpoints            : 0x02 (2 Endpoints)
+    0xFF,                           // bInterfaceClass          : 0xFF (Vendor Specific)
+    0x5D,                           // bInterfaceSubClass       : 0x5D
+    0x01,                           // bInterfaceProtocol       : 0x01
+    0x00,                           // iInterface               : 0x00 (No String Descriptor)
+    
+    0x10,0x21,0x10,0x01,0x01,       // Unknown
+    0x24,0x81,0x14,0x03,0x00,
+    0x03,0x13,0x02,0x00,0x03,
+    0x00,
+    
+    0x07,                           // bLength                  : 0x07 (7 bytes)
+    0x05,                           // bDescriptorType          : 0x05 (Endpoint Descriptor)
+    CUSTOM_HID_EPIN_ADDR,           // bEndpointAddress         : 0x81 (Direction=IN EndpointID=1)
+    0x03,                           // bmAttributes             : 0x03 (TransferType=Interrupt)
+    0x20,                           // wMaxPacketSize           : 0x0020 (32 bytes)
+    0x00,                           
+    0x04,                           // bInterval                : 0x04 (4 ms)
+    
+    0x07,                           // bLength                  : 0x07 (7 bytes)
+    0x05,                           // bDescriptorType          : 0x05 (Endpoint Descriptor)
+    0x02,                           // bEndpointAddress         : 0x02 (Direction=OUT EndpointID=2)
+    0x03,                           // bmAttributes             : 0x03 (TransferType=Interrupt)
+    0x20,                           // wMaxPacketSize           : 0x0020 (32 bytes)
+    0x00,                           
+    0x08,                           // bInterval                : 0x08 (8 ms)
 };
 
 /* USB CUSTOM_HID device HS Configuration Descriptor */
@@ -360,18 +404,21 @@ static uint8_t  USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev,
   uint8_t ret = 0U;
   USBD_CUSTOM_HID_HandleTypeDef     *hhid;
 
-  /* Open EP IN */
-  USBD_LL_OpenEP(pdev, CUSTOM_HID_EPIN_ADDR, USBD_EP_TYPE_INTR,
-                 CUSTOM_HID_EPIN_SIZE);
-
-  pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 1U;
-
-  /* Open EP OUT */
-  USBD_LL_OpenEP(pdev, CUSTOM_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR,
-                 CUSTOM_HID_EPOUT_SIZE);
-
-  pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
-
+  if(isXboxMode)
+  {
+    USBD_LL_OpenEP(pdev, CUSTOM_HID_EPIN_ADDR, USBD_EP_TYPE_INTR, 20);
+    pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 1U;
+    USBD_LL_OpenEP(pdev, 0x02, USBD_EP_TYPE_INTR, CUSTOM_HID_EPOUT_SIZE);
+    pdev->ep_out[0x02 & 0xFU].is_used = 1U;
+  }
+  else
+  {
+    USBD_LL_OpenEP(pdev, CUSTOM_HID_EPIN_ADDR, USBD_EP_TYPE_INTR, CUSTOM_HID_EPIN_SIZE);
+    pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 1U;
+    USBD_LL_OpenEP(pdev, CUSTOM_HID_EPOUT_ADDR, USBD_EP_TYPE_INTR, CUSTOM_HID_EPOUT_SIZE);
+    pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].is_used = 1U;
+  }
+  
   pdev->pClassData = USBD_malloc(sizeof(USBD_CUSTOM_HID_HandleTypeDef));
 
   if (pdev->pClassData == NULL)
@@ -386,8 +433,10 @@ static uint8_t  USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev,
     ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->Init();
 
     /* Prepare Out endpoint to receive 1st packet */
-    USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf,
-                           USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+    if(isXboxMode)
+        USBD_LL_PrepareReceive(pdev, 0x02, hhid->Report_buf, USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+    else
+        USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf, USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
   }
 
   return ret;
@@ -403,14 +452,24 @@ static uint8_t  USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev,
 static uint8_t  USBD_CUSTOM_HID_DeInit(USBD_HandleTypeDef *pdev,
                                        uint8_t cfgidx)
 {
-  /* Close CUSTOM_HID EP IN */
-  USBD_LL_CloseEP(pdev, CUSTOM_HID_EPIN_ADDR);
-  pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 0U;
-
-  /* Close CUSTOM_HID EP OUT */
-  USBD_LL_CloseEP(pdev, CUSTOM_HID_EPOUT_ADDR);
-  pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
-
+  if(isXboxMode)
+  {
+    /* Close CUSTOM_HID EP IN */
+    USBD_LL_CloseEP(pdev, CUSTOM_HID_EPIN_ADDR);
+    pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 0U;
+    /* Close CUSTOM_HID EP OUT */
+    USBD_LL_CloseEP(pdev, 0x02);
+    pdev->ep_out[0x02 & 0xFU].is_used = 0U;
+  }
+  else
+  {
+    /* Close CUSTOM_HID EP IN */
+    USBD_LL_CloseEP(pdev, CUSTOM_HID_EPIN_ADDR);
+    pdev->ep_in[CUSTOM_HID_EPIN_ADDR & 0xFU].is_used = 0U;
+    /* Close CUSTOM_HID EP OUT */
+    USBD_LL_CloseEP(pdev, CUSTOM_HID_EPOUT_ADDR);
+    pdev->ep_out[CUSTOM_HID_EPOUT_ADDR & 0xFU].is_used = 0U;
+  }
   /* FRee allocated memory */
   if (pdev->pClassData != NULL)
   {
@@ -579,8 +638,16 @@ uint8_t USBD_CUSTOM_HID_SendReport(USBD_HandleTypeDef  *pdev,
   */
 static uint8_t  *USBD_CUSTOM_HID_GetFSCfgDesc(uint16_t *length)
 {
-  *length = sizeof(USBD_CUSTOM_HID_CfgFSDesc);
-  return USBD_CUSTOM_HID_CfgFSDesc;
+  if(isXboxMode)
+  {
+    *length = sizeof(USBD_Xin_CfgFSDesc);
+    return USBD_Xin_CfgFSDesc;
+  }
+  else
+  {
+    *length = sizeof(USBD_CUSTOM_HID_CfgFSDesc);
+    return USBD_CUSTOM_HID_CfgFSDesc;
+  }
 }
 
 /**
@@ -642,8 +709,16 @@ static uint8_t  USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev,
   ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
                                                             hhid->Report_buf[1]);
 
-  USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf,
-                         USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+  if(isXboxMode)
+  {
+    USBD_LL_PrepareReceive(pdev, 0x02, hhid->Report_buf,
+                           USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+  }
+  else
+  {
+    USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf,
+                           USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+  }
 
   return USBD_OK;
 }

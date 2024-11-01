@@ -28,6 +28,8 @@
 #include "usbd_custom_hid_if.h"
 
 /* USER CODE BEGIN Includes */
+#include "adc.h"
+#include "xinput.h"
 
 /* USER CODE END Includes */
 
@@ -65,7 +67,13 @@ USBD_HandleTypeDef hUsbDeviceFS;
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-  
+  if(adc_value[0] < 700
+  && adc_value[1] < 700
+  && adc_value[2] > 2800
+  && adc_value[3] < 700)
+  {
+      isXboxMode = 1;
+  }
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
 
   /* Init Device Library, add supported class and start the library. */

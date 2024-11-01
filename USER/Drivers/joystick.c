@@ -9,21 +9,33 @@
 #include "status.h"
 #include "crsf.h"
 #include "common.h"
+#include "xinput.h"
+
+
 
 static uint32_t joystickDelayTime;
 TaskHandle_t joystickTaskHandle;
 /*累加和校验算法*/
 static uint16_t checkSum;
 uint16_t sendSpam;
+
+
+
 extern crsfParameter_t externalRFprarmeter;
+
+
+
 void joystickTask(void *param) 
 {
-    uint8_t     hidReportBuf[20] = { 0 };
-    uint16_t*   hidReportData = (uint16_t*)hidReportBuf;
-    uint16_t    requestDataBuff[8];
-    uint16_t    mixValBuff[8];
-
+    uint8_t             hidReportBuf[20] = { 0 };
+    uint16_t*           hidReportData = (uint16_t*)hidReportBuf;
+    xinput_gamepad_t*   xinGamepad = (xinput_gamepad_t*)hidReportBuf;
+    uint16_t            requestDataBuff[8];
+    uint16_t            mixValBuff[8];
+    
+    //if(isXboxMode)xinGamepad->bPackageSize = 20;
     joystickDelayTime = Get_ProtocolDelayTime();
+    
     while(1)
     {
         vTaskDelay(joystickDelayTime);
@@ -242,23 +254,69 @@ void joystickTask(void *param)
         }
         else 
         {
-            hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
-            hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
-            hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
-            hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
-            hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
-            hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
-            hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
-            hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
-            hidReportBuf[16] = 0;
-            //模式切换映射
-            if      (mixValBuff[5] < 1200)  hidReportBuf[16] |= 0x80;
-            else if (mixValBuff[5] < 1800)  hidReportBuf[16] |= 0x40;
-            //自定义按键5
-            if      (mixValBuff[6] > 1800)  hidReportBuf[16] |= 0x08;
-            //自定义按键6
-            if      (mixValBuff[7] > 1800)  hidReportBuf[16] |= 0x02;
-            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
+            if(isXboxMode)
+            {
+                xinGamepad->sThumbRX = xinputMap(mixValBuff[0], 988,2012, INT16_MIN, INT16_MAX);
+                xinGamepad->sThumbRY = xinputMap(mixValBuff[1], 988,2012, INT16_MIN, INT16_MAX);
+                xinGamepad->sThumbLY = xinputMap(mixValBuff[2], 988,2012, INT16_MIN, INT16_MAX);
+                xinGamepad->sThumbLX = xinputMap(mixValBuff[3], 988,2012, INT16_MIN, INT16_MAX);
+                xinGamepad->bReverse = 0;
+                xinGamepad->bPackageSize = 20;
+                xinGamepad->bHat = 0;
+                xinGamepad->bButtons = 0;
+                //SA
+                if      (mixValBuff[4] < 1200){
+                    xinGamepad->bLeftTrigger = 0;
+                }else if(mixValBuff[4] < 1800){
+                    xinGamepad->bLeftTrigger = 0;
+                }else                         {
+                    xinGamepad->bLeftTrigger = UINT8_MAX;
+                }
+                //SB
+                if      (mixValBuff[5] < 1200){
+                    xinGamepad->bButtons |= XINPUT_GAMEPAD_BUTTON_6;
+                }else if(mixValBuff[5] < 1800){
+                    
+                }else                         {
+                    xinGamepad->bButtons |= XINPUT_GAMEPAD_BUTTON_5;
+                }
+                //SC
+                if      (mixValBuff[6] < 1200){
+                    xinGamepad->bHat |= XINPUT_GAMEPAD_HAT_DOWN;
+                }else if(mixValBuff[6] < 1800){
+                }else                         {
+                    xinGamepad->bHat |= XINPUT_GAMEPAD_HAT_UP;
+                }
+                //SD
+                if      (mixValBuff[7] < 1200){
+                    xinGamepad->bRightTrigger = 0;
+                }else if(mixValBuff[7] < 1800){
+                    xinGamepad->bRightTrigger = 0;
+                }else                         {
+                    xinGamepad->bRightTrigger = UINT8_MAX;
+                }
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 20);
+            }
+            else
+            {
+                hidReportData[0] = map(mixValBuff[0],988,2012,0,2047);
+                hidReportData[1] = map(mixValBuff[1],988,2012,0,2047);
+                hidReportData[2] = map(mixValBuff[2],988,2012,0,2047);
+                hidReportData[3] = map(mixValBuff[3],988,2012,0,2047);
+                hidReportData[4] = map(mixValBuff[4],988,2012,0,2047);
+                hidReportData[5] = map(mixValBuff[5],988,2012,0,2047);
+                hidReportData[6] = map(mixValBuff[6],988,2012,0,2047);
+                hidReportData[7] = map(mixValBuff[7],988,2012,0,2047);
+                hidReportBuf[16] = 0;
+                //模式切换映射
+                if      (mixValBuff[5] < 1200)  hidReportBuf[16] |= 0x80;
+                else if (mixValBuff[5] < 1800)  hidReportBuf[16] |= 0x40;
+                //自定义按键5
+                if      (mixValBuff[6] > 1800)  hidReportBuf[16] |= 0x08;
+                //自定义按键6
+                if      (mixValBuff[7] > 1800)  hidReportBuf[16] |= 0x02;
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 18);
+            }
         }
         checkSum = 0;        
 
