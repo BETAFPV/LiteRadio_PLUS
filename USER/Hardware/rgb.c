@@ -6,6 +6,8 @@
 #include "radiolink.h"
 #include "stdbool.h"
 #include "common.h"
+#include "xinput.h"
+
 EventGroupHandle_t rgbEventHandle;
 
 static uint8_t bindStatus = 0;
@@ -300,7 +302,7 @@ static bool Tim1IsOpen = false;
 void rgbTask(void* param)
 {
     EventBits_t rgbEvent;
-    
+    uint8_t xboxPromptOnlyOnce = 0;
     highThrottleFlag = 1;
     
     while(1)
@@ -322,7 +324,23 @@ void rgbTask(void* param)
             RGB_Breath_Down(BLUE);
             rgbEvent &= ~DATA_RGB;
         }
-
+        
+        /*Enter xbox mode*/
+        if(xboxPromptOnlyOnce == 0)
+        {
+            if(isXboxMode == 1)
+            {
+                xboxPromptOnlyOnce = 1;
+                for(uint8_t i=0; i<3; i++)
+                {
+                    RGB_Set(WHITE,BRIGHTNESS_MAX);
+                    osDelay(200);
+                    RGB_Set(BLACK,BRIGHTNESS_MAX);
+                    osDelay(200);
+                }
+            }
+        }
+        
         /*LOW ELECTRICITY RGB*/
         if((rgbEvent & LOW_ELECTRICITY_RGB) == LOW_ELECTRICITY_RGB)
         {

@@ -67,12 +67,15 @@ USBD_HandleTypeDef hUsbDeviceFS;
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-  if(adc_value[0] < 700
-  && adc_value[1] < 700
-  && adc_value[2] > 2800
-  && adc_value[3] < 700)
+  if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port, KEY_POWER_Pin) == GPIO_PIN_SET)
   {
-      isXboxMode = 1;
+      if(adc_value[0] < 700
+      && adc_value[1] < 700
+      && adc_value[2] > 2800
+      && adc_value[3] < 700)
+      {
+          isXboxMode = 1;
+      }
   }
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
 
