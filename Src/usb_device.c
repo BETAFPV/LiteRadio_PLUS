@@ -30,6 +30,9 @@
 /* USER CODE BEGIN Includes */
 #include "adc.h"
 #include "xinput.h"
+#include "stmflash.h"
+#include "common.h"
+#include "joystick.h"
 
 /* USER CODE END Includes */
 
@@ -67,16 +70,24 @@ USBD_HandleTypeDef hUsbDeviceFS;
 void MX_USB_DEVICE_Init(void)
 {
   /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-  if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port, KEY_POWER_Pin) == GPIO_PIN_SET)
-  {
-      if(adc_value[0] < 700
-      && adc_value[1] < 700
-      && adc_value[2] > 2800
-      && adc_value[3] < 700)
-      {
-          isXboxMode = 1;
-      }
-  }
+    STMFLASH_Read(LITE_RADIO_HARDWARE_TYPE_ADDR, &liteRadioIndex, 1);
+    if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port, KEY_POWER_Pin) == GPIO_PIN_SET){
+        if(liteRadioIndex == LITE_RADIO_1_CC2500){
+            if(adc_value[0] < 700
+            && adc_value[1] < 700
+            && adc_value[2] < 700
+            && adc_value[3] > 2800){
+                isXboxMode = 1;
+            }
+        }else{
+            if(adc_value[0] < 700
+            && adc_value[1] < 700
+            && adc_value[2] > 2800
+            && adc_value[3] < 700){
+                isXboxMode = 1;
+            }
+        }
+    }
   /* USER CODE END USB_DEVICE_Init_PreTreatment */
 
   /* Init Device Library, add supported class and start the library. */

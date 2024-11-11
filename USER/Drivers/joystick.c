@@ -18,6 +18,7 @@ TaskHandle_t joystickTaskHandle;
 /*累加和校验算法*/
 static uint16_t checkSum;
 uint16_t sendSpam;
+uint16_t liteRadioIndex = LITE_RADIO_UNKNOW;
 
 
 

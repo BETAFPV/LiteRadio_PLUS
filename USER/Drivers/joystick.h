@@ -23,8 +23,19 @@ typedef enum
     REQUEST_EXTRA_CONFIG_INFO      = 0x04,
 }requestProtocol_e;
 
+typedef enum{
+    LITE_RADIO_UNKNOW = 0U,
+    LITE_RADIO_2_SE = 1U,
+    LITE_RADIO_2_SE_V2_CC2500 = 2U,
+    LITE_RADIO_2_SE_V2_SX1280 = 3U,
+    LITE_RADIO_3_CC2500 = 4U,
+    LITE_RADIO_3_SX1280 = 5U,
+    LITE_RADIO_1_CC2500 = 6U,
+    LITE_RADIO_4_SE_SX1280 = 7U,
+}lite_radio_index_e;
 
-extern uint16_t sendSpam;                                                                
+extern uint16_t sendSpam;   
+extern uint16_t liteRadioIndex;
                                                                 
 void joystickTask(void *param);
 extern TaskHandle_t joystickTaskHandle;
