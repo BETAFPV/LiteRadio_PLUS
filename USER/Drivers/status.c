@@ -290,14 +290,21 @@ void statusTask(void* param)
         }    
         if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
         {    
-            if(RCstatus != RC_CHRG_AND_JOYSTICK)
-            {
-                xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
-                if(RCstatus == RC_RADIOLINK)
-                {
-                    RFstatus = RF_CALIBARATION;
-                }
-            }   
+            xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
+            if(RFstatus == RF_DATA){
+                RCstatus = RC_RADIOLINK;
+                RFstatus = RF_CALIBARATION;
+            }else if(RFstatus == RF_CALIBARATION){
+                RFstatus = RF_CALIBARATION_1;
+            }
+//            if(RCstatus != RC_CHRG_AND_JOYSTICK)
+//            {
+//                xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
+//                if(RCstatus == RC_RADIOLINK)
+//                {
+//                    RFstatus = RF_CALIBARATION;
+//                }
+//            }   
         }       
         
         gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
@@ -308,6 +315,7 @@ void statusTask(void* param)
         if((gimbalEvent & GIMBAL_CALIBRATE_END) == GIMBAL_CALIBRATE_END)
         {
             RFstatus = RF_DATA;
+            RCstatus = RC_CHRG_AND_JOYSTICK;
         }
 
         switch (RCstatus)
@@ -328,6 +336,11 @@ void statusTask(void* param)
                     case RF_CALIBARATION:
                     {
                         xEventGroupSetBits( rgbEventHandle, SETUP_RGB);
+                        break;
+                    }
+                    case RF_CALIBARATION_1:
+                    {
+                        xEventGroupSetBits( rgbEventHandle, SETUP_RGB1);
                         break;
                     }
                     case RF_BIND:

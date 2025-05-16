@@ -25,6 +25,7 @@ typedef enum
     RF_DATA           = 0,
     RF_CALIBARATION      ,   
     RF_BIND              ,
+    RF_CALIBARATION_1    ,
 }RFstatus_e;
 
 extern uint8_t requestType1;
