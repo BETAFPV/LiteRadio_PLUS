@@ -190,9 +190,8 @@ void RGB_BindTwinkle()
     bindStatus = 0;
 }
 
-void RGB_SetupTwinkle()
-{    
-    uint8_t rgbNum = 2;
+void RGB_SetupTwinkle(uint8_t rgbNum)
+{
     rgbNowTick = HAL_GetTick();    
     if(rgbStartStatus||rgbStopStatus||rgbStopDelayStatus)
     {
@@ -309,18 +308,20 @@ void rgbTask(void* param)
     {   
         vTaskDelay(1);       
         rgbEvent = xEventGroupWaitBits( rgbEventHandle,
-                                        POWER_ON_RGB|POWER_OFF_RGB|BIND_RGB|LOW_ELECTRICITY_RGB|SETUP_RGB|DATA_RGB|SHUTDOWN_RGB|CHRG_AND_JOYSTICK_RGB,
+                                        POWER_ON_RGB | POWER_OFF_RGB | BIND_RGB |
+                                        LOW_ELECTRICITY_RGB | SETUP_RGB | SETUP_RGB1 |
+                                        DATA_RGB | SHUTDOWN_RGB | CHRG_AND_JOYSTICK_RGB,
                                         pdTRUE,
                                         pdFALSE,
                                         0);
         /*POWER RGB*/
         if((rgbEvent & POWER_ON_RGB) == POWER_ON_RGB)
-        {         
+        {
             RGB_Breath_Up(RED);
             rgbEvent &= ~CHRG_AND_JOYSTICK_RGB;
         }
         if((rgbEvent & POWER_OFF_RGB) == POWER_OFF_RGB)
-        {				
+        {
             RGB_Breath_Down(BLUE);
             rgbEvent &= ~DATA_RGB;
         }
@@ -353,10 +354,14 @@ void rgbTask(void* param)
             bindStatus = 1;
             RGB_BindTwinkle();
         }        
-
-        if((rgbEvent & SETUP_RGB) == SETUP_RGB)
+        
+        if((rgbEvent & SETUP_RGB1) == SETUP_RGB1)
         {
-            RGB_SetupTwinkle();
+            RGB_SetupTwinkle(3);
+        }
+        else if((rgbEvent & SETUP_RGB) == SETUP_RGB)
+        {
+            RGB_SetupTwinkle(2);
         }
         if((rgbEvent & DATA_RGB) == DATA_RGB)
         {

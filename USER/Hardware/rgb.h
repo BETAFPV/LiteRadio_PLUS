@@ -21,6 +21,7 @@
 #define CHRG_AND_JOYSTICK_RGB     (0x01 << 5)
 #define POWER_ON_RGB	          (0x01 << 6)	
 #define POWER_OFF_RGB	          (0x01 << 7)	
+#define SETUP_RGB1           	  (0x01 << 8)
 
 #define RGB_START_INTERVAL       150
 #define RGB_STOP_INTERVAL        150
@@ -52,7 +53,7 @@ extern EventGroupHandle_t rgbEventHandle;
 void Color_Set(uint8_t colorIndex,uint8_t brightness);
 void RGB_Set(uint8_t colorIndex,uint8_t brightness);
 void RGB_TwinkleForInit(uint8_t num,uint16_t twinkleDelayTime);
-void RGB_SetupTwinkle(void);
+void RGB_SetupTwinkle(uint8_t rgbNum);
 void RGB_BindTwinkle(void);
 void RGB_LowElectricityTwinkle(void);
 void RGB_Breath(uint8_t colorIndex);
