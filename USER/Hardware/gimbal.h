@@ -37,6 +37,14 @@ typedef enum
 	THROTTLE = 0 ,      //throttle
 }gimbalChannelTypeDef;
 
+typedef enum
+{
+	ADC_INPUT_ID_MAX = 0U,
+	ADC_INPUT_ID_MID = 1U,
+    ADC_INPUT_ID_MIN = 2U,
+}adc_input_id_e;
+
+
 
 #define CHANNEL_OUTPUT_MAX 2012
 #define CHANNEL_OUTPUT_MID 1500
@@ -61,8 +69,16 @@ typedef enum
 #define AD_MIDVALUE_MIN (ADC_INPUT_MID - 500)
 #define AD_MIDVALUE_MAX	(ADC_INPUT_MID + 500)
 
+
+
+extern uint16_t Sampling_MaxMinData[4][3];
+
+
+
 void Gimbal_Init(void);
 void gimbalTask(void* param);
+
+
 
 uint16_t Get_GimbalValue(gimbalChannelTypeDef channel);
 void SaveCalibrationValueToFlash(void);
@@ -70,5 +86,7 @@ void ReadCalibrationValueForFlash(void);
 uint8_t Check_HighThrottle(void);
 void GimbalCalibrateProcess(void);
 uint8_t get_calibrationMode(void);
+
+
 
 #endif

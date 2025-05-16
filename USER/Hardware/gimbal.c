@@ -11,7 +11,7 @@
 extern IWDG_HandleTypeDef hiwdg;
 uint16_t adc_test1,adc_test2,adc_test3,adc_test4;
 static uint8_t calibrationMode = 0;//校准模式标志 1：进入校准模式 0：未进入校准模式
-static uint8_t calibrationStatus = 0;
+uint8_t calibrationStatus = 0;
 QueueHandle_t gimbalValQueue = NULL;
 EventGroupHandle_t gimbalEventHandle = NULL;
 static uint32_t gimbalDelayTime;

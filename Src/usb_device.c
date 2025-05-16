@@ -33,6 +33,7 @@
 #include "stmflash.h"
 #include "common.h"
 #include "joystick.h"
+#include "gimbal.h"
 
 /* USER CODE END Includes */
 
@@ -73,17 +74,17 @@ void MX_USB_DEVICE_Init(void)
     STMFLASH_Read(LITE_RADIO_HARDWARE_TYPE_ADDR, &liteRadioIndex, 1);
     if(HAL_GPIO_ReadPin(KEY_POWER_GPIO_Port, KEY_POWER_Pin) == GPIO_PIN_SET){
         if(liteRadioIndex == LITE_RADIO_1_CC2500){
-            if(adc_value[0] < 700
-            && adc_value[1] < 700
-            && adc_value[2] < 700
-            && adc_value[3] > 2800){
+            if(adc_value[0] < Sampling_MaxMinData[0][ADC_INPUT_ID_MIN]+200
+            && adc_value[1] < Sampling_MaxMinData[1][ADC_INPUT_ID_MIN]+200
+            && adc_value[2] < Sampling_MaxMinData[2][ADC_INPUT_ID_MIN]+200
+            && adc_value[3] > Sampling_MaxMinData[3][ADC_INPUT_ID_MAX]-200){
                 isXboxMode = 1;
             }
         }else{
-            if(adc_value[0] < 700
-            && adc_value[1] < 700
-            && adc_value[2] > 2800
-            && adc_value[3] < 700){
+            if(adc_value[0] < Sampling_MaxMinData[0][ADC_INPUT_ID_MIN]+200
+            && adc_value[1] < Sampling_MaxMinData[1][ADC_INPUT_ID_MIN]+200
+            && adc_value[2] > Sampling_MaxMinData[2][ADC_INPUT_ID_MAX]-200
+            && adc_value[3] < Sampling_MaxMinData[3][ADC_INPUT_ID_MIN]+200){
                 isXboxMode = 1;
             }
         }
