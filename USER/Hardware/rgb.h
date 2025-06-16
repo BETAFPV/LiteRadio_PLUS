@@ -11,7 +11,7 @@
 #define BREATH_UP 1
 
 #define BRIGHTNESS_MIN 0
-#define BRIGHTNESS_MAX 255
+#define BRIGHTNESS_MAX 0x14
 
 #define BIND_RGB	              (0x01 << 0)
 #define LOW_ELECTRICITY_RGB       (0x01 << 1)   
