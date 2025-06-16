@@ -248,28 +248,43 @@ void RGB_SetupTwinkle(uint8_t rgbNum)
     
 }
 
-void RGB_Breath_Up(uint8_t colorIndex)
+void RGB_Breath_Up(uint8_t colorIndex, uint32_t time)
 {
+    if(BRIGHTNESS_MAX){
+        time = time / BRIGHTNESS_MAX;
+    }else{
+        time = 10;
+    }
     rgbBrightness = BRIGHTNESS_MIN;
     while(rgbBrightness<BRIGHTNESS_MAX)
     {
         rgbBrightness++;
         RGB_Set(colorIndex,rgbBrightness);
-        osDelay(10);
+        osDelay(time);
     }
 }
-void RGB_Breath_Down(uint8_t colorIndex)
+void RGB_Breath_Down(uint8_t colorIndex, uint32_t time)
 {
+    if(BRIGHTNESS_MAX){
+        time = time / BRIGHTNESS_MAX;
+    }else{
+        time = 10;
+    }
     rgbBrightness = BRIGHTNESS_MAX;
     while(rgbBrightness > BRIGHTNESS_MIN)
     {
         rgbBrightness--;
         RGB_Set(colorIndex,rgbBrightness);
-        osDelay(10);
+        osDelay(time);
     }
 }
-void RGB_Breath(uint8_t colorIndex)
+void RGB_Breath(uint8_t colorIndex, uint32_t time)
 {
+    if(BRIGHTNESS_MAX){
+        time = time / BRIGHTNESS_MAX / 2;
+    }else{
+        time = 10;
+    }
     if(rgbBreathStatus == BREATH_DOWN)
     {
         if(rgbBrightness > BRIGHTNESS_MIN)
@@ -280,7 +295,7 @@ void RGB_Breath(uint8_t colorIndex)
         {
             rgbBreathStatus = BREATH_UP;
         }
-        osDelay(10);
+        osDelay(time);
     }
     if(rgbBreathStatus == BREATH_UP)
     {
@@ -292,7 +307,7 @@ void RGB_Breath(uint8_t colorIndex)
         {
             rgbBreathStatus = BREATH_DOWN;
         }
-        osDelay(5);
+        osDelay(time);
     }
     RGB_Set(colorIndex,rgbBrightness);
 
@@ -317,12 +332,12 @@ void rgbTask(void* param)
         /*POWER RGB*/
         if((rgbEvent & POWER_ON_RGB) == POWER_ON_RGB)
         {
-            RGB_Breath_Up(RED);
+            RGB_Breath_Up(RED, 2500);
             rgbEvent &= ~CHRG_AND_JOYSTICK_RGB;
         }
         if((rgbEvent & POWER_OFF_RGB) == POWER_OFF_RGB)
         {
-            RGB_Breath_Down(BLUE);
+            RGB_Breath_Down(BLUE, 2500);
             rgbEvent &= ~DATA_RGB;
         }
         
@@ -410,14 +425,14 @@ void rgbTask(void* param)
                 if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
                 {
 					CHRG_Status_filter = 0;       //充电状态标志清0
-                    RGB_Breath(RED);
+                    RGB_Breath(RED, 2500);
                 }
                 else
                 {              
 					CHRG_Status_filter ++; 
 					if(CHRG_Status_filter > 500)   //因为电池在充满的边界时，充满状态引脚可能会不稳定，等到连续n次都是高电平，那么才认定为真正的充满。
 					{
-						RGB_Breath(GREEN);
+						RGB_Breath(GREEN, 2500);
 					}
 				}					
             }
