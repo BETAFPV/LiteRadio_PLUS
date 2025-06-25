@@ -88,6 +88,7 @@ void MX_USB_DEVICE_Init(void)
             && adc_value[3] < Sampling_MaxMinData[3][ADC_INPUT_ID_MAX]+200){
                 /* 向上的内八打杆进入凤凰模拟器 */
                 isPhoenixMode = 1;
+                phoenixSetDescLen();    // 修改原本的hid描述符长度
             }else if(adc_value[0] < Sampling_MaxMinData[0][ADC_INPUT_ID_MIN]+200
             && adc_value[1] < Sampling_MaxMinData[1][ADC_INPUT_ID_MIN]+200
             && adc_value[2] > Sampling_MaxMinData[2][ADC_INPUT_ID_MAX]-200

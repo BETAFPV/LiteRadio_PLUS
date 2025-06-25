@@ -8,6 +8,7 @@
 
 
 
+/* 凤凰模拟器HID发送缓冲区长度（字节） */
 #define PHOENIX_HID_REPORT_SIZE     8
 
 
@@ -35,6 +36,11 @@ void    phoenixUsbInit(void);
 void    HandleSetReport(void);
 void    UpdatePhoenixHash(void);
 uint8_t phoenixCrsfToByte(uint16_t channelData);
+
+
+
+/* 需要在外部c文件实现的接口函数 */
+void phoenixSetDescLen(void);   // 修改hid配置描述符长度
 
 
 

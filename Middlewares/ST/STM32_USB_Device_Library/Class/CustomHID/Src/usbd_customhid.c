@@ -390,6 +390,14 @@ __ALIGN_BEGIN static uint8_t USBD_CUSTOM_HID_DeviceQualifierDesc[USB_LEN_DEV_QUA
 /** @defgroup USBD_CUSTOM_HID_Private_Functions
   * @{
   */
+/* 修改所有HID描述符长度为凤凰模拟器长度 */
+void phoenixSetDescLen(void){
+    USBD_CUSTOM_HID_CfgFSDesc[25] = PHOENIX_HID_REPORT_DESC_LEN;
+    USBD_CUSTOM_HID_CfgHSDesc[25] = PHOENIX_HID_REPORT_DESC_LEN;
+    USBD_CUSTOM_HID_OtherSpeedCfgDesc[25] = PHOENIX_HID_REPORT_DESC_LEN;
+    USBD_CUSTOM_HID_Desc[7] = PHOENIX_HID_REPORT_DESC_LEN;
+}
+
 
 /**
   * @brief  USBD_CUSTOM_HID_Init
