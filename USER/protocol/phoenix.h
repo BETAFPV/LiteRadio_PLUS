@@ -26,10 +26,17 @@ typedef struct phoenix_gamepad_s{
 
 
 extern uint8_t isPhoenixMode;
+extern uint8_t phoenixRCHash;
+extern uint8_t phoenixRCRepCount;
 
 
 
-void phoenixUsbInit(void);
+void    phoenixUsbInit(void);
+void    HandleSetReport(void);
+void    UpdatePhoenixHash(void);
+uint8_t phoenixCrsfToByte(uint16_t channelData);
+
+
 
 /**
 * @brief    这个宏函数要加到遥控器USB初始化函数最前面，

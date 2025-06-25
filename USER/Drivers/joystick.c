@@ -32,6 +32,7 @@ void joystickTask(void *param)
     uint8_t             hidReportBuf[20] = { 0 };
     uint16_t*           hidReportData = (uint16_t*)hidReportBuf;
     xinput_gamepad_t*   xinGamepad = (xinput_gamepad_t*)hidReportBuf;
+    phoenix_gamepad_t*  pnxGamepad = (phoenix_gamepad_t*)hidReportBuf;
     uint16_t            requestDataBuff[8];
     uint16_t            mixValBuff[8];
     
@@ -298,6 +299,17 @@ void joystickTask(void *param)
                     xinGamepad->bRightTrigger = UINT8_MAX;
                 }
                 USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 20);
+            }
+            else if(isPhoenixMode){
+                pnxGamepad->ch1 = phoenixCrsfToByte(mixValBuff[0]);
+                pnxGamepad->ch2 = phoenixRCHash;
+                pnxGamepad->ch3 = phoenixCrsfToByte(mixValBuff[1]);
+                pnxGamepad->ch4 = phoenixCrsfToByte(mixValBuff[2]);
+                pnxGamepad->ch5 = phoenixCrsfToByte(mixValBuff[3]);
+                pnxGamepad->ch6 = phoenixCrsfToByte(mixValBuff[4]);
+                pnxGamepad->ch7 = phoenixCrsfToByte(mixValBuff[5]);
+                pnxGamepad->ch8 = 0x00;
+                USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, PHOENIX_HID_REPORT_SIZE);
             }
             else
             {
