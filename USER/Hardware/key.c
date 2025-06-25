@@ -22,6 +22,8 @@ void keyTask(void* param)
 	while(1)
 	{
 		vTaskDelay(10);
+        
+        
 		if(bindPressed==false && BIND_KEY_STATUS() == PRESSED)
 		{
 			bindPressed = true;
@@ -29,7 +31,9 @@ void keyTask(void* param)
 		}
 		if(setupPressed==false && SETUP_KEY_STATUS() == PRESSED)
 		{
+            // 按键从释放到按下的标志
 			setupPressed = true;
+            // 记录这个跳变的关键时刻
 			setupKeypressedTime = xTaskGetTickCount();
 		}
 		if(powerPressed==false && POWER_KEY_STATUS() == PRESSED)
@@ -38,10 +42,9 @@ void keyTask(void* param)
 			powerKeyPressedTime = xTaskGetTickCount();
 		}
 		
+        
 		if(bindPressed==true && bindKeyUpSta == 0x00)
 		{
-			if(BIND_KEY_STATUS() == RELEASED)
-				bindPressed = false;
 			if((xTaskGetTickCount() - bindKeyPressedTime) > LONG_PRESS_COUNT)
 			{
 				xEventGroupSetBits( KeyEventHandle, BIND_LONG_PRESS );
@@ -54,20 +57,20 @@ void keyTask(void* param)
 		}
 		if(BIND_KEY_STATUS()== RELEASED)
 		{
+            bindPressed = false;
 			bindKeyUpSta = 0x00;
 			bindKeyPressedTime = xTaskGetTickCount();            //刷新pressedTime，防止再一次进入LONG_PRESS
 		}
 		
 		
-		
-		
+		/* 有按下边沿，且标志位为0 */
 		if(setupPressed==true && setupKeyUpSta == 0x00)
 		{
-			if(SETUP_KEY_STATUS() == RELEASED)
-				setupPressed = false;
+            /* 按压过程中满足长按时间 */
 			if((xTaskGetTickCount() - setupKeypressedTime) > LONG_PRESS_COUNT)
 			{
 				xEventGroupSetBits( KeyEventHandle, SETUP_LONG_PRESS );
+                /* 标志位置1防止重复进入导致多次发送长按事件 */
 				setupKeyUpSta = 0x01;
 			}
 			else if(SETUP_KEY_STATUS() == RELEASED)
@@ -75,18 +78,17 @@ void keyTask(void* param)
                 xEventGroupSetBits( KeyEventHandle, SETUP_SHORT_PRESS );
             }
 		}
+        /* 一旦检测到松手，重置所有状态 */
 		if(SETUP_KEY_STATUS()== RELEASED)
 		{
+            setupPressed = false;
 			setupKeyUpSta = 0x00;
 			setupKeypressedTime = xTaskGetTickCount();            //刷新pressedTime，防止再一次进入LONG_PRESS
 		}
-		
-		
+
 		
 		if(powerPressed == true && powerswitchKeyUpSta == 0x00)
 		{
-			if(POWER_KEY_STATUS() == RELEASED)
-				powerPressed = false;
 			if((xTaskGetTickCount() - powerKeyPressedTime) > LONG_PRESS_COUNT)
 			{
 				xEventGroupSetBits( KeyEventHandle, POWERSWITCH_LONG_PRESS );
@@ -99,6 +101,7 @@ void keyTask(void* param)
 		}
 		if(POWER_KEY_STATUS()== RELEASED)
 		{
+            powerPressed = false;
 			powerswitchKeyUpSta = 0x00;
 			powerKeyPressedTime = xTaskGetTickCount();            //刷新pressedTime，防止再一次进入LONG_PRESS
 		}

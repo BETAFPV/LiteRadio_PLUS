@@ -255,7 +255,7 @@ void statusTask(void* param)
             statusLastTick = statusNowTick;    
         }
         keyEvent= xEventGroupWaitBits( KeyEventHandle,
-		                               POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS,
+		                               POWERSWITCH_LONG_PRESS|BIND_SHORT_PRESS|SETUP_SHORT_PRESS|SETUP_LONG_PRESS,
 		                               pdTRUE,
 	                                   pdFALSE,
 		                               0);  
@@ -280,10 +280,8 @@ void statusTask(void* param)
             Status_Update();
         }
         
-        if((keyEvent & BIND_SHORT_PRESS) == BIND_SHORT_PRESS)
-        {    
-            if(RCstatus != RC_CHRG_AND_JOYSTICK)
-            {
+        if((keyEvent & BIND_SHORT_PRESS) == BIND_SHORT_PRESS){    
+            if(RCstatus != RC_CHRG_AND_JOYSTICK){
                 xEventGroupSetBits( radioEventHandle, RADIOLINK_BIND);
                 RFstatus = RF_BIND;
             }
