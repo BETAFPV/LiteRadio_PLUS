@@ -30,6 +30,7 @@
 /* USER CODE BEGIN Includes */
 #include "adc.h"
 #include "xinput.h"
+#include "phoenix.h"
 #include "stmflash.h"
 #include "common.h"
 #include "joystick.h"

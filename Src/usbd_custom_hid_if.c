@@ -36,6 +36,8 @@
 #include "common.h"
 #endif
 #include "xinput.h"
+#include "phoenix.h"
+
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/

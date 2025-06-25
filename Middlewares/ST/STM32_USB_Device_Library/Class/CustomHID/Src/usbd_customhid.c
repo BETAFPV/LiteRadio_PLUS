@@ -46,7 +46,7 @@ EndBSPDependencies */
 #include "usbd_customhid.h"
 #include "usbd_ctlreq.h"
 #include "xinput.h"
-
+#include "phoenix.h"
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
   */

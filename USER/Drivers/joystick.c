@@ -10,6 +10,7 @@
 #include "crsf.h"
 #include "common.h"
 #include "xinput.h"
+#include "phoenix.h"
 
 
 

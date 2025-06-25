@@ -7,6 +7,7 @@
 #include "stdbool.h"
 #include "common.h"
 #include "xinput.h"
+#include "phoenix.h"
 #include "mixes.h"
 #include "stmflash.h"
 EventGroupHandle_t rgbEventHandle;
