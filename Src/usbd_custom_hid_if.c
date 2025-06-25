@@ -214,6 +214,38 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
 };
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
+/* 凤凰模拟器报表描述符 */
+__ALIGN_BEGIN static uint8_t PNX_ReportDesc_FS[PHOENIX_HID_REPORT_DESC_LEN] __ALIGN_END =
+{
+  /* USER CODE BEGIN 0 */
+    0x06, 0xA0, 0xff,              // USAGE_PAGE (Vendor Spec)
+    0x09, 0x01,                    // USAGE (Vendor Usage 1)
+    0xa1, 0x01,                    // COLLECTION (app)
+    0x09, 0x02,                    //   USAGE (Vendor Usage 2)
+    0xa1, 0x00,                    //   COLLECTION (Physical)
+    0x06, 0xA1, 0xff,              //     USAGE_PAGE (Vendor Spec)
+    0x09, 0x03,                    //     USAGE (Undefined)
+    0x09, 0x04,                    //     USAGE (Undefined)
+    0x15, 0x80,                    //     LOGICAL_MINIMUM (-128)
+    0x25, 0x7f,                    //     LOGICAL_MAXIMUM (127)
+    0x35, 0x00,                    //     PHYSICAL_MINIMUM (0)
+    0x46, 0xff, 0x00,              //     PHYSICAL_MAXIMUM (255)
+    0x75, 0x08,                    //     REPORT_SIZE (8)
+    0x95, 0x08,                    //     REPORT_COUNT (8)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+    0x09, 0x05,                    //     USAGE (Undefined)
+    0x09, 0x06,                    //     USAGE (Undefined)
+    0x15, 0x80,                    //     LOGICAL_MINIMUM (-128)
+    0x25, 0x7f,                    //     LOGICAL_MAXIMUM (127)
+    0x35, 0x00,                    //     PHYSICAL_MINIMUM (0)
+    0x46, 0xff, 0x00,              //     PHYSICAL_MAXIMUM (255)
+    0x75, 0x08,                    //     REPORT_SIZE (8)
+    0x95, 0x08,                    //     REPORT_COUNT (8)
+    0x91, 0x02,                    //     OUTPUT (Data,Var,Abs)
+    0xc0,                          //   END_COLLECTION
+  /* USER CODE END 0 */
+  0xC0    /*     END_COLLECTION	             */
+};
 
 /* USER CODE END PRIVATE_VARIABLES */
 
@@ -250,6 +282,14 @@ static int8_t CUSTOM_HID_OutEvent_FS(uint8_t event_idx, uint8_t state);
 USBD_CUSTOM_HID_ItfTypeDef USBD_CustomHID_fops_FS =
 {
   CUSTOM_HID_ReportDesc_FS,
+  CUSTOM_HID_Init_FS,
+  CUSTOM_HID_DeInit_FS,
+  CUSTOM_HID_OutEvent_FS
+};
+
+USBD_CUSTOM_HID_ItfTypeDef USBD_Pnx_fops_FS =
+{
+  PNX_ReportDesc_FS,
   CUSTOM_HID_Init_FS,
   CUSTOM_HID_DeInit_FS,
   CUSTOM_HID_OutEvent_FS

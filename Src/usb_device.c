@@ -109,9 +109,16 @@ void MX_USB_DEVICE_Init(void)
   {
     Error_Handler();
   }
-  if (USBD_CUSTOM_HID_RegisterInterface(&hUsbDeviceFS, &USBD_CustomHID_fops_FS) != USBD_OK)
-  {
-    Error_Handler();
+  if(isPhoenixMode){
+     if (USBD_CUSTOM_HID_RegisterInterface(&hUsbDeviceFS, &USBD_Pnx_fops_FS) != USBD_OK)
+     {
+        Error_Handler();
+     }
+  }else{
+     if (USBD_CUSTOM_HID_RegisterInterface(&hUsbDeviceFS, &USBD_CustomHID_fops_FS) != USBD_OK)
+     {
+        Error_Handler();
+     }
   }
   if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
   {

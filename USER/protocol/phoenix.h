@@ -10,6 +10,8 @@
 
 /* 凤凰模拟器HID发送缓冲区长度（字节） */
 #define PHOENIX_HID_REPORT_SIZE     8
+/* 凤凰模拟器HID报表描述符长度 */
+#define PHOENIX_HID_REPORT_DESC_LEN 54
 
 
 
