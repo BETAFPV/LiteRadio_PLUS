@@ -128,6 +128,11 @@ uint8_t Check_HighThrottle(void)
 }
 
 
+uint8_t Get_GimbalCaliStatus(){
+    return calibrationStatus;
+}
+
+
 void SaveCalibrationValueToFlash(void)
 {
 	Sampling_MaxMinData[THROTTLE][MAXDAT] = Sampling_MaxMinData[THROTTLE][MAXDAT]-25;

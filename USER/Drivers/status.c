@@ -285,25 +285,38 @@ void statusTask(void* param)
                 xEventGroupSetBits( radioEventHandle, RADIOLINK_BIND);
                 RFstatus = RF_BIND;
             }
-        }    
-        if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS)
-        {    
-            xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
-            if(RFstatus == RF_DATA){
-                RCstatus = RC_RADIOLINK;
-                RFstatus = RF_CALIBARATION;
-            }else if(RFstatus == RF_CALIBARATION){
-                RFstatus = RF_CALIBARATION_1;
-            }
-//            if(RCstatus != RC_CHRG_AND_JOYSTICK)
-//            {
-//                xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
-//                if(RCstatus == RC_RADIOLINK)
-//                {
-//                    RFstatus = RF_CALIBARATION;
-//                }
-//            }   
-        }       
+        }
+        
+        switch(Get_GimbalCaliStatus()){
+            case 0:{
+                if((keyEvent & SETUP_LONG_PRESS) == SETUP_LONG_PRESS){
+                    xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
+                    if(RFstatus == RF_DATA){
+                        RCstatus = RC_RADIOLINK;
+                        RFstatus = RF_CALIBARATION;
+                    }else if(RFstatus == RF_CALIBARATION){
+                        RFstatus = RF_CALIBARATION_1;
+                    }
+                }
+                if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS){
+                    xEventGroupSetBits( rgbEventHandle, RGB_KEY_SETUP_SHORT);
+                }
+                break;}
+            case 1:
+            case 2:{
+                if((keyEvent & SETUP_SHORT_PRESS) == SETUP_SHORT_PRESS){    
+                    xEventGroupSetBits( gimbalEventHandle, GIMBAL_CALIBRATE_IN);
+                    if(RFstatus == RF_DATA){
+                        RCstatus = RC_RADIOLINK;
+                        RFstatus = RF_CALIBARATION;
+                    }else if(RFstatus == RF_CALIBARATION){
+                        RFstatus = RF_CALIBARATION_1;
+                    }
+                }
+                break;}
+            default:{
+                break;}
+        }
         
         gimbalEvent = xEventGroupWaitBits( gimbalEventHandle,
                                            GIMBAL_CALIBRATE_END,

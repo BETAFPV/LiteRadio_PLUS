@@ -7,7 +7,8 @@
 #include "stdbool.h"
 #include "common.h"
 #include "xinput.h"
-
+#include "mixes.h"
+#include "stmflash.h"
 EventGroupHandle_t rgbEventHandle;
 
 static uint8_t bindStatus = 0;
@@ -312,6 +313,9 @@ void RGB_Breath(uint8_t colorIndex, uint32_t time)
     RGB_Set(colorIndex,rgbBrightness);
 
 }
+
+
+
 static bool Tim1IsOpen = false;
 void rgbTask(void* param)
 {
@@ -319,16 +323,45 @@ void rgbTask(void* param)
     uint8_t xboxPromptOnlyOnce = 0;
     highThrottleFlag = 1;
     
+    uint8_t  rgbFlashChanged = 0;               // flash内容有改变此标志位置1
+    uint32_t rgbFlashSaveTick = HAL_GetTick();  // 每当要保存到flash的变量发生改变，记录此变量改变时刻
+    uint16_t rgbChargingBreathEnable;           // 充电状态下呼吸灯的开关，短按setup切换
+    STMFLASH_Read(ChargingRgbSwitch_ADDR, &rgbChargingBreathEnable, 1);
+    if(rgbChargingBreathEnable > 1){
+        // 检查参数范围
+        rgbChargingBreathEnable = 1;
+        rgbFlashChanged = 1;
+    }
+    
     while(1)
     {   
         vTaskDelay(1);       
         rgbEvent = xEventGroupWaitBits( rgbEventHandle,
                                         POWER_ON_RGB | POWER_OFF_RGB | BIND_RGB |
                                         LOW_ELECTRICITY_RGB | SETUP_RGB | SETUP_RGB1 |
-                                        DATA_RGB | SHUTDOWN_RGB | CHRG_AND_JOYSTICK_RGB,
+                                        DATA_RGB | SHUTDOWN_RGB | CHRG_AND_JOYSTICK_RGB |
+                                        RGB_KEY_SETUP_SHORT,
                                         pdTRUE,
                                         pdFALSE,
                                         0);
+        /* 切换呼吸灯动画开关 */
+        if((rgbEvent & RGB_KEY_SETUP_SHORT) == RGB_KEY_SETUP_SHORT){
+            if(rgbChargingBreathEnable == 1){
+                rgbChargingBreathEnable = 0;
+                RGB_Set(BLACK, BRIGHTNESS_MAX);// 熄灭
+            }else{
+                rgbChargingBreathEnable = 1;
+            }
+            rgbFlashChanged = 1;
+            // 记录最新的切换时间，1s后没有发生改变就会保存至flash
+            rgbFlashSaveTick = HAL_GetTick();
+        }
+        if(rgbFlashChanged && HAL_GetTick()-rgbFlashSaveTick >= 1000){
+            rgbFlashChanged = 0;
+            // 保存到flash
+            STMFLASH_Write(ChargingRgbSwitch_ADDR, &rgbChargingBreathEnable, 1);
+        }
+        
         /*POWER RGB*/
         if((rgbEvent & POWER_ON_RGB) == POWER_ON_RGB)
         {
@@ -420,21 +453,25 @@ void rgbTask(void* param)
             {
                 RGB_Set(PURPLE,BRIGHTNESS_MAX);
             }
-            else
+            else 
             {
                 if(HAL_GPIO_ReadPin(CHRG_IN_GPIO_Port,CHRG_IN_Pin) == GPIO_PIN_RESET)
                 {
-					CHRG_Status_filter = 0;       //充电状态标志清0
-                    RGB_Breath(RED, 2500);
+                    CHRG_Status_filter = 0;       //充电状态标志清0
+                    if(rgbChargingBreathEnable){
+                        RGB_Breath(RED, 2500);
+                    }
                 }
                 else
                 {              
-					CHRG_Status_filter ++; 
-					if(CHRG_Status_filter > 500)   //因为电池在充满的边界时，充满状态引脚可能会不稳定，等到连续n次都是高电平，那么才认定为真正的充满。
-					{
-						RGB_Breath(GREEN, 2500);
-					}
-				}					
+                    CHRG_Status_filter ++; 
+                    if(CHRG_Status_filter > 500)   //因为电池在充满的边界时，充满状态引脚可能会不稳定，等到连续n次都是高电平，那么才认定为真正的充满。
+                    {
+                        if(rgbChargingBreathEnable){
+                            RGB_Breath(GREEN, 2500);
+                        }
+                    }
+                }
             }
         }
     }
