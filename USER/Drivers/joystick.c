@@ -300,7 +300,8 @@ void joystickTask(void *param)
                 }
                 USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*)hidReportData, 20);
             }
-            else if(isPhoenixMode){
+            else if(isPhoenixMode)
+            {
                 pnxGamepad->ch1 = phoenixCrsfToByte(mixValBuff[0]);
                 pnxGamepad->ch2 = phoenixRCHash;
                 pnxGamepad->ch3 = phoenixCrsfToByte(mixValBuff[1]);
