@@ -8,6 +8,7 @@
 #include "status.h"
 #include "function.h"
 #include "crsf.h"
+extern osSemaphoreId mixStartBinarySemHandle;
 static uint32_t mixesDelayTime;
 UBaseType_t uxTaskGetStackHighWaterMarkdebug;
 TaskHandle_t mixesTaskHandle;
@@ -284,6 +285,7 @@ void mixesTask(void* param)
     }
     mixesValQueue = xQueueCreate(20,sizeof(mixesBuff));
     Mixes_Init();
+    xSemaphoreTake(mixStartBinarySemHandle, 1000);
     while(1)
     {
         vTaskDelay(mixesDelayTime);  

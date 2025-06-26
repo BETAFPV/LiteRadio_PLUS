@@ -57,6 +57,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+osSemaphoreId mixStartBinarySemHandle;
+osSemaphoreId joystickStartBinarySemHandle;
 TaskHandle_t startTaskHandle;
 
 /* USER CODE END Variables */
@@ -106,6 +108,10 @@ void MX_FREERTOS_Init(void) {
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
+  osSemaphoreDef(mixStartBinarySem);
+  mixStartBinarySemHandle = osSemaphoreCreate(osSemaphore(mixStartBinarySem), 1);
+  osSemaphoreDef(joystickStartBinarySem);
+  joystickStartBinarySemHandle = osSemaphoreCreate(osSemaphore(joystickStartBinarySem), 1);
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
@@ -140,6 +146,8 @@ void StartDefaultTask(void const * argument)
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN StartDefaultTask */
+  xSemaphoreGive(mixStartBinarySemHandle);
+  xSemaphoreGive(joystickStartBinarySemHandle);
   /* Infinite loop */
   for(;;)
   {

@@ -24,7 +24,7 @@ uint16_t liteRadioIndex = LITE_RADIO_UNKNOW;
 
 
 extern crsfParameter_t externalRFprarmeter;
-
+extern osSemaphoreId joystickStartBinarySemHandle;
 
 
 void joystickTask(void *param) 
@@ -38,7 +38,7 @@ void joystickTask(void *param)
     
     //if(isXboxMode)xinGamepad->bPackageSize = 20;
     joystickDelayTime = Get_ProtocolDelayTime();
-    
+    xSemaphoreTake(joystickStartBinarySemHandle, 1000);
     while(1)
     {
         vTaskDelay(joystickDelayTime);
