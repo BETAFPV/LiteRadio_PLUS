@@ -26,7 +26,7 @@
 
 #define FIRMWARE_MAJOR_VERSION 25U  //year
 #define FIRMWARE_MINOR_VERSION 6U   //month
-#define FIRMWARE_PITCH_VERSION 16U  //day
+#define FIRMWARE_PITCH_VERSION 26U  //day
 typedef struct
 {
     uint8_t MAJOR_VERSION;
