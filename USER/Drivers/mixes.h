@@ -54,7 +54,6 @@
 
 #define JoystickDeadZonePercent_ADDR 0x8007214
 #define BuzzerSwitch_ADDR            0x8007216
-#define ChargingRgbSwitch_ADDR       0x8007218
 
 #define DeafultDeadZonePercent 4
 #define MinDeadZonePercent 1

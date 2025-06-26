@@ -8,8 +8,7 @@
 #include "common.h"
 #include "xinput.h"
 #include "phoenix.h"
-#include "mixes.h"
-#include "stmflash.h"
+
 EventGroupHandle_t rgbEventHandle;
 
 static uint8_t bindStatus = 0;
@@ -323,16 +322,7 @@ void rgbTask(void* param)
     EventBits_t rgbEvent;
     uint8_t xboxPromptOnlyOnce = 0;
     highThrottleFlag = 1;
-    
-    uint8_t  rgbFlashChanged = 0;               // flash内容有改变此标志位置1
-    uint32_t rgbFlashSaveTick = HAL_GetTick();  // 每当要保存到flash的变量发生改变，记录此变量改变时刻
-    uint16_t rgbChargingBreathEnable;           // 充电状态下呼吸灯的开关，短按setup切换
-    STMFLASH_Read(ChargingRgbSwitch_ADDR, &rgbChargingBreathEnable, 1);
-    if(rgbChargingBreathEnable > 1){
-        // 检查参数范围
-        rgbChargingBreathEnable = 1;
-        rgbFlashChanged = 1;
-    }
+    uint8_t rgbChargingBreathEnable = 1;    // 充电状态下呼吸灯的开关，短按setup切换
     
     while(1)
     {   
@@ -353,14 +343,6 @@ void rgbTask(void* param)
             }else{
                 rgbChargingBreathEnable = 1;
             }
-            rgbFlashChanged = 1;
-            // 记录最新的切换时间，1s后没有发生改变就会保存至flash
-            rgbFlashSaveTick = HAL_GetTick();
-        }
-        if(rgbFlashChanged && HAL_GetTick()-rgbFlashSaveTick >= 1000){
-            rgbFlashChanged = 0;
-            // 保存到flash
-            STMFLASH_Write(ChargingRgbSwitch_ADDR, &rgbChargingBreathEnable, 1);
         }
         
         /*POWER RGB*/
