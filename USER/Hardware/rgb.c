@@ -394,7 +394,7 @@ void rgbTask(void* param)
                 xboxPromptOnlyOnce = 1;
                 for(uint8_t i=0; i<3; i++)
                 {
-                    RGB_Set(WHITE, BRIGHTNESS_MAX);
+                    RGB_Set(BLUE, BRIGHTNESS_MAX);
                     osDelay(200);
                     RGB_Set(BLACK, BRIGHTNESS_MAX);
                     osDelay(200);
