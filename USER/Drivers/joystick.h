@@ -26,12 +26,13 @@ typedef enum
 typedef enum{
     LITE_RADIO_UNKNOW = 0U,
     LITE_RADIO_2_SE = 1U,
-    LITE_RADIO_2_SE_V2_CC2500 = 2U,
-    LITE_RADIO_2_SE_V2_SX1280 = 3U,
-    LITE_RADIO_3_CC2500 = 4U,
-    LITE_RADIO_3_SX1280 = 5U,
+    LITE_RADIO_2_SE_V2_SX1280 = 2U,
+    LITE_RADIO_2_SE_V2_CC2500 = 3U,
+    LITE_RADIO_3_SX1280 = 4U,
+    LITE_RADIO_3_CC2500 = 5U,
     LITE_RADIO_1_CC2500 = 6U,
     LITE_RADIO_4_SE_SX1280 = 7U,
+    LITE_RADIO_2_SIM = 8U,
 }lite_radio_index_e;
 
 extern uint16_t sendSpam;   

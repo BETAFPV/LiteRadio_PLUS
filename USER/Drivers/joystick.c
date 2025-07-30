@@ -11,7 +11,7 @@
 #include "common.h"
 #include "xinput.h"
 #include "phoenix.h"
-
+uint16_t device_info_buff[10] = {0};
 
 
 static uint32_t joystickDelayTime;
@@ -214,7 +214,7 @@ void joystickTask(void *param)
             externalRFprarmeter.rate = 0xff;
             externalRFprarmeter.TLM =0xff;
             
-            uint16_t device_info_buff[10] = {0};
+            
             STMFLASH_Read(LITE_RADIO_HARDWARE_TYPE_ADDR,&device_info_buff[0],1);
             STMFLASH_Read(INTERNAL_RADIO_TYPE_ADDR,&device_info_buff[1],1);
             STMFLASH_Read(THROTTLE_ROCKER_POSITION_ADDR,&device_info_buff[2],1);
@@ -225,6 +225,14 @@ void joystickTask(void *param)
             device_info_buff[7] = FIRMWARE_MINOR_VERSION;
             device_info_buff[8] = FIRMWARE_PITCH_VERSION;
             STMFLASH_Read(FIRST_FLASH_MARK_ADDR,&device_info_buff[9],1);//0xa55a
+            /* 如果读到LR2 SE Frsky的信息，将信息替换为LR2 SE SIM */
+            if((device_info_buff[0]&0x00FF) == LITE_RADIO_2_SE_V2_CC2500){
+                device_info_buff[0] = LITE_RADIO_2_SIM;
+                device_info_buff[1] = 3;// 对应NO_RF
+                device_info_buff[3] = 1;
+                device_info_buff[4] = 0;
+                device_info_buff[5] = 0;
+            }
             hidReportData[0] = DEVICE_INFO_ID;
             hidReportData[1] = (device_info_buff[0]&0x00ff)|((device_info_buff[1]&0x00FF)<<8);
             hidReportData[2] = (device_info_buff[2]&0x00ff)|((device_info_buff[3]&0x00FF)<<8);
