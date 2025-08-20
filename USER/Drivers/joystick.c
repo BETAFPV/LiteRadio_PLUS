@@ -311,7 +311,12 @@ void joystickTask(void *param)
             else if(isPhoenixMode)
             {
                 pnxGamepad->ch1 = phoenixCrsfToByte(mixValBuff[0]);
-                pnxGamepad->ch2 = phoenixRCHash;
+                if(phoenixRCHashReady){
+                    phoenixRCHashReady = 0;
+                    pnxGamepad->ch2 = phoenixRCHash;
+                }else{
+                    pnxGamepad->ch2 = phoenixCrsfToByte(mixValBuff[7]);
+                }
                 pnxGamepad->ch3 = 255-phoenixCrsfToByte(mixValBuff[1]);
                 pnxGamepad->ch4 = 255-phoenixCrsfToByte(mixValBuff[2]);
                 pnxGamepad->ch5 = phoenixCrsfToByte(mixValBuff[3]);

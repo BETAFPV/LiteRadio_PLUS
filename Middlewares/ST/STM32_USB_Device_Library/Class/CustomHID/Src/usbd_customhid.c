@@ -514,10 +514,13 @@ static uint8_t  USBD_CUSTOM_HID_Init(USBD_HandleTypeDef *pdev,
     ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->Init();
 
     /* Prepare Out endpoint to receive 1st packet */
-    if(isXboxMode)
+    if(isXboxMode){
         USBD_LL_PrepareReceive(pdev, 0x02, hhid->Report_buf, USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
-    else
+    }else if(isPhoenixMode){
+        USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf, PHOENIX_HID_OUTREPORT_BUF_SIZE);
+    }else{
         USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf, USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
+    }
   }
 
   return ret;
@@ -800,13 +803,13 @@ static uint8_t  USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev,
   ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf[0],
                                                             hhid->Report_buf[1]);
 
-  if(isXboxMode)
-  {
+  if(isXboxMode){
     USBD_LL_PrepareReceive(pdev, 0x02, hhid->Report_buf,
                            USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
-  }
-  else
-  {
+  }else if(isPhoenixMode){
+    USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf, 
+                           PHOENIX_HID_OUTREPORT_BUF_SIZE);
+  }else{
     USBD_LL_PrepareReceive(pdev, CUSTOM_HID_EPOUT_ADDR, hhid->Report_buf,
                            USBD_CUSTOMHID_OUTREPORT_BUF_SIZE);
   }

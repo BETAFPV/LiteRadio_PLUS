@@ -19,6 +19,7 @@ void USBD_CUSTOM_HID_Update_desc_len(void);
 uint8_t isPhoenixMode = 0;
 uint8_t phoenixRCHash = 0;
 uint8_t phoenixRCRepCount = 0;
+uint8_t phoenixRCHashReady = 0;
 
 
 
@@ -64,6 +65,7 @@ void HandleSetReport(){
     }
     
     phoenixRCRepCount = 250;
+    phoenixRCHashReady = 1;
 }
 
 

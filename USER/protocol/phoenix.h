@@ -8,8 +8,10 @@
 
 
 
-/* 凤凰模拟器HID发送缓冲区长度（字节） */
-#define PHOENIX_HID_REPORT_SIZE     8
+/* 凤凰模拟器HID发送缓冲区长度 */
+#define PHOENIX_HID_REPORT_SIZE         8
+/* 凤凰模拟器HID接收缓冲区长度（OUTREPORT表示的是主机端输出报表，对于MCU就是输入） */
+#define PHOENIX_HID_OUTREPORT_BUF_SIZE  8
 /* 凤凰模拟器HID报表描述符长度 */
 #define PHOENIX_HID_REPORT_DESC_LEN 54
 
@@ -31,7 +33,7 @@ typedef struct phoenix_gamepad_s{
 extern uint8_t isPhoenixMode;
 extern uint8_t phoenixRCHash;
 extern uint8_t phoenixRCRepCount;
-
+extern uint8_t phoenixRCHashReady;
 
 
 void    phoenixUsbInit(void);
