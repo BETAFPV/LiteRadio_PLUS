@@ -378,13 +378,13 @@ void statusTask(void* param)
                 if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_OFF && internalCRSFdata.configStatus == CONFIG_CRSF_ON)
                 {
                     vTaskResume(radiolinkTaskHandle);
-                    HAL_TIM_Base_Start_IT(&htim1);
+                    //HAL_TIM_Base_Start_IT(&htim1);
                     internalCRSFdata.lastConfigStatus = CONFIG_CRSF_ON;  
                 }
                 else if(internalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && internalCRSFdata.configStatus == CONFIG_CRSF_OFF)
                 {
                     vTaskSuspend(radiolinkTaskHandle);
-                    HAL_TIM_Base_Stop_IT(&htim1);
+                    //HAL_TIM_Base_Stop_IT(&htim1);
                     internalCRSFdata.lastConfigStatus = CONFIG_CRSF_OFF;
                 }
                 

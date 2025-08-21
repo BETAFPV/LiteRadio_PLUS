@@ -413,7 +413,7 @@ void rgbTask(void* param)
                 {
                     highThrottleFlag = Check_HighThrottle();
                     RGB_Set(RED,BRIGHTNESS_MAX);
-					HAL_TIM_Base_Stop_IT(&htim1);
+					//HAL_TIM_Base_Stop_IT(&htim1);
                 }
                 else
                 {
@@ -424,7 +424,7 @@ void rgbTask(void* param)
             if(Tim1IsOpen == false)
             {
                 Tim1IsOpen = true;
-                HAL_TIM_Base_Start_IT(&htim1);
+                //HAL_TIM_Base_Start_IT(&htim1);
             }
             
         }

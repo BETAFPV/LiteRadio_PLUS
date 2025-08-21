@@ -666,7 +666,7 @@ void EnterBindingMode()
     }
 
     // Disable the TX timer and wait for any TX to complete
-    HAL_TIM_Base_Stop_IT(&htim1);
+    //HAL_TIM_Base_Stop_IT(&htim1);
     while (busyTransmitting);
 
     // Queue up sending the Master UID as MSP packets
@@ -689,8 +689,8 @@ void EnterBindingMode()
     Radio.currFreq = GetInitialFreq(); //set frequency first or an error will occur!!!
     SetFrequencyReg(Radio.currFreq); 
     // Start transmitting again
-    TIM1->ARR = 20000;
-    HAL_TIM_Base_Start_IT(&htim1);
+    //TIM1->ARR = 20000;
+    //HAL_TIM_Base_Start_IT(&htim1);
 }
 
 void ExitBindingMode()
