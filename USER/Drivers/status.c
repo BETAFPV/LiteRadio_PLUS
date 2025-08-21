@@ -18,6 +18,7 @@
 uint8_t requestType1;
 uint8_t requestType2;
 uint8_t configFlag;
+uint8_t isTrainingMode = 0;
 
 static uint64_t statusNowTick;
 static uint64_t statusLastTick;
