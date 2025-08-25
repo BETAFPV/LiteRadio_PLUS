@@ -144,7 +144,9 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void const * argument)
 {
   /* init code for USB_DEVICE */
-  MX_USB_DEVICE_Init();
+  if(!isTrainingMode){
+    MX_USB_DEVICE_Init();
+  }
   /* USER CODE BEGIN StartDefaultTask */
   xSemaphoreGive(mixStartBinarySemHandle);
   xSemaphoreGive(joystickStartBinarySemHandle);

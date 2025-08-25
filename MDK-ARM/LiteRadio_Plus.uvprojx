@@ -765,6 +765,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Hardware/PPM</GroupName>
+          <Files>
+            <File>
+              <FileName>Bsp_PPM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\PPM\Bsp_PPM.c</FilePath>
+            </File>
+            <File>
+              <FileName>PPM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\PPM\PPM.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Protocol</GroupName>
           <Files>
             <File>
@@ -806,6 +821,11 @@
               <FileName>phoenix.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\protocol\phoenix.c</FilePath>
+            </File>
+            <File>
+              <FileName>sbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\protocol\sbus.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2185,6 +2205,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Hardware/PPM</GroupName>
+          <Files>
+            <File>
+              <FileName>Bsp_PPM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\PPM\Bsp_PPM.c</FilePath>
+            </File>
+            <File>
+              <FileName>PPM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\PPM\PPM.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Protocol</GroupName>
           <Files>
             <File>
@@ -2379,6 +2414,11 @@
               <FileName>phoenix.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\protocol\phoenix.c</FilePath>
+            </File>
+            <File>
+              <FileName>sbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\protocol\sbus.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2719,7 +2759,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F103xB,LiteRadio_Plus_CC2500</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;                         ../Drivers/STM32F1xx_HAL_Driver/Inc;                         ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;                         ../Middlewares/Third_Party/FreeRTOS/Source/include;                         ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                         ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;                         ../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;                         ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;                         ../Drivers/CMSIS/Include;                         ..\USER\Drivers;                         ..\USER\Hardware;                         ../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc;                         ..\USER\protocol;                         ..\USER\systemview\Config;                         ..\USER\systemview\FreeRTOSV10\Config\Cortex-M;                         ..\USER\systemview\FreeRTOSV10\Config;                         ..\USER\systemview\FreeRTOSV10\Patch;                         ..\USER\systemview\FreeRTOSV10;                         ..\USER\systemview\SEGGER\Syscalls;                         ..\USER\systemview\SEGGER</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F1xx_HAL_Driver/Inc;../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM3;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Drivers/CMSIS/Device/ST/STM32F1xx/Include;../Drivers/CMSIS/Include;..\USER\Drivers;..\USER\Hardware;../Middlewares/ST/STM32_USB_Device_Library/Class/CustomHID/Inc;..\USER\protocol;..\USER\systemview\Config;..\USER\systemview\FreeRTOSV10\Config\Cortex-M;..\USER\systemview\FreeRTOSV10\Config;..\USER\systemview\FreeRTOSV10\Patch;..\USER\systemview\FreeRTOSV10;..\USER\systemview\SEGGER\Syscalls;..\USER\systemview\SEGGER;..\USER\Hardware\PPM;..\USER\Hardware\IOUART</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -3860,6 +3900,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Hardware/PPM</GroupName>
+          <Files>
+            <File>
+              <FileName>Bsp_PPM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\PPM\Bsp_PPM.c</FilePath>
+            </File>
+            <File>
+              <FileName>PPM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\Hardware\PPM\PPM.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Protocol</GroupName>
           <Files>
             <File>
@@ -4003,6 +4058,11 @@
               <FileName>phoenix.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\protocol\phoenix.c</FilePath>
+            </File>
+            <File>
+              <FileName>sbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\protocol\sbus.c</FilePath>
             </File>
           </Files>
         </Group>

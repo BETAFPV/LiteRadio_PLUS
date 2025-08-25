@@ -38,6 +38,8 @@
 #elif defined(LiteRadio_Plus_SX1276)
 #include "sx1276.h"
 #endif
+#include "Bsp_PPM.h"
+#include "status.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -272,10 +274,14 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-
+    
   /* USER CODE END TIM1_UP_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
+  if(isTrainingMode){
+    bspPpm_IRQHandler();
+    return;
+  }
 #if defined(LiteRadio_Plus_SX1280)||(LiteRadio_Plus_SX1276)
     if(Get_ProtocolIndex()==0)
         SendRCdataToRF(channelData);

@@ -47,6 +47,7 @@ EndBSPDependencies */
 #include "usbd_ctlreq.h"
 #include "xinput.h"
 #include "phoenix.h"
+#include "status.h"
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
   * @{
   */
@@ -702,6 +703,7 @@ uint8_t USBD_CUSTOM_HID_SendReport(USBD_HandleTypeDef  *pdev,
                                    uint8_t *report,
                                    uint16_t len)
 {
+  if(isTrainingMode)return USBD_OK;// 防止教练模式调用空指针
   USBD_CUSTOM_HID_HandleTypeDef     *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
 
   if (pdev->dev_state == USBD_STATE_CONFIGURED)

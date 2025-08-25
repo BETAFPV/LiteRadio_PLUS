@@ -8,6 +8,8 @@
 #include "status.h"
 #include "function.h"
 #include "crsf.h"
+#include "Bsp_PPM.h"
+#include "xinput.h"
 extern osSemaphoreId mixStartBinarySemHandle;
 static uint32_t mixesDelayTime;
 UBaseType_t uxTaskGetStackHighWaterMarkdebug;
@@ -17,7 +19,12 @@ mixData_t mixData[8];
 uint16_t mixesBuff[8];
 uint8_t mixUpdateFlag;
 uint16_t controlMode;
-    
+uint16_t ppmChBuf[8];
+ppm_ch_t ppmCh = {
+    .buf = ppmChBuf,
+    .len = 8,
+};
+ppm_if_t* ppmIf;
 void Mixes_Init()
 {   
     for(int i=0;i<8;i++)
@@ -154,7 +161,9 @@ uint16_t OutputCode[513];
 void mixesTask(void* param)
 {
     uint16_t JoystickDeadZonePercent = 0;
-    
+    if(isTrainingMode){
+        ppmIf = bspPpm_Init();
+    }
     STMFLASH_Read(JoystickDeadZonePercent_ADDR,&JoystickDeadZonePercent,1);
     if(JoystickDeadZonePercent<MinDeadZonePercent||JoystickDeadZonePercent>MaxDeadZonePercent)
     {
@@ -384,6 +393,12 @@ void mixesTask(void* param)
         mixesBuff[5] = mixData[5].output;
         mixesBuff[6] = mixData[6].output;        
         mixesBuff[7] = mixData[7].output;                      
+        if(isTrainingMode){
+            for(uint8_t i=0; i<8; i++){
+                ppmCh.buf[i] = xinputMap(mixData[i].output, 988, 2012, 500, 1500);
+            }
+            ppmIf->_send(&ppmCh);
+        }
         xQueueSend(mixesValQueue,mixesBuff,0);
         if(externalCRSFdata.lastConfigStatus == CONFIG_CRSF_ON && externalCRSFdata.configStatus == CONFIG_CRSF_ON)
         {
