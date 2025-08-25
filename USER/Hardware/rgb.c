@@ -360,26 +360,40 @@ void rgbTask(void* param)
         /*Enter xbox mode*/
         if(xboxPromptOnlyOnce == 0)
         {
-            if(isXboxMode == 1)
+            if(isTrainingMode)
             {
                 xboxPromptOnlyOnce = 1;
                 for(uint8_t i=0; i<3; i++)
                 {
-                    RGB_Set(WHITE, BRIGHTNESS_MAX);
+                    RGB_Set(PURPLE, BRIGHTNESS_MAX);
                     osDelay(200);
                     RGB_Set(BLACK, BRIGHTNESS_MAX);
                     osDelay(200);
                 }
             }
-            if(isPhoenixMode == 1)
+            else
             {
-                xboxPromptOnlyOnce = 1;
-                for(uint8_t i=0; i<3; i++)
+                if(isXboxMode == 1)
                 {
-                    RGB_Set(BLUE, BRIGHTNESS_MAX);
-                    osDelay(200);
-                    RGB_Set(BLACK, BRIGHTNESS_MAX);
-                    osDelay(200);
+                    xboxPromptOnlyOnce = 1;
+                    for(uint8_t i=0; i<3; i++)
+                    {
+                        RGB_Set(WHITE, BRIGHTNESS_MAX);
+                        osDelay(200);
+                        RGB_Set(BLACK, BRIGHTNESS_MAX);
+                        osDelay(200);
+                    }
+                }
+                if(isPhoenixMode == 1)
+                {
+                    xboxPromptOnlyOnce = 1;
+                    for(uint8_t i=0; i<3; i++)
+                    {
+                        RGB_Set(BLUE, BRIGHTNESS_MAX);
+                        osDelay(200);
+                        RGB_Set(BLACK, BRIGHTNESS_MAX);
+                        osDelay(200);
+                    }
                 }
             }
         }
