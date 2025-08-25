@@ -81,7 +81,7 @@ uint8_t isEnterTrainingMode(){
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_NOPULL;     // 外部上拉了
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(CRSF_EN_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     /* 检测到低电平进入教练模式 */
     return !HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_12);
 }
@@ -120,6 +120,7 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  isTrainingMode = isEnterTrainingMode();
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
@@ -136,7 +137,7 @@ int main(void)
 #endif  
 
   Gimbal_Init();  
-  isTrainingMode = isEnterTrainingMode();
+  
   Status_Init();
 
   /* USER CODE END 2 */
