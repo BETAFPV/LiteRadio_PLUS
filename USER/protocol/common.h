@@ -25,8 +25,8 @@
 #define HARDWARE_PATCH_VERSION_ADDR     0x8007A12
 
 #define FIRMWARE_MAJOR_VERSION 25U  //year
-#define FIRMWARE_MINOR_VERSION 1U   //month
-#define FIRMWARE_PITCH_VERSION 17U  //day
+#define FIRMWARE_MINOR_VERSION 12U  //month
+#define FIRMWARE_PITCH_VERSION 15U  //day
 typedef struct
 {
     uint8_t MAJOR_VERSION;
