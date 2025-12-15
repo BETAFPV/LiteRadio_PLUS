@@ -25,12 +25,12 @@ uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
 		case SWB: 
             if((HAL_GPIO_ReadPin(SWB_H_GPIO_Port, SWB_H_Pin) == GPIO_PIN_SET) && (HAL_GPIO_ReadPin(SWB_L_GPIO_Port, SWB_L_Pin) == GPIO_PIN_RESET))
             {
-                switchValue = SWITCH_MIN_VALUE;
+                switchValue = SWITCH_MAX_VALUE;
             }
             
             if((HAL_GPIO_ReadPin(SWB_H_GPIO_Port, SWB_H_Pin) == GPIO_PIN_RESET) && (HAL_GPIO_ReadPin(SWB_L_GPIO_Port, SWB_L_Pin) == GPIO_PIN_SET))
             {
-                switchValue = SWITCH_MAX_VALUE;
+                switchValue = SWITCH_MIN_VALUE;
             }
             
             if((HAL_GPIO_ReadPin(SWB_H_GPIO_Port, SWB_H_Pin) == GPIO_PIN_SET) && (HAL_GPIO_ReadPin(SWB_L_GPIO_Port, SWB_L_Pin) == GPIO_PIN_SET))
@@ -42,12 +42,12 @@ uint16_t Get_SwitchValue(SwitchesChannelTypeDef switchIndex)
 		case SWC:
             if((HAL_GPIO_ReadPin(SWC_H_GPIO_Port, SWC_H_Pin) == GPIO_PIN_SET) && (HAL_GPIO_ReadPin(SWC_L_GPIO_Port, SWC_L_Pin) == GPIO_PIN_RESET))
             {
-                switchValue = SWITCH_MIN_VALUE;
+                switchValue = SWITCH_MAX_VALUE;
             }
             
             else if((HAL_GPIO_ReadPin(SWC_H_GPIO_Port, SWC_H_Pin) == GPIO_PIN_RESET) && (HAL_GPIO_ReadPin(SWC_L_GPIO_Port, SWC_L_Pin) == GPIO_PIN_SET))
             {
-                switchValue = SWITCH_MAX_VALUE;
+                switchValue = SWITCH_MIN_VALUE;
             }
             
             else if((HAL_GPIO_ReadPin(SWC_H_GPIO_Port, SWC_H_Pin) == GPIO_PIN_SET) && (HAL_GPIO_ReadPin(SWC_L_GPIO_Port, SWC_L_Pin) == GPIO_PIN_SET))
