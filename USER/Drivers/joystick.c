@@ -3,8 +3,8 @@
 #include "switches.h"
 #include "usbd_customhid.h"
 #include "mixes.h"
-#include "stmflash.h"
 #include "radiolink.h"
+#include "stmflash.h"
 #include "function.h"
 #include "status.h"
 #include "crsf.h"
@@ -218,6 +218,36 @@ void joystickTask(void *param)
             hidReportData[7] = checkSum;
             USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
 
+        }
+        else if(requestType1 == REQUEST_BIND_PHRASE)
+        {
+            uint16_t BindPhraseFromFlash[7];
+            uint8_t* sendBuf = (uint8_t*)hidReportData;
+            STMFLASH_Read(MasterUidUseChipIDFlag_ADDR, BindPhraseFromFlash, 5);
+            STMFLASH_Read(MasterID5FromBindPhrase_ADDR, &BindPhraseFromFlash[5], 1);
+            STMFLASH_Read(MasterID6FromBindPhrase_ADDR, &BindPhraseFromFlash[6], 1);
+            sendBuf[0] = UID_BYTES_ID;
+            if(!BindPhraseFromFlash[0]){
+                sendBuf[1] = BindPhraseFromFlash[1];
+                sendBuf[2] = BindPhraseFromFlash[2];
+                sendBuf[3] = BindPhraseFromFlash[3];
+                sendBuf[4] = BindPhraseFromFlash[4];
+                sendBuf[5] = BindPhraseFromFlash[5];
+                sendBuf[6] = BindPhraseFromFlash[6];
+            }else{
+                sendBuf[1] = 0U;
+                sendBuf[2] = 0U;
+                sendBuf[3] = 0U;
+                sendBuf[4] = 0U;
+                sendBuf[5] = 0U;
+                sendBuf[6] = 0U;
+            }
+            for(int i=0;i<7;i++)
+            {
+                checkSum += hidReportData[i]&0x00FF;
+            }
+            hidReportData[7] = checkSum;
+            USBD_CUSTOM_HID_SendReport(&hUsbDeviceFS, (uint8_t*) &hidReportData, 8*sizeof(uint16_t));
         }
         else 
         {
