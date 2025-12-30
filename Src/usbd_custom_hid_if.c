@@ -45,6 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 static uint8_t USB_Recive_Buffer[64]; 
 extern uint8_t MasterUID[6];
+extern uint16_t BuzzerSwitch;
 extern bool MasterUidUseChipIDFlag;
 /* USER CODE END PV */
 
@@ -306,7 +307,18 @@ void SaveMixValueToFlash(void)
             HAL_NVIC_SystemReset();
             break;
         }
-        
+        case EXTRA_CUSTOM_CONFIG_ID:
+        {
+            if(USB_Recive_Buffer[1] == 1)
+            {
+                STMFLASH_Write(BuzzerSwitch_ADDR,&writeWord[2],1); 
+                BuzzerSwitch = writeWord[2];
+            }
+            else if(USB_Recive_Buffer[1] == 2)
+            {
+                STMFLASH_Write(JoystickDeadZonePercent_ADDR,&writeWord[2],1); 
+            }
+        }
 #if defined(LiteRadio_Plus_SX1280)    
         case INTERNAL_CONFIGER_INFO_ID:
         {
