@@ -117,8 +117,9 @@ uint8_t Check_HighThrottle(void)
     {
         throttleValue = 2*CHANNEL_OUTPUT_MID - Get_GimbalValue(ELEVATOR);
     }
-    if(throttleValue < HIGH_THROTTLE_THRESHOLD) 
-    {        
+    if(LOW_THROTTLE_THRESHOLD<throttleValue && throttleValue<HIGH_THROTTLE_THRESHOLD)
+    {
+        // 注意，玄智定制固件解锁条件改为中位解锁
         return 0;
     }
     else
