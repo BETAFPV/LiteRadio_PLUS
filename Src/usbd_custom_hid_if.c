@@ -318,6 +318,7 @@ void SaveMixValueToFlash(void)
             {
                 STMFLASH_Write(JoystickDeadZonePercent_ADDR,&writeWord[2],1); 
             }
+            break;
         }
 #if defined(LiteRadio_Plus_SX1280)    
         case INTERNAL_CONFIGER_INFO_ID:
